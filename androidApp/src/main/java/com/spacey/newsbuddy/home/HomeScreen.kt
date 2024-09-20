@@ -4,13 +4,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Feed
 import androidx.compose.material.icons.filled.Newspaper
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material.icons.twotone.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -23,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -35,7 +40,6 @@ fun HomeScreen(navigateToBuddy: () -> Unit) {
     var bottomSelectedIndex by remember {
         mutableIntStateOf(0)
     }
-    val context = LocalContext.current
     val navController = rememberNavController()
     val backstack by navController.currentBackStackEntryAsState()
     bottomSelectedIndex = when (backstack?.destination?.route) {
@@ -74,7 +78,7 @@ fun HomeScreen(navigateToBuddy: () -> Unit) {
         LargeFloatingActionButton(onClick = {
             navigateToBuddy()
         }) {
-            Icon(Icons.Outlined.PlayArrow, contentDescription = "Play news")
+            Icon(Icons.Outlined.PlayArrow, contentDescription = "Play news", modifier = Modifier.size(40.dp))
         }
     }) { padding ->
         NavHost(navController = navController, startDestination = NewsHome) {
@@ -82,7 +86,7 @@ fun HomeScreen(navigateToBuddy: () -> Unit) {
                 Column(modifier = Modifier
                     .fillMaxSize()
                     .padding(padding), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("Hello there!")
+                    Text("Good Morning!", style = MaterialTheme.typography.displayMedium)
                 }
             }
 
