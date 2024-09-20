@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
@@ -14,8 +17,15 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        val keyStoreFile = project.rootProject.file("secrets.properties")
+        val properties = Properties()
+        properties.load(FileInputStream(keyStoreFile))
+        buildConfigField("String", "GEMINI_API_KEY", properties.getProperty("GEMINI_API_KEY"))
+        buildConfigField("String", "NEWS_API_KEY", properties.getProperty("NEWS_API_KEY"))
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     packaging {
@@ -49,6 +59,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
 
+    implementation(libs.google.generativeai)
 
     debugImplementation(libs.compose.ui.tooling)
 }
