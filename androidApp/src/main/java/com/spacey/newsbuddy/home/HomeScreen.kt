@@ -1,6 +1,5 @@
 package com.spacey.newsbuddy.home
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +31,7 @@ import com.spacey.newsbuddy.EmptyScreen
 import kotlinx.serialization.Serializable
 
 @Composable
-fun HomeScreen(navigateToNews: () -> Unit) {
+fun HomeScreen(navigateToBuddy: () -> Unit) {
     var bottomSelectedIndex by remember {
         mutableIntStateOf(0)
     }
@@ -73,7 +72,7 @@ fun HomeScreen(navigateToNews: () -> Unit) {
         }
     }, floatingActionButton = {
         LargeFloatingActionButton(onClick = {
-            navigateToNews()
+            navigateToBuddy()
         }) {
             Icon(Icons.Outlined.PlayArrow, contentDescription = "Play news")
         }

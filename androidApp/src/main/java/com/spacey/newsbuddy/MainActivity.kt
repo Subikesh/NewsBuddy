@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.spacey.newsbuddy.buddy.BuddyScreen
 import com.spacey.newsbuddy.home.HomeScreen
-import com.spacey.newsbuddy.home.NewsHome
 import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
@@ -37,11 +37,15 @@ fun MainNavigation() {
     NavHost(navController = navController, startDestination = Home) {
         composable<Home> {
             HomeScreen {
-                navController.navigate(NewsTalk)
+                navController.navigate(Buddy)
             }
         }
 
-        composable<NewsTalk> { EmptyScreen() }
+        composable<Buddy> {
+            BuddyScreen {
+                navController.navigate(Home)
+            }
+        }
     }
 }
 
@@ -49,4 +53,4 @@ fun MainNavigation() {
 data object Home
 
 @Serializable
-data object NewsTalk
+data object Buddy
