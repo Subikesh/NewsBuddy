@@ -5,14 +5,14 @@ import com.spacey.newsbuddy.news.NewsRepository
 
 lateinit var serviceLocator: ServiceLocator
 
-class ServiceLocator {
-    private val newsApiService = NewsApiService()
+class ServiceLocator(private val dependencies: Dependencies) {
+    private val newsApiService by lazy { NewsApiService(dependencies) }
 
-    val newsRepository = NewsRepository(newsApiService)
+    val newsRepository by lazy { NewsRepository(newsApiService) }
 
     companion object {
-        fun initiate() {
-            serviceLocator = ServiceLocator()
+        fun initiate(dependencies: Dependencies) {
+            serviceLocator = ServiceLocator(dependencies)
         }
     }
 }

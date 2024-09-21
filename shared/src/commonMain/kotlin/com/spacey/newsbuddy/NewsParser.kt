@@ -1,8 +1,6 @@
 package com.spacey.newsbuddy
 
-import kotlinx.serialization.SerialInfo
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
