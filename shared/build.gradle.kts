@@ -4,6 +4,11 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
 }
 
+repositories {
+    google()
+    mavenCentral()
+}
+
 kotlin {
     androidTarget {
         compilations.all {
@@ -33,6 +38,7 @@ kotlin {
             implementation(libs.ktor.serialization.json)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.generativeai.google)
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)

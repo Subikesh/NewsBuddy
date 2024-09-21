@@ -9,6 +9,7 @@ class MyApplication : Application() {
         super.onCreate()
         ServiceLocator.initiate(object : Dependencies {
             override fun getNewsApiToken(): String = BuildConfig.NEWS_API_KEY
+            override fun getGeminiApiToken(): String = BuildConfig.GEMINI_API_KEY
         })
     }
 }

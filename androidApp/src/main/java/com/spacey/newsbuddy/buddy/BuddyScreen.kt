@@ -43,7 +43,7 @@ fun BuddyScreen(viewModel: BuddyViewModel = viewModel(), navigateToHome: () -> U
                     uriHandler.openUri(it)
                 }
             }) {
-                Text(text = conversation.convo, modifier = Modifier.padding(8.dp))
+                Text(text = conversation.content, modifier = Modifier.padding(8.dp))
             }
         }
     }
