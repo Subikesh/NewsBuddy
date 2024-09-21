@@ -14,10 +14,8 @@ import com.google.ai.client.generativeai.type.generationConfig
 import com.spacey.newsbuddy.Conversation
 import com.spacey.newsbuddy.NewsParser
 import com.spacey.newsbuddy.android.BuildConfig
-import com.spacey.newsbuddy.home.NewsHome
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 
 class BuddyViewModel : ViewModel() {
@@ -47,7 +45,7 @@ class BuddyViewModel : ViewModel() {
             text(
                 "I will share you a json array of today's news headlines response. " +
                     "Summarise those and create a conversation styled news curation. " +
-                    "Give the text in seperate key in json and try to provide proper link to that article near the corresponding article's content like { '$CONVO': \"Some long conversation text\", '$LINK': 'That link here'} so all the convo text can be combined by me to frame the final news summary." +
+                    "Give the text in separate key in json and try to provide proper link to that article near the corresponding article's content like { '$CONVO': \"Some long conversation text\", '$LINK': 'That link here'} so all the convo text can be combined by me to frame the final news summary." +
                     "Here, each item in article summarization, add catchy and linking conversation like statements. "
             )
         },

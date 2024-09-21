@@ -2,7 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
+        android:name="com.spacey.newsbuddy.MyApplication"
         android:allowBackup="false"
+        android:label="NewsBuddy"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
