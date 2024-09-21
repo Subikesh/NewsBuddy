@@ -14,6 +14,7 @@ import com.google.ai.client.generativeai.type.generationConfig
 import com.spacey.newsbuddy.Conversation
 import com.spacey.newsbuddy.NewsParser
 import com.spacey.newsbuddy.android.BuildConfig
+import com.spacey.newsbuddy.serviceLocator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -53,19 +54,25 @@ class BuddyViewModel : ViewModel() {
     )
 
     fun promptTodaysNews() {
-        // TODO: Remove file access
-        model.startChat()
-        val contentStream = model.generateContentStream(content { text(PROMPT) })
         viewModelScope.launch {
-            val content = buildString {
-                contentStream.collect {
-                    if (it.text != null) {
-                        append(it.text)
+            model.startChat()
+            val news = serviceLocator.newsRepository.getTodaysNews()
+            if (news.isSuccess) {
+                val contentStream = model.generateContentStream(content { text(news.getOrThrow().toString()) })
+                Log.i("News", "News response: $news")
+                val content = buildString {
+                    contentStream.collect {
+                        if (it.text != null) {
+                            append(it.text)
+                        }
                     }
                 }
+                Log.d("AI response", content)
+                _conversationList.value = newsParser.parseJson(content)
+            } else {
+                Log.e("News", "News error: ${news.exceptionOrNull()}")
+                _conversationList.value = listOf(Conversation("Error occurred when fetching today's news!"))
             }
-            Log.d("AI response", content)
-            _conversationList.value = newsParser.parseJson(content)
         }
     }
 
