@@ -1,17 +1,12 @@
 package com.spacey.newsbuddy.home
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Feed
 import androidx.compose.material.icons.filled.Newspaper
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material.icons.twotone.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
@@ -24,15 +19,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.spacey.newsbuddy.EmptyScreen
+import com.spacey.newsbuddy.ui.CenteredColumn
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -83,9 +77,7 @@ fun HomeScreen(navigateToBuddy: () -> Unit) {
     }) { padding ->
         NavHost(navController = navController, startDestination = NewsHome) {
             composable<NewsHome> {
-                Column(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                CenteredColumn(Modifier.padding(padding)) {
                     Text("Good Morning!", style = MaterialTheme.typography.displayMedium)
                 }
             }
