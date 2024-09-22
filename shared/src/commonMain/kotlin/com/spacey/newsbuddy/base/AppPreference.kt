@@ -5,7 +5,6 @@ import kotlin.reflect.KProperty
 
 interface AppPreference {
     fun getString(key: String): String
-
     fun putString(key: String, value: String)
 }
 
