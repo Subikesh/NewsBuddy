@@ -2,7 +2,6 @@ package com.spacey.newsbuddy.genai
 
 import com.spacey.newsbuddy.Dependencies
 import com.spacey.newsbuddy.log
-import com.spacey.newsbuddy.serviceLocator
 import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
 import dev.shreyaspatil.ai.client.generativeai.type.FunctionCallingConfig
 import dev.shreyaspatil.ai.client.generativeai.type.FunctionType
@@ -11,9 +10,6 @@ import dev.shreyaspatil.ai.client.generativeai.type.Schema
 import dev.shreyaspatil.ai.client.generativeai.type.ToolConfig
 import dev.shreyaspatil.ai.client.generativeai.type.content
 import dev.shreyaspatil.ai.client.generativeai.type.generationConfig
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.decodeFromJsonElement
 
 class GenerativeAiService(dependencies: Dependencies) {
 
@@ -21,7 +17,7 @@ class GenerativeAiService(dependencies: Dependencies) {
         "gemini-1.5-pro",
         // Retrieve API key as an environmental variable defined in a Build Configuration
         // see https://github.com/google/secrets-gradle-plugin for further instructions
-        dependencies.getNewsApiToken(),
+        dependencies.getGeminiApiToken(),
         requestOptions = RequestOptions(),
         generationConfig = generationConfig {
             temperature = 1f
@@ -41,21 +37,22 @@ class GenerativeAiService(dependencies: Dependencies) {
 
     suspend fun runPrompt(news: String): Result<String> {
         return runCatching {
-            newsProcessingModel.startChat()
+//            newsProcessingModel.startChat()
             val contentStream = newsProcessingModel.generateContent(content { text(news) })
-            val content = contentStream.text ?: ""
+            val content = contentStream.text?.substringAfter('\n')?.substringBeforeLast('\n') ?: ""
             log("AI response", content)
             content
         }
     }
 
     companion object {
-        private const val CONVO = "convo"
-        private const val LINK = "link"
+        const val CONTENT = "content"
+        const val LINK = "link"
+        const val NEWS_CURATION = "news_curation"
         private const val GEMINI_SYSTEM_CMD = "I will share you a json array of today's news headlines response. " +
                 "Summarise those and create a conversation styled news curation. " +
-                "Give the text in separate key in json and try to provide the given link from the input near the corresponding article's content " +
-                "so all the convo text can be combined by me to frame the final news summary." +
+                "Give the text in separate key in json and try to provide the given link from the input in 'link' key of the corresponding article's content " +
+                "so the final summary can be framed by combining all summaries like list of {'$CONTENT': <summary>, '$LINK': <convo_link>} by following responseSchema definition." +
                 "Make the text more engaging and simple. Feel free to shuffle the articles if you think it's better connected" +
                 ", but try to focus on important articles or topics at first. "
 
@@ -66,17 +63,17 @@ class GenerativeAiService(dependencies: Dependencies) {
             required = listOf("news"),
             properties = mapOf(
                 "news" to Schema(
-                    "news",
+                    NEWS_CURATION,
                     "An array of news articles with conversations and links",
                     type = FunctionType.ARRAY,
                     items = Schema(
                         "newsItem",
                         "Single article news item",
                         type = FunctionType.OBJECT,
-                        required = listOf(CONVO),
+                        required = listOf(CONTENT),
                         properties = mapOf(
-                            CONVO to Schema(
-                                CONVO,
+                            CONTENT to Schema(
+                                CONTENT,
                                 "The conversation content for the news article",
                                 type = FunctionType.STRING
                             ),

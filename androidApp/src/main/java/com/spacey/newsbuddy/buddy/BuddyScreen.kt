@@ -59,7 +59,7 @@ fun BuddyScreen(viewModel: BuddyViewModel = viewModel(), navigateToHome: () -> U
             }
             is BuddyScreenState.Error -> {
                 CenteredColumn(Modifier.padding(padding)) {
-                    Text(state.message, style = MaterialTheme.typography.titleMedium)
+                    Text(state.message, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.error)
                 }
             }
         }

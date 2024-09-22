@@ -22,7 +22,7 @@ class NewsRepository(private val newsApiService: NewsApiService, private val gen
     suspend fun getNewsConversation(): Result<List<Conversation>> {
         return if (aiResponse.isEmpty()) {
             val news = getTodaysNews()
-            news.convert {
+            news.convertCatching {
                 log("News", "News response: $it")
                 generativeAiService.runPrompt(it).map { aiMsg ->
                     aiResponse = aiMsg
@@ -53,8 +53,11 @@ class NewsRepository(private val newsApiService: NewsApiService, private val gen
     }
 
     private fun parseJson(json: String): List<Conversation> {
-        val jsonObject: JsonObject = Json.decodeFromString(json)
-        return Json.decodeFromJsonElement(jsonObject["news"]!!)
+        val jsonObject: JsonObject = Json.decodeFromString(json.escapeAiContent())
+        return Json.decodeFromJsonElement(jsonObject[GenerativeAiService.NEWS_CURATION]!!)
     }
 
+    private fun String.escapeAiContent(): String {
+        return replace("\\$", "$")
+    }
 }

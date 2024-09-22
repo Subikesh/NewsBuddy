@@ -7,8 +7,6 @@ class PreferenceImpl(context: Context) : AppPreference, SharedPreferences by con
 
     override fun getString(key: String): String = getString(key, null) ?: ""
     override fun putString(key: String, value: String) {
-        apply {
-            putString(key, value)
-        }
+        edit().putString(key, value).apply()
     }
 }

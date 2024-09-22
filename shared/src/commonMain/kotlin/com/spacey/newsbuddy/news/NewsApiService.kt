@@ -9,12 +9,11 @@ import kotlinx.serialization.json.JsonObject
 
 class NewsApiService(dependencies: Dependencies) : BaseApiService(dependencies) {
     suspend fun getTodaysTopHeadlines(): Result<JsonObject> {
-
         val response = getApiCall(BASE_URL + "everything") {
             parameter("sources", "the-times-of-india,google-news-in")
-            parameter("sortBy", "popularity")
+//            parameter("sortBy", "popularity")
             // TODO: Change to proper date
-            parameter("from", "2024-09-20")
+            parameter("from", "2024-09-21")
             parameter("pageSize", 20)
             parameter("language", "en")
         }

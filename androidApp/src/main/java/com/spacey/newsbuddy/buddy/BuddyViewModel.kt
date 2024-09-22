@@ -1,5 +1,6 @@
 package com.spacey.newsbuddy.buddy
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spacey.newsbuddy.genai.Conversation
@@ -22,6 +23,8 @@ class BuddyViewModel : ViewModel() {
             _uiState.value = newsConvo.fold(onSuccess = {
                 BuddyScreenState.Success(it)
             }, onFailure = {
+                Log.e("Error", "Error in getting news conversation")
+                it.printStackTrace()
                 BuddyScreenState.Error(it.toString())
             })
         }
