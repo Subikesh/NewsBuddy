@@ -2,7 +2,6 @@ package com.spacey.newsbuddy
 
 import com.spacey.newsbuddy.genai.GenerativeAiService
 import com.spacey.newsbuddy.news.NewsApiService
-import com.spacey.newsbuddy.news.NewsRepository
 
 lateinit var serviceLocator: ServiceLocator
 
@@ -11,7 +10,7 @@ class ServiceLocator(private val dependencies: Dependencies) {
     internal val preference by lazy { dependencies.getPreference() }
 
     val generativeAiService by lazy { GenerativeAiService(dependencies) }
-    val newsRepository by lazy { NewsRepository(newsApiService) }
+    val newsRepository by lazy { NewsRepository(newsApiService, generativeAiService) }
 
     companion object {
         fun initiate(dependencies: Dependencies) {

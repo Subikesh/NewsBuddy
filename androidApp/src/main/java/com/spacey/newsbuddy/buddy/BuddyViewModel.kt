@@ -13,11 +13,17 @@ class BuddyViewModel : ViewModel() {
     private val _uiState: MutableStateFlow<BuddyScreenState> = MutableStateFlow(BuddyScreenState.Loading())
     val uiState: StateFlow<BuddyScreenState> = _uiState
 
-    private val generativeAiService = serviceLocator.generativeAiService
+    private val newsRepository = serviceLocator.newsRepository
 
     fun promptTodaysNews() {
+        _uiState.value = BuddyScreenState.Loading()
         viewModelScope.launch {
-            _uiState.value = BuddyScreenState.Success(generativeAiService.promptTodaysNews())
+            val newsConvo = newsRepository.getNewsConversation()
+            _uiState.value = newsConvo.fold(onSuccess = {
+                BuddyScreenState.Success(it)
+            }, onFailure = {
+                BuddyScreenState.Error(it.toString())
+            })
         }
     }
 }
