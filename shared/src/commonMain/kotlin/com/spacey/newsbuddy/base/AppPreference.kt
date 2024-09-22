@@ -9,18 +9,23 @@ interface AppPreference {
     fun putString(key: String, value: String)
 }
 
-class Preference<T>(private val key: String) {
-    operator fun getValue(thisRef: T?, property: KProperty<*>): T {
-       return when (thisRef) {
-            is String? -> serviceLocator.preference.getString(key)
+internal class Preference(private val key: String) {
+    inline operator fun <reified T> getValue(thisRef: Any?, property: KProperty<*>): T {
+        return when (T::class) {
+            String::class -> serviceLocator.preference.getString(key)
             else -> TODO("Not yet implemented")
         } as T
     }
 
-    operator fun setValue(thisRef: T?, property: KProperty<*>, value: T) {
+    operator fun <T> setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         when (value) {
             is String -> serviceLocator.preference.putString(key, value)
             else -> TODO("Not yet implemented")
         }
+    }
+
+    companion object {
+        const val NEWS_RESPONSE = "news_response"
+        const val AI_REPONSE = "ai_response"
     }
 }

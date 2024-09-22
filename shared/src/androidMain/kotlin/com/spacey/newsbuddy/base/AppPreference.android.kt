@@ -1,12 +1,14 @@
 package com.spacey.newsbuddy.base
 
 import android.content.Context
+import android.content.SharedPreferences
 
-class PreferenceImpl(context: Context) {
-    private val preference = context.getSharedPreferences("news_buddy", Context.MODE_PRIVATE)
+class PreferenceImpl(context: Context) : AppPreference, SharedPreferences by context.getSharedPreferences("news_buddy", Context.MODE_PRIVATE) {
 
-    fun getString(key: String): String = preference.getString(key, null) ?: ""
-    fun putString(key: String, value: String) {
-        preference.edit().putString(key, value).apply()
+    override fun getString(key: String): String = getString(key, null) ?: ""
+    override fun putString(key: String, value: String) {
+        apply {
+            putString(key, value)
+        }
     }
 }

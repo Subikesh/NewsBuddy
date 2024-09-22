@@ -39,34 +39,14 @@ class GenerativeAiService(dependencies: Dependencies) {
         toolConfig = ToolConfig(FunctionCallingConfig(FunctionCallingConfig.Mode.ANY))
     )
 
-    suspend fun promptTodaysNews(): List<Conversation> {
-        newsProcessingModel.startChat()
-        val news = serviceLocator.newsRepository.getTodaysNews()
-        return if (news.isSuccess) {
-            val contentStream = newsProcessingModel.generateContentStream(content {
-                text(
-                    news.getOrThrow().toString()
-                )
-            })
-            log("News", "News response: $news")
-            val content = buildString {
-                contentStream.collect {
-                    if (it.text != null) {
-                        append(it.text)
-                    }
-                }
-            }
+    suspend fun runPrompt(news: String): Result<String> {
+        return runCatching {
+            newsProcessingModel.startChat()
+            val contentStream = newsProcessingModel.generateContent(content { text(news) })
+            val content = contentStream.text ?: ""
             log("AI response", content)
-            parseJson(content)
-        } else {
-            log("News", "News error: ${news.exceptionOrNull()}")
-            listOf(Conversation("Error occurred when fetching today's news!"))
+            content
         }
-    }
-
-    private fun parseJson(json: String): List<Conversation> {
-        val jsonObject: JsonObject = Json.decodeFromString(json)
-        return Json.decodeFromJsonElement(jsonObject["news"]!!)
     }
 
     companion object {
