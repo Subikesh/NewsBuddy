@@ -73,9 +73,12 @@ class GenerativeAiService(dependencies: Dependencies) {
         private const val CONVO = "convo"
         private const val LINK = "link"
         private const val GEMINI_SYSTEM_CMD = "I will share you a json array of today's news headlines response. " +
-            "Summarise those and create a conversation styled news curation. " +
-            "Give the text in separate key in json and try to provide proper link to that article near the corresponding article's content like { '$CONVO': \"Some long conversation text\", '$LINK': 'That link here'} so all the convo text can be combined by me to frame the final news summary." +
-            "Here, each item in article summarization, add catchy and linking conversation like statements. "
+                "Summarise those and create a conversation styled news curation. " +
+                "Give the text in separate key in json and try to provide the given link from the input near the corresponding article's content " +
+                "so all the convo text can be combined by me to frame the final news summary." +
+                "Make the text more engaging and simple. Feel free to shuffle the articles if you think it's better connected" +
+                ", but try to focus on important articles or topics at first. "
+
         private val schema = Schema(
             "News article as conversation",
             "News articles converted as conversation with proper link alongside each conversation",

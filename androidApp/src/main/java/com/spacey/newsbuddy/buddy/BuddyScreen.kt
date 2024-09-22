@@ -3,6 +3,7 @@ package com.spacey.newsbuddy.buddy
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,9 +43,10 @@ fun BuddyScreen(viewModel: BuddyViewModel = viewModel(), navigateToHome: () -> U
             }
             is BuddyScreenState.Success -> {
                 LazyColumn(Modifier.padding(padding)) {
-                    items(state.conversations) { conversation ->
+                    items(items = state.conversations) { conversation ->
                         Card(
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            shape = RoundedCornerShape(30.dp),
                             onClick = {
                                 conversation.link?.let {
                                     uriHandler.openUri(it)
