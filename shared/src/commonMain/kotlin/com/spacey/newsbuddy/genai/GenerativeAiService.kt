@@ -46,13 +46,13 @@ class GenerativeAiService(dependencies: Dependencies) {
     }
 
     companion object {
+        const val NEWS_CURATION = "news_curation"
         const val CONTENT = "content"
         const val LINK = "link"
-        const val NEWS_CURATION = "news_curation"
         private const val GEMINI_SYSTEM_CMD = "I will share you a json array of today's news headlines response. " +
-                "Summarise those and create a conversation styled news curation. " +
+                "Summarise those and create a conversation styled news curation. \n" +
                 "Give the text in separate key in json and try to provide the given link from the input in 'link' key of the corresponding article's content " +
-                "so the final summary can be framed by combining all summaries like list of {'$CONTENT': <summary>, '$LINK': <convo_link>} by following responseSchema definition." +
+                "so the final summary can be framed by combining all summaries like `{ $NEWS_CURATION: [{'$CONTENT': <summary>, '$LINK': <convo_link>}] }` by following responseSchema definition." +
                 "Make the text more engaging and simple. Feel free to shuffle the articles if you think it's better connected" +
                 ", but try to focus on important articles or topics at first. "
 

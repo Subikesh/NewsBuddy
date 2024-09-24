@@ -1,5 +1,6 @@
 package com.spacey.newsbuddy.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.ui.CenteredColumn
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: BuddyViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsState()
@@ -26,20 +26,28 @@ fun HomeScreen(viewModel: BuddyViewModel = viewModel()) {
         viewModel.promptTodaysNews()
     }
     val uriHandler = LocalUriHandler.current
-    when(val state = uiState) {
+    when (val state = uiState) {
         is BuddyScreenState.Loading -> {
             CenteredColumn {
                 CircularProgressIndicator()
                 Text(state.message)
             }
         }
+
         is BuddyScreenState.Success -> {
             LazyColumn(contentPadding = PaddingValues(16.dp)) {
                 items(items = state.conversations) { conversation ->
-                    Text(text = conversation.content, modifier = Modifier.padding(bottom = 8.dp), style = MaterialTheme.typography.bodyLarge)
+                    Text(text = conversation.content, modifier = Modifier
+                        .padding(bottom = 8.dp)
+                        .clickable {
+                            conversation.link?.let {
+                                uriHandler.openUri(it)
+                            }
+                        }, style = MaterialTheme.typography.bodyLarge)
                 }
             }
         }
+
         is BuddyScreenState.Error -> {
             CenteredColumn {
                 Text(state.message, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.error)

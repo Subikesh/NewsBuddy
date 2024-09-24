@@ -16,16 +16,19 @@ import kotlinx.serialization.json.jsonPrimitive
 
 class NewsRepository(private val newsApiService: NewsApiService, private val generativeAiService: GenerativeAiService) {
 
+    private var cacheDate: String by Preference(Preference.CACHE_DATE)
     private var newsPreference: String by Preference(Preference.NEWS_RESPONSE)
     private var aiResponse: String by Preference(Preference.AI_REPONSE)
 
-    suspend fun getNewsConversation(): Result<List<Conversation>> {
-        return if (aiResponse.isEmpty()) {
-            val news = getTodaysNews()
+    suspend fun getNewsConversation(today: String, forceRefresh: Boolean = false): Result<List<Conversation>> {
+        return if (forceRefresh || aiResponse.isEmpty() || cacheDate != today) {
+            log("Date", "Response for cacheDate: $today")
+            val news = getTodaysNews(today)
             news.convertCatching {
                 log("News", "News response: $it")
                 generativeAiService.runPrompt(it).map { aiMsg ->
                     aiResponse = aiMsg
+                    cacheDate = today
                     parseJson(aiMsg)
                 }
             }
@@ -34,10 +37,10 @@ class NewsRepository(private val newsApiService: NewsApiService, private val gen
         }
     }
 
-    suspend fun getTodaysNews(): Result<String> = withContext(Dispatchers.IO) {
+    suspend fun getTodaysNews(today: String, forceRefresh: Boolean = false): Result<String> = withContext(Dispatchers.IO) {
         try {
-            if (newsPreference.isEmpty()) {
-                newsApiService.getTodaysTopHeadlines().let {
+            if (forceRefresh || newsPreference.isEmpty() || cacheDate != today) {
+                newsApiService.getTodaysTopHeadlines(today).let {
                     if (it.getOrThrow().jsonObject.getValue("totalResults").jsonPrimitive.int == 0) {
                         throw Exception("Empty articles list was returned from news API")
                     }
