@@ -6,7 +6,7 @@
     <application
         android:name="com.spacey.newsbuddy.MyApplication"
         android:allowBackup="false"
-        android:label="NewsBuddy"
+        android:label="@string/app_label"
         android:icon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">

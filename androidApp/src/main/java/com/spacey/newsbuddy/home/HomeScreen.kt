@@ -20,8 +20,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.ui.CenteredColumn
 
 @Composable
-fun HomeScreen(viewModel: BuddyViewModel = viewModel()) {
+fun HomeScreen(viewModel: BuddyViewModel = viewModel(), titleText: (String) -> Unit = {}) {
     val uiState by viewModel.uiState.collectAsState()
+    titleText("Let's catch up with latest news!")
     LaunchedEffect(key1 = true) {
         viewModel.promptTodaysNews()
     }

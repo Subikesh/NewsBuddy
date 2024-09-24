@@ -18,9 +18,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -44,9 +46,13 @@ fun MainScaffold(navigateToBuddy: () -> Unit) {
         User::class.qualifiedName -> 2
         else -> 0
     }
+    val defaultTitle = LocalContext.current.getString(com.spacey.newsbuddy.android.R.string.app_label)
+    var appBarTitle: String by remember {
+        mutableStateOf("")
+    }
     Scaffold(topBar = {
         TopAppBar(title = {
-            Text("Let's catch up with latest news!")
+            Text(appBarTitle)
         })
     }, bottomBar = {
         NavigationBar {
@@ -82,11 +88,19 @@ fun MainScaffold(navigateToBuddy: () -> Unit) {
     }) { padding ->
         NavHost(navController = navController, startDestination = NewsHome, modifier = Modifier.padding(padding)) {
             composable<NewsHome> {
-                HomeScreen()
+                HomeScreen {
+                    appBarTitle = it
+                }
             }
 
-            composable<Feed> { EmptyScreen() }
-            composable<User> { EmptyScreen() }
+            composable<Feed> {
+                appBarTitle = defaultTitle
+                EmptyScreen()
+            }
+            composable<User> {
+                appBarTitle = defaultTitle
+                EmptyScreen()
+            }
         }
     }
 }
