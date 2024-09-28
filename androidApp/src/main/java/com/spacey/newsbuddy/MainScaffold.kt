@@ -1,19 +1,15 @@
 package com.spacey.newsbuddy
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Feed
 import androidx.compose.material.icons.filled.Newspaper
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -26,7 +22,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -39,7 +34,7 @@ import kotlinx.serialization.Serializable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScaffold(navigateToBuddy: () -> Unit) {
+fun MainScaffold() {
     var bottomSelectedIndex by remember {
         mutableIntStateOf(0)
     }
@@ -53,23 +48,25 @@ fun MainScaffold(navigateToBuddy: () -> Unit) {
         else -> 0
     }
     val defaultTitle = LocalContext.current.getString(com.spacey.newsbuddy.android.R.string.app_label)
-    var appBarTitle: String by remember {
-        mutableStateOf("")
+    var appBarContent: AppBarContent by remember {
+        mutableStateOf(AppBarContent {
+        })
     }
     var fabIcon by remember {
         mutableStateOf(Icons.Outlined.PlayArrow)
     }
-    var fabConfig: FabConfig by remember {
+    var fabOnClick: FabConfig by remember {
         mutableStateOf(FabConfig(onClick = {}))
     }
     Scaffold(topBar = {
         TopAppBar(title = {
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
-                Text(appBarTitle, Modifier.weight(1f))
-                IconButton(onClick = { /* TODO implement pull to refresh */ }) {
-                    Icons.Default.Refresh
-                }
-            }
+            appBarContent.content?.invoke() ?: Text(defaultTitle)
+//            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
+//                Text(appBarTitle, Modifier.weight(1f))
+//                IconButton(onClick = { /* TODO implement pull to refresh */ }) {
+//                    Icons.Default.Refresh
+//                }
+//            }
         })
     }, bottomBar = {
         NavigationBar {
@@ -97,7 +94,7 @@ fun MainScaffold(navigateToBuddy: () -> Unit) {
             }, icon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "User") })
         }
     }, floatingActionButton = {
-        LargeFloatingActionButton(onClick = fabConfig.onClick) {
+        LargeFloatingActionButton(onClick = fabOnClick.onClick) {
             AnimatedContent(targetState = fabIcon, label = "Pause/Play") {
                 Icon(it, contentDescription = "Pause/Play news", modifier = Modifier.size(40.dp))
             }
@@ -105,27 +102,25 @@ fun MainScaffold(navigateToBuddy: () -> Unit) {
     }) { padding ->
         NavHost(navController = navController, startDestination = NewsHome, modifier = Modifier.padding(padding)) {
             composable<NewsHome> {
-                HomeScreen(titleText = {
-                    appBarTitle = it
+                HomeScreen(setAppBarContent = {
+                    appBarContent = it
                 }, setFabIcon = {
                     fabIcon = it
                 }, setFabConfig = {
-                    fabConfig = it
+                    fabOnClick = it
                 })
             }
 
             composable<Feed> {
-                appBarTitle = defaultTitle
                 EmptyScreen()
             }
             composable<User> {
-                appBarTitle = defaultTitle
                 EmptyScreen()
             }
         }
     }
 }
-
+data class AppBarContent(val content: (@Composable () -> Unit)? = null)
 data class FabConfig(val onClick: () -> Unit)
 
 @Serializable

@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.spacey.newsbuddy.home.HomeScreen
 import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
@@ -35,13 +34,11 @@ fun MainNavigation() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Home) {
         composable<Home> {
-            MainScaffold {
-                navController.navigate(Buddy)
-            }
+            MainScaffold()
         }
 
-        composable<Buddy> {
-            HomeScreen(setFabConfig = {}, setFabIcon = {})
+        composable<Login> {
+//            HomeScreen(setFabConfig = {}, setFabIcon = {})
         }
     }
 }
@@ -50,4 +47,4 @@ fun MainNavigation() {
 data object Home
 
 @Serializable
-data object Buddy
+data object Login
