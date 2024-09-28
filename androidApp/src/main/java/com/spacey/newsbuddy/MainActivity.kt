@@ -41,7 +41,7 @@ fun MainNavigation() {
         }
 
         composable<Buddy> {
-            HomeScreen()
+            HomeScreen(setFabConfig = {}, setFabIcon = {})
         }
     }
 }
