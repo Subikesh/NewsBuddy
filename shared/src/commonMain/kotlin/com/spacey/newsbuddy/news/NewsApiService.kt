@@ -1,6 +1,9 @@
 package com.spacey.newsbuddy.news
 
+import com.spacey.newsbuddy.BASE_URL
 import com.spacey.newsbuddy.Dependencies
+import com.spacey.newsbuddy.NEWS_LANGUAGE
+import com.spacey.newsbuddy.NEWS_PAGE_SIZE
 import com.spacey.newsbuddy.base.BaseApiService
 import io.ktor.client.call.body
 import io.ktor.client.request.parameter
@@ -12,10 +15,9 @@ class NewsApiService(dependencies: Dependencies) : BaseApiService(dependencies) 
         val response = getApiCall(BASE_URL + "everything") {
             parameter("sources", "the-times-of-india,google-news-in")
 //            parameter("sortBy", "popularity")
-            // TODO: Change to proper date
             parameter("from", date)
-            parameter("pageSize", 20)
-            parameter("language", "en")
+            parameter("pageSize", NEWS_PAGE_SIZE)
+            parameter("language", NEWS_LANGUAGE)
         }
         return if (response.status.isSuccess()) {
             Result.success(response.body())
@@ -24,5 +26,3 @@ class NewsApiService(dependencies: Dependencies) : BaseApiService(dependencies) 
         }
     }
 }
-
-const val BASE_URL = "https://newsapi.org/v2/"

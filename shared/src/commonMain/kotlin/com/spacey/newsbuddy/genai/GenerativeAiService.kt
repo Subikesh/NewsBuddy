@@ -40,7 +40,7 @@ class GenerativeAiService(dependencies: Dependencies) {
 
     suspend fun runPrompt(news: String): Result<String> {
         return runCatching {
-            val contentStream = chat.sendMessage(content { text(news) })
+            val contentStream = newsProcessingModel.generateContent(content { text(news) })
             val content = contentStream.text?.substringAfter('\n')?.substringBeforeLast('\n') ?: ""
             log("AI response", content)
             content

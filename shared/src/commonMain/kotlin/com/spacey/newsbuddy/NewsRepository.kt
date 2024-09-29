@@ -23,7 +23,7 @@ class NewsRepository(private val newsApiService: NewsApiService, private val gen
     suspend fun getNewsConversation(today: String, forceRefresh: Boolean = false): Result<List<Conversation>> {
         return if (forceRefresh || aiResponse.isEmpty() || cacheDate != today) {
             log("Date", "Response for cacheDate: $today")
-            val news = getTodaysNews(today)
+            val news = getTodaysNews(today, forceRefresh)
             news.convertCatching {
                 log("News", "News response: $it")
                 generativeAiService.runPrompt(it).map { aiMsg ->
