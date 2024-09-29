@@ -13,3 +13,5 @@ inline fun <T, R> Result<T>.convertCatching(block: (T) -> Result<R>): Result<R> 
         Result.failure(e)
     }
 }
+
+const val GEMINI_1_5_PRO = "gemini-1.5-pro"

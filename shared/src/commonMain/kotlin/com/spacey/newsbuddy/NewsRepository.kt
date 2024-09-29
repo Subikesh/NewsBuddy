@@ -18,7 +18,7 @@ class NewsRepository(private val newsApiService: NewsApiService, private val gen
 
     private var cacheDate: String by Preference(Preference.CACHE_DATE)
     private var newsPreference: String by Preference(Preference.NEWS_RESPONSE)
-    private var aiResponse: String by Preference(Preference.AI_REPONSE)
+    private var aiResponse: String by Preference(Preference.AI_RESPONSE)
 
     suspend fun getNewsConversation(today: String, forceRefresh: Boolean = false): Result<List<Conversation>> {
         return if (forceRefresh || aiResponse.isEmpty() || cacheDate != today) {

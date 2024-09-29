@@ -1,6 +1,7 @@
 package com.spacey.newsbuddy.genai
 
 import com.spacey.newsbuddy.Dependencies
+import com.spacey.newsbuddy.GEMINI_1_5_PRO
 import com.spacey.newsbuddy.log
 import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
 import dev.shreyaspatil.ai.client.generativeai.type.FunctionCallingConfig
@@ -14,7 +15,7 @@ import dev.shreyaspatil.ai.client.generativeai.type.generationConfig
 class GenerativeAiService(dependencies: Dependencies) {
 
     private val newsProcessingModel = GenerativeModel(
-        "gemini-1.5-pro",
+        GEMINI_1_5_PRO,
         // Retrieve API key as an environmental variable defined in a Build Configuration
         // see https://github.com/google/secrets-gradle-plugin for further instructions
         dependencies.getGeminiApiToken(),
@@ -35,10 +36,11 @@ class GenerativeAiService(dependencies: Dependencies) {
         toolConfig = ToolConfig(FunctionCallingConfig(FunctionCallingConfig.Mode.ANY))
     )
 
+    private val chat = newsProcessingModel.startChat()
+
     suspend fun runPrompt(news: String): Result<String> {
         return runCatching {
-//            newsProcessingModel.startChat()
-            val contentStream = newsProcessingModel.generateContent(content { text(news) })
+            val contentStream = chat.sendMessage(content { text(news) })
             val content = contentStream.text?.substringAfter('\n')?.substringBeforeLast('\n') ?: ""
             log("AI response", content)
             content
