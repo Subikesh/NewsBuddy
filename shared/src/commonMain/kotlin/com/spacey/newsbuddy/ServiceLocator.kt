@@ -12,7 +12,7 @@ class ServiceLocator(private val dependencies: Dependencies) {
     private val conversationAiService by lazy { ConversationAiService(dependencies) }
     internal val preference by lazy { dependencies.getPreference() }
 
-    val newsRepository by lazy { NewsRepository(newsApiService, generativeAiService) }
+    val newsRepository by lazy { NewsRepository(newsApiService, generativeAiService, conversationAiService) }
 
     companion object {
         fun initiate(dependencies: Dependencies) {
