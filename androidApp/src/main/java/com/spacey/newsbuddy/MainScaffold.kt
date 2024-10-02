@@ -1,6 +1,7 @@
 package com.spacey.newsbuddy
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -29,6 +30,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.spacey.newsbuddy.chat.ChatScreen
 import com.spacey.newsbuddy.home.HomeScreen
 import kotlinx.serialization.Serializable
 
@@ -55,7 +57,7 @@ fun MainScaffold() {
     var fabIcon by remember {
         mutableStateOf(Icons.Outlined.PlayArrow)
     }
-    var fabOnClick: FabConfig by remember {
+    var fabConfig: FabConfig by remember {
         mutableStateOf(FabConfig(onClick = {}))
     }
     Scaffold(topBar = {
@@ -94,9 +96,11 @@ fun MainScaffold() {
             }, icon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "User") })
         }
     }, floatingActionButton = {
-        LargeFloatingActionButton(onClick = fabOnClick.onClick) {
-            AnimatedContent(targetState = fabIcon, label = "Pause/Play") {
-                Icon(it, contentDescription = "Pause/Play news", modifier = Modifier.size(40.dp))
+        AnimatedVisibility(visible = fabConfig.showFab) {
+            LargeFloatingActionButton(onClick = fabConfig.onClick) {
+                AnimatedContent(targetState = fabIcon, label = "Pause/Play") {
+                    Icon(it, contentDescription = "Pause/Play news", modifier = Modifier.size(40.dp))
+                }
             }
         }
     }) { padding ->
@@ -107,21 +111,29 @@ fun MainScaffold() {
                 }, setFabIcon = {
                     fabIcon = it
                 }, setFabConfig = {
-                    fabOnClick = it
+                    fabConfig = it
                 })
             }
 
             composable<Feed> {
-                EmptyScreen()
+                ChatScreen(setFabConfig = {
+                    fabConfig = it
+                }, setAppBarContent = {
+                    appBarContent = it
+                })
             }
             composable<User> {
                 EmptyScreen()
+                appBarContent = AppBarContent {
+                    Text(text = "News Buddy")
+                }
             }
         }
     }
 }
+
 data class AppBarContent(val content: (@Composable () -> Unit)? = null)
-data class FabConfig(val onClick: () -> Unit)
+data class FabConfig(val showFab: Boolean = true, val onClick: () -> Unit)
 
 @Serializable
 data object NewsHome

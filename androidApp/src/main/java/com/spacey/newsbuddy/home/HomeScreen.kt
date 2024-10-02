@@ -23,7 +23,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.AppBarContent
 import com.spacey.newsbuddy.FabConfig
+import com.spacey.newsbuddy.ListedUiState
 import com.spacey.newsbuddy.genai.Conversation
 import com.spacey.newsbuddy.ui.CenteredColumn
 
@@ -60,6 +60,7 @@ fun HomeScreen(
             }
         }
     })
+    setFabConfig(FabConfig {})
     val uiState by viewModel.uiState.collectAsState()
     LaunchedEffect(key1 = true) {
         viewModel.promptTodaysNews()
@@ -73,14 +74,14 @@ fun HomeScreen(
     }
     val uriHandler = LocalUriHandler.current
     when (val state = uiState) {
-        is BuddyScreenState.Loading -> {
+        is ListedUiState.Loading -> {
             CenteredColumn {
                 CircularProgressIndicator()
                 Text(state.message)
             }
         }
 
-        is BuddyScreenState.Success -> {
+        is ListedUiState.Success -> {
             var currentSpeaking: Int by remember {
                 mutableIntStateOf(-1)
             }
@@ -114,7 +115,7 @@ fun HomeScreen(
             }
         }
 
-        is BuddyScreenState.Error -> {
+        is ListedUiState.Error -> {
             CenteredColumn {
                 Text(
                     state.message,
