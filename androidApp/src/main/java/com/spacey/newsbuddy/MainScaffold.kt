@@ -58,7 +58,7 @@ fun MainScaffold() {
     var fabIcon by remember {
         mutableStateOf(Icons.Outlined.PlayArrow)
     }
-    var fabConfig: FabConfig by remember {
+    var fabConfig: FabConfig? by remember {
         mutableStateOf(FabConfig(onClick = {}))
     }
     Scaffold(
@@ -96,12 +96,16 @@ fun MainScaffold() {
                 }, icon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "User") })
             }
         }, floatingActionButton = {
-            AnimatedVisibility(visible = fabConfig.showFab) {
-                LargeFloatingActionButton(onClick = fabConfig.onClick) {
-                    AnimatedContent(targetState = fabIcon, label = "Pause/Play") {
-                        Icon(it, contentDescription = "Pause/Play news", modifier = Modifier.size(40.dp))
+            val fab = fabConfig
+            if (fab != null) {
+                AnimatedVisibility(visible = fab.showFab) {
+                    LargeFloatingActionButton(onClick = fab.onClick) {
+                        AnimatedContent(targetState = fabIcon, label = "Pause/Play") {
+                            Icon(it, contentDescription = "Pause/Play news", modifier = Modifier.size(40.dp))
+                        }
                     }
                 }
+
             }
         }
     ) { padding ->
@@ -123,6 +127,8 @@ fun MainScaffold() {
                     fabConfig = it
                 }, setAppBarContent = {
                     appBarContent = it
+                }, navBackToHome = {
+                    navController.navigateUp()
                 })
             }
             composable<User> {

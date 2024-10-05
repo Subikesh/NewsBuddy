@@ -11,16 +11,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -33,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.AppBarContent
@@ -41,97 +47,116 @@ import com.spacey.newsbuddy.ListedUiState
 
 // Create an app design with modern and material colors to it. Choose a proper color and minimalistic look for it. The app is a chat bot, where you have different chats on different topics and has a date label to it. So every day a new chat will be created. I want two screens, one which lists all the chats, and one with the actual chat window. Be creative in making the design
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
-    setAppBarContent: (AppBarContent) -> Unit,
-    setFabConfig: (FabConfig) -> Unit,
+    setAppBarContent: (AppBarContent?) -> Unit,
+    setFabConfig: (FabConfig?) -> Unit,
+    navBackToHome: () -> Unit,
     viewModel: ChatViewModel = viewModel()
 ) {
     LaunchedEffect(key1 = true) {
         viewModel.startChat()
+        setAppBarContent(null)
+        setFabConfig(null)
     }
-    setAppBarContent(AppBarContent {
-        Text(text = "News talk!")
-    })
-    setFabConfig(FabConfig(false) {})
 
     val conversations by viewModel.conversation.collectAsState()
-
-    when (val chat = conversations) {
-        is ListedUiState.Error -> {
-            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                Text(text = chat.message, color = MaterialTheme.colorScheme.error)
+    Column {
+        CenterAlignedTopAppBar(colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+            title = {
+                Text(
+                    "News Buddy",
+                    Modifier.padding(16.dp),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }, navigationIcon = {
+                IconButton(
+                    onClick = navBackToHome,
+                    colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                ) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "back")
+                }
+            })
+        when (val chat = conversations) {
+            is ListedUiState.Error -> {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                    Text(text = chat.message, color = MaterialTheme.colorScheme.error)
+                }
             }
-        }
 
-        is ListedUiState.Loading -> {
-            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator()
+            is ListedUiState.Loading -> {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator()
+                }
             }
-        }
 
-        is ListedUiState.Success -> {
-            var chatInput by remember {
-                mutableStateOf("")
-            }
-            Column(Modifier.fillMaxSize()) {
-                LazyColumn(Modifier.weight(1f)) {
-                    items(items = chat.conversations) { convo ->
-                        val alignment = if (convo.isUser) Alignment.End else Alignment.Start
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(alignment)
-                        ) {
-                            Card(
-                                colors = CardDefaults.cardColors(if (convo.isUser) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant),
+            is ListedUiState.Success -> {
+                var chatInput by remember {
+                    mutableStateOf("")
+                }
+                Column(Modifier.fillMaxSize()) {
+                    LazyColumn(Modifier.weight(1f)) {
+                        items(items = chat.conversations) { convo ->
+                            val alignment = if (convo.isUser) Alignment.End else Alignment.Start
+                            Box(
                                 modifier = Modifier
-                                    .fillMaxWidth(fraction = .9f)
-                                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                                shape = RoundedCornerShape(20.dp)
+                                    .fillMaxWidth()
+                                    .align(alignment)
                             ) {
-                                if (convo.isLoading) {
-                                    CircularProgressIndicator()
-                                } else {
-                                    Text(text = convo.text, modifier = Modifier.padding(16.dp))
+                                Card(
+                                    colors = CardDefaults.cardColors(if (convo.isUser) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant),
+                                    modifier = Modifier
+                                        .fillMaxWidth(fraction = .9f)
+                                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                                    shape = RoundedCornerShape(20.dp)
+                                ) {
+                                    if (convo.isLoading) {
+                                        CircularProgressIndicator()
+                                    } else {
+                                        Text(text = convo.text, modifier = Modifier.padding(16.dp))
+                                    }
                                 }
                             }
                         }
                     }
+                    fun onInputDone() {
+                        viewModel.chat(chatInput)
+                        chatInput = ""
+                    }
+                    val (focus) = FocusRequester.createRefs()
+                    TextField(value = chatInput,
+                        shape = RoundedCornerShape(30.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(4.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                        ),
+                        trailingIcon = {
+                            IconButton(onClick = ::onInputDone) {
+                                Icon(Icons.Default.Send, "Send chat")
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onDone = {
+                            onInputDone()
+                            focus.requestFocus()
+                        }),
+                        singleLine = true,
+                        onValueChange = {
+                            chatInput = it
+                        },
+                        placeholder = {
+                            Text(text = "Start typing...")
+                        })
                 }
-                fun onInputDone() {
-                    viewModel.chat(chatInput)
-                    chatInput = ""
-                }
-                val (focus) = FocusRequester.createRefs()
-                TextField(value = chatInput,
-                    shape = RoundedCornerShape(30.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent,
-                    ),
-                    trailingIcon = {
-                        IconButton(onClick = ::onInputDone) {
-                            Icon(Icons.Default.Send, "Send chat")
-                        }
-                    },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = {
-                        onInputDone()
-                        focus.requestFocus()
-                    }),
-                    singleLine = true,
-                    onValueChange = {
-                        chatInput = it
-                    },
-                    placeholder = {
-                        Text(text = "Start typing...")
-                    })
             }
         }
+
     }
 }

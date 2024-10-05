@@ -46,10 +46,10 @@ fun HomeScreen(
     setFabIcon: (ImageVector) -> Unit,
     setFabConfig: (FabConfig) -> Unit
 ) {
-    setAppBarContent(null)
-    setFabConfig(FabConfig {})
     val uiState by viewModel.uiState.collectAsState()
     LaunchedEffect(key1 = true) {
+        setAppBarContent(null)
+        setFabConfig(FabConfig {})
         viewModel.promptTodaysNews()
     }
     val context = LocalContext.current
