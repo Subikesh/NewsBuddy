@@ -9,6 +9,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Card
@@ -29,7 +31,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.AppBarContent
@@ -92,6 +97,11 @@ fun ChatScreen(setAppBarContent: (AppBarContent) -> Unit, setFabConfig: (FabConf
                         }
                     }
                 }
+                fun onInputDone() {
+                    viewModel.chat(chatInput)
+                    chatInput = ""
+                }
+                val (focus) = FocusRequester.createRefs()
                 TextField(value = chatInput,
                     shape = RoundedCornerShape(30.dp),
                     modifier = Modifier
@@ -103,13 +113,15 @@ fun ChatScreen(setAppBarContent: (AppBarContent) -> Unit, setFabConfig: (FabConf
                         disabledIndicatorColor = Color.Transparent,
                     ),
                     trailingIcon = {
-                        IconButton(onClick = {
-                            viewModel.chat(chatInput)
-                            chatInput = ""
-                        }) {
+                        IconButton(onClick = ::onInputDone) {
                             Icon(Icons.Default.Send, "Send chat")
                         }
                     },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = { onInputDone()
+                        focus.requestFocus()
+                    }),
+                    singleLine = true,
                     onValueChange = {
                         chatInput = it
                     },

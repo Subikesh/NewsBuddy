@@ -35,6 +35,7 @@ class ChatViewModel : ViewModel() {
 
     fun chat(prompt: String) {
         var current = conversation.value
+        val prompt = prompt.ifBlank { "Continue" }
         if (current is ListedUiState.Success) {
             current = current.copy(current.conversations + listOf(ChatBox(prompt, true), ChatBox("", isUser = false, true)))
             _conversations.value = current
