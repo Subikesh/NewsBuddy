@@ -2,6 +2,7 @@ package com.spacey.newsbuddy
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -24,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
@@ -50,9 +52,8 @@ fun MainScaffold() {
         else -> 0
     }
     val defaultTitle = LocalContext.current.getString(com.spacey.newsbuddy.android.R.string.app_label)
-    var appBarContent: AppBarContent by remember {
-        mutableStateOf(AppBarContent {
-        })
+    var appBarContent: AppBarContent? by remember {
+        mutableStateOf(null)
     }
     var fabIcon by remember {
         mutableStateOf(Icons.Outlined.PlayArrow)
@@ -60,16 +61,21 @@ fun MainScaffold() {
     var fabConfig: FabConfig by remember {
         mutableStateOf(FabConfig(onClick = {}))
     }
-    Scaffold(topBar = {
-        TopAppBar(title = {
-            appBarContent.content?.invoke() ?: Text(defaultTitle)
+    Scaffold(
+        containerColor = Color.Transparent,
+        topBar = {
+            val appBar = appBarContent
+            if (appBar != null) {
+                TopAppBar(title = {
+                    appBar.content?.invoke() ?: Text(defaultTitle)
 //            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
 //                Text(appBarTitle, Modifier.weight(1f))
 //                IconButton(onClick = { /* TODO implement pull to refresh */ }) {
 //                    Icons.Default.Refresh
 //                }
 //            }
-        })
+                }, Modifier.background(Color.Transparent))
+            }
     }, bottomBar = {
         NavigationBar {
             NavigationBarItem(selected = bottomSelectedIndex == 0, onClick = {
@@ -104,7 +110,9 @@ fun MainScaffold() {
             }
         }
     }) { padding ->
-        NavHost(navController = navController, startDestination = NewsHome, modifier = Modifier.padding(padding)) {
+        NavHost(navController = navController, startDestination = NewsHome, modifier = Modifier
+            .padding(padding)
+            .background(Color.Transparent)) {
             composable<NewsHome> {
                 HomeScreen(setAppBarContent = {
                     appBarContent = it

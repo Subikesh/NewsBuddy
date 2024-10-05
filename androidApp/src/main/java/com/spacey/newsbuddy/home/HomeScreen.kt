@@ -4,9 +4,9 @@ import android.speech.tts.TextToSpeech
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -25,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -47,19 +46,6 @@ fun HomeScreen(
     setFabIcon: (ImageVector) -> Unit,
     setFabConfig: (FabConfig) -> Unit
 ) {
-    setAppBarContent(AppBarContent {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
-            Text("Latest news!", Modifier.weight(1f))
-            IconButton(
-                modifier = Modifier.padding(end = 16.dp),
-                onClick = {
-                    viewModel.promptTodaysNews(true)
-                },
-            ) {
-                Icon(Icons.Default.Refresh, "Refresh")
-            }
-        }
-    })
     setFabConfig(FabConfig {})
     val uiState by viewModel.uiState.collectAsState()
     LaunchedEffect(key1 = true) {
@@ -73,55 +59,78 @@ fun HomeScreen(
         Log.d("Speak", it.toString())
     }
     val uriHandler = LocalUriHandler.current
-    when (val state = uiState) {
-        is ListedUiState.Loading -> {
-            CenteredColumn {
-                CircularProgressIndicator()
-                Text(state.message)
-            }
-        }
-
-        is ListedUiState.Success -> {
-            var currentSpeaking: Int by remember {
-                mutableIntStateOf(-1)
-            }
-            setFabConfig(FabConfig {
-                if (textToSpeech.isSpeaking) {
-                    setFabIcon(Icons.Outlined.PlayArrow)
-                    textToSpeech.stop()
-                } else {
-                    textToSpeech.converse(state.conversations, 0)
+    Column(Modifier.padding(16.dp)) {
+        when (val state = uiState) {
+            is ListedUiState.Loading -> {
+                CenteredColumn {
+                    CircularProgressIndicator()
+                    Text(state.message)
                 }
-            })
-            textToSpeech.setOnUtteranceProgressListener(NewsSpeechListener(setFabIcon) {
-                currentSpeaking = it
-            })
-            LazyColumn(contentPadding = PaddingValues(16.dp)) {
-                itemsIndexed(items = state.conversations) { i, conversation ->
-                    val weight = if (i == currentSpeaking) FontWeight.ExtraBold else null
-                    Text(text = conversation.content,
-                        modifier = Modifier
-                            .padding(bottom = 8.dp)
-                            .combinedClickable(onLongClickLabel = "Open Url", onLongClick = {
-                                conversation.link?.let {
-                                    uriHandler.openUri(it)
+            }
+
+            is ListedUiState.Success -> {
+                var currentSpeaking: Int by remember {
+                    mutableIntStateOf(-1)
+                }
+                setFabConfig(FabConfig {
+                    if (textToSpeech.isSpeaking) {
+                        setFabIcon(Icons.Outlined.PlayArrow)
+                        textToSpeech.stop()
+                    } else {
+                        textToSpeech.converse(state.conversations, 0)
+                    }
+                })
+                textToSpeech.setOnUtteranceProgressListener(NewsSpeechListener(setFabIcon) {
+                    currentSpeaking = it
+                })
+                LazyColumn(contentPadding = PaddingValues(vertical = 16.dp)) {
+                    item {
+                        Row {
+                            Text(
+                                "Hello,\nLatest news!",
+                                Modifier.weight(1f).padding(bottom = 32.dp),
+                                style = MaterialTheme.typography.displayMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            IconButton(
+                                modifier = Modifier.padding(end = 16.dp),
+                                onClick = {
+                                    viewModel.promptTodaysNews(true)
                                 }
-                            }) {
-                                textToSpeech.converse(state.conversations, i)
-                            },
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = weight)
+                            ) {
+                                Icon(Icons.Default.Refresh, "Refresh", tint = MaterialTheme.colorScheme.onSurface)
+                            }
+                        }
+                    }
+                    itemsIndexed(items = state.conversations) { i, conversation ->
+                        val weight = if (i == currentSpeaking) FontWeight.ExtraBold else null
+                        Text(text = conversation.content,
+                            modifier = Modifier
+                                .padding(bottom = 8.dp)
+                                .combinedClickable(onLongClickLabel = "Open Url", onLongClick = {
+                                    conversation.link?.let {
+                                        uriHandler.openUri(it)
+                                    }
+                                }) {
+                                    textToSpeech.converse(state.conversations, i)
+                                },
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                fontWeight = weight,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        )
+                    }
+                }
+            }
+
+            is ListedUiState.Error -> {
+                CenteredColumn {
+                    Text(
+                        state.message,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.error
                     )
                 }
-            }
-        }
-
-        is ListedUiState.Error -> {
-            CenteredColumn {
-                Text(
-                    state.message,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.error
-                )
             }
         }
     }

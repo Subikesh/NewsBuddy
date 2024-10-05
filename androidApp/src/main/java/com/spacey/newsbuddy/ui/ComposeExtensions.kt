@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun CenteredColumn(
@@ -16,4 +17,9 @@ fun CenteredColumn(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(modifier.fillMaxSize(), verticalArrangement, horizontalAlignment, content)
+}
+
+@Composable
+fun Color.Companion.of(stringHex: String): Color {
+    return Color(android.graphics.Color.parseColor(stringHex))
 }

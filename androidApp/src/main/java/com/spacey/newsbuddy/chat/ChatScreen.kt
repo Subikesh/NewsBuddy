@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -33,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -41,8 +39,14 @@ import com.spacey.newsbuddy.AppBarContent
 import com.spacey.newsbuddy.FabConfig
 import com.spacey.newsbuddy.ListedUiState
 
+// Create an app design with modern and material colors to it. Choose a proper color and minimalistic look for it. The app is a chat bot, where you have different chats on different topics and has a date label to it. So every day a new chat will be created. I want two screens, one which lists all the chats, and one with the actual chat window. Be creative in making the design
+
 @Composable
-fun ChatScreen(setAppBarContent: (AppBarContent) -> Unit, setFabConfig: (FabConfig) -> Unit, viewModel: ChatViewModel = viewModel()) {
+fun ChatScreen(
+    setAppBarContent: (AppBarContent) -> Unit,
+    setFabConfig: (FabConfig) -> Unit,
+    viewModel: ChatViewModel = viewModel()
+) {
     LaunchedEffect(key1 = true) {
         viewModel.startChat()
     }
@@ -73,10 +77,11 @@ fun ChatScreen(setAppBarContent: (AppBarContent) -> Unit, setFabConfig: (FabConf
             Column(Modifier.fillMaxSize()) {
                 LazyColumn(Modifier.weight(1f)) {
                     items(items = chat.conversations) { convo ->
+                        val alignment = if (convo.isUser) Alignment.End else Alignment.Start
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .align(if (convo.isUser) Alignment.End else Alignment.Start)
+                                .align(alignment)
                         ) {
                             Card(
                                 colors = CardDefaults.cardColors(if (convo.isUser) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant),
@@ -86,10 +91,7 @@ fun ChatScreen(setAppBarContent: (AppBarContent) -> Unit, setFabConfig: (FabConf
                                 shape = RoundedCornerShape(20.dp)
                             ) {
                                 if (convo.isLoading) {
-                                    CircularProgressIndicator(
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .align(Alignment.CenterHorizontally))
+                                    CircularProgressIndicator()
                                 } else {
                                     Text(text = convo.text, modifier = Modifier.padding(16.dp))
                                 }
@@ -118,7 +120,8 @@ fun ChatScreen(setAppBarContent: (AppBarContent) -> Unit, setFabConfig: (FabConf
                         }
                     },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = { onInputDone()
+                    keyboardActions = KeyboardActions(onDone = {
+                        onInputDone()
                         focus.requestFocus()
                     }),
                     singleLine = true,

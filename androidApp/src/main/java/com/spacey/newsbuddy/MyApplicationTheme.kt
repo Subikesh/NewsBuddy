@@ -1,19 +1,25 @@
 package com.spacey.newsbuddy
 
-import androidx.compose.foundation.isSystemInDarkTheme
+import android.os.Build
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.spacey.newsbuddy.ui.of
 
 @Composable
 fun MyApplicationTheme(
@@ -53,5 +59,15 @@ fun MyApplicationTheme(
         typography = typography,
         shapes = shapes,
         content = content
+    )
+}
+
+@Composable
+fun gradientBackground(): Brush {
+    return Brush.radialGradient(
+        colors = listOf(
+            Color.of("#322054"),
+            Color.of("#070707"),
+        ), center = Offset(900f, 100f), radius = 800f
     )
 }
