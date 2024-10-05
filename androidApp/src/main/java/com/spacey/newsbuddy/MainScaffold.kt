@@ -68,48 +68,43 @@ fun MainScaffold() {
             if (appBar != null) {
                 TopAppBar(title = {
                     appBar.content?.invoke() ?: Text(defaultTitle)
-//            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
-//                Text(appBarTitle, Modifier.weight(1f))
-//                IconButton(onClick = { /* TODO implement pull to refresh */ }) {
-//                    Icons.Default.Refresh
-//                }
-//            }
                 }, Modifier.background(Color.Transparent))
             }
     }, bottomBar = {
-        NavigationBar {
-            NavigationBarItem(selected = bottomSelectedIndex == 0, onClick = {
-                if (bottomSelectedIndex != 0) {
-                    navController.navigate(NewsHome)
-                    bottomSelectedIndex = 0
-                } else {
-                    // TODO: Refresh page or something
-                }
-            }, icon = { Icon(imageVector = Icons.Default.Newspaper, contentDescription = "News home") })
+            NavigationBar {
+                NavigationBarItem(selected = bottomSelectedIndex == 0, onClick = {
+                    if (bottomSelectedIndex != 0) {
+                        navController.navigate(NewsHome)
+                        bottomSelectedIndex = 0
+                    } else {
+                        // TODO: Refresh page or something
+                    }
+                }, icon = { Icon(imageVector = Icons.Default.Newspaper, contentDescription = "News home") })
 
-            NavigationBarItem(selected = bottomSelectedIndex == 1, onClick = {
-                if (bottomSelectedIndex != 1) {
-                    navController.navigate(Feed)
-                    bottomSelectedIndex = 1
-                }
-            }, icon = { Icon(imageVector = Icons.Default.Feed, contentDescription = "Feed") })
+                NavigationBarItem(selected = bottomSelectedIndex == 1, onClick = {
+                    if (bottomSelectedIndex != 1) {
+                        navController.navigate(Feed)
+                        bottomSelectedIndex = 1
+                    }
+                }, icon = { Icon(imageVector = Icons.Default.Feed, contentDescription = "Feed") })
 
-            NavigationBarItem(selected = bottomSelectedIndex == 2, onClick = {
-                if (bottomSelectedIndex != 2) {
-                    navController.navigate(User)
-                    bottomSelectedIndex = 2
-                }
-            }, icon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "User") })
-        }
-    }, floatingActionButton = {
-        AnimatedVisibility(visible = fabConfig.showFab) {
-            LargeFloatingActionButton(onClick = fabConfig.onClick) {
-                AnimatedContent(targetState = fabIcon, label = "Pause/Play") {
-                    Icon(it, contentDescription = "Pause/Play news", modifier = Modifier.size(40.dp))
+                NavigationBarItem(selected = bottomSelectedIndex == 2, onClick = {
+                    if (bottomSelectedIndex != 2) {
+                        navController.navigate(User)
+                        bottomSelectedIndex = 2
+                    }
+                }, icon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "User") })
+            }
+        }, floatingActionButton = {
+            AnimatedVisibility(visible = fabConfig.showFab) {
+                LargeFloatingActionButton(onClick = fabConfig.onClick) {
+                    AnimatedContent(targetState = fabIcon, label = "Pause/Play") {
+                        Icon(it, contentDescription = "Pause/Play news", modifier = Modifier.size(40.dp))
+                    }
                 }
             }
         }
-    }) { padding ->
+    ) { padding ->
         NavHost(navController = navController, startDestination = NewsHome, modifier = Modifier
             .padding(padding)
             .background(Color.Transparent)) {

@@ -42,10 +42,11 @@ import com.spacey.newsbuddy.ui.CenteredColumn
 @Composable
 fun HomeScreen(
     viewModel: BuddyViewModel = viewModel(),
-    setAppBarContent: (AppBarContent) -> Unit,
+    setAppBarContent: (AppBarContent?) -> Unit,
     setFabIcon: (ImageVector) -> Unit,
     setFabConfig: (FabConfig) -> Unit
 ) {
+    setAppBarContent(null)
     setFabConfig(FabConfig {})
     val uiState by viewModel.uiState.collectAsState()
     LaunchedEffect(key1 = true) {
