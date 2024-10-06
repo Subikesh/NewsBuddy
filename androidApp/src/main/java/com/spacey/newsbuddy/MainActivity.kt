@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,7 +31,7 @@ class MainActivity : ComponentActivity() {
                         if (isDarkTheme) {
                             it.background(gradientBackground())
                         } else {
-                            it.background(Color.White)
+                            it.background(MaterialTheme.colorScheme.secondaryContainer)
                         }
                     },
                 ) {
@@ -40,7 +41,7 @@ class MainActivity : ComponentActivity() {
                             contentDescription = "background image",
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop,
-                            alpha = .5f,
+                            alpha = .5f
                         )
                     }
                     MainNavigation()

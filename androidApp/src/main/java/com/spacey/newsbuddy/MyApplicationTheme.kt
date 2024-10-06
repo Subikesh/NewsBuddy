@@ -43,8 +43,14 @@ fun MyApplicationTheme(
 //        } else {
             lightColorScheme(
                 primary = Color.White,
+                onPrimary = Color.Black,
+                primaryContainer = Color(0xFF497feb),
+                onPrimaryContainer = Color.White,
                 secondary = Color(0xFFfdfefe),
-                tertiary = Color.Black
+                secondaryContainer = Color(0xFFedf2f8),
+                onSecondaryContainer = Color.Black,
+                tertiary = Color.Black,
+                onTertiary = Color.White
             )
 //        }
     }

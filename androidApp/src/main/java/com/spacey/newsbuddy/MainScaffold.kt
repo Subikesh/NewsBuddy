@@ -4,15 +4,14 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Feed
 import androidx.compose.material.icons.filled.Newspaper
-import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.LocalAbsoluteTonalElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -30,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -58,7 +56,7 @@ fun MainScaffold() {
         mutableStateOf(null)
     }
     var fabIcon by remember {
-        mutableStateOf(Icons.Outlined.PlayArrow)
+        mutableStateOf(Icons.Filled.Chat)
     }
     var fabConfig: FabConfig? by remember {
         mutableStateOf(FabConfig(onClick = {}))
@@ -99,9 +97,14 @@ fun MainScaffold() {
             val fab = fabConfig
             if (fab != null) {
                 AnimatedVisibility(visible = fab.showFab) {
-                    LargeFloatingActionButton(onClick = fab.onClick) {
+                    FloatingActionButton(
+                        shape = CircleShape,
+                        onClick = fab.onClick,
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.onTertiary
+                    ) {
                         AnimatedContent(targetState = fabIcon, label = "Pause/Play") {
-                            Icon(it, contentDescription = "Pause/Play news", modifier = Modifier.size(40.dp))
+                            Icon(it, contentDescription = "Pause/Play news")
                         }
                     }
                 }
