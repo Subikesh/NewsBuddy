@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="inner_gradient">#09185a</color>
+    <color name="outer_gradient">#0f1120</color>
+    <color name="contrast_orange">#f4723a</color>
+    <color name="contrast_orange_dull">#e24501</color>
+    <color name="enabled_button">#ffffff</color>
+    <color name="disabled_button">#1c2756</color>
+    <color name="back_button_or_bottom_nav">#292a33</color>
+<!--Light theme-->
+    <color name="pink">#d671d9</color>
+    <color name="msg_blue">#497feb</color>
+    <color name="msg_green">#d9ede3</color>
+    <color name="msg_orange">#ebdfd2</color>
+</resources>
