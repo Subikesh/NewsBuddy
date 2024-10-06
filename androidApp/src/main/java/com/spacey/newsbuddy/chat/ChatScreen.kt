@@ -76,7 +76,7 @@ fun ChatScreen(
             }, navigationIcon = {
                 IconButton(
                     onClick = navBackToHome,
-                    colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
+                    colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.tertiary, contentColor = MaterialTheme.colorScheme.onTertiary),
                     modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp).size(40.dp)
                 ) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "back")
@@ -103,8 +103,8 @@ fun ChatScreen(
                     LazyColumn(Modifier.weight(1f)) {
                         items(items = chat.conversations) { convo ->
                             val alignment = if (convo.isUser) Alignment.End else Alignment.Start
-                            val cardContainerColor = if (convo.isUser) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primary
-                            val cardContentColor = if (convo.isUser) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onPrimary
+                            val cardContainerColor = if (convo.isUser) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiary
+                            val cardContentColor = if (convo.isUser) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onTertiary
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -137,10 +137,10 @@ fun ChatScreen(
                             .fillMaxWidth()
                             .padding(4.dp),
                         colors = TextFieldDefaults.colors(
-                            disabledContainerColor = MaterialTheme.colorScheme.primary,
-                            focusedContainerColor = MaterialTheme.colorScheme.primary,
-                            errorContainerColor = MaterialTheme.colorScheme.primary,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+                            disabledContainerColor = MaterialTheme.colorScheme.tertiary,
+                            focusedContainerColor = MaterialTheme.colorScheme.tertiary,
+                            errorContainerColor = MaterialTheme.colorScheme.tertiary,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.tertiary,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent,

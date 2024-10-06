@@ -87,17 +87,17 @@ fun HomeScreen(
                 textToSpeech.setOnUtteranceProgressListener(NewsSpeechListener(setFabIcon) {
                     currentSpeaking = it
                 })
-                LazyColumn(contentPadding = PaddingValues(vertical = 16.dp)) {
+                LazyColumn(contentPadding = PaddingValues()) {
                     item {
-                        Row {
+                        Row(Modifier.padding(16.dp)) {
                             Text(
                                 "Hello,\nLatest news!",
-                                Modifier.weight(1f).padding(bottom = 32.dp),
+                                Modifier.weight(1f).padding(bottom = 16.dp),
+                                // TODO: Text size based on screen
                                 style = MaterialTheme.typography.displayMedium,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             IconButton(
-                                modifier = Modifier.padding(end = 16.dp),
                                 onClick = {
                                     viewModel.promptTodaysNews(true)
                                 }

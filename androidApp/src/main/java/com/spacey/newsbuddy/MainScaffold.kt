@@ -11,8 +11,8 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Feed
 import androidx.compose.material.icons.filled.Newspaper
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.LocalAbsoluteTonalElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -67,8 +67,8 @@ fun MainScaffold() {
         containerColor = Color.Transparent,
         bottomBar = {
             val navBarColors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MaterialTheme.colorScheme.tertiary,
-                unselectedIconColor = MaterialTheme.colorScheme.tertiary.copy(alpha = .4f),
+                selectedIconColor = MaterialTheme.colorScheme.primary,
+                unselectedIconColor = MaterialTheme.colorScheme.primary.copy(alpha = .4f),
                 indicatorColor = MaterialTheme.colorScheme.surfaceColorAtElevation(LocalAbsoluteTonalElevation.current)
             )
             NavigationBar(containerColor = MaterialTheme.colorScheme.secondary) {
@@ -99,11 +99,11 @@ fun MainScaffold() {
             val fab = fabConfig
             if (fab != null) {
                 AnimatedVisibility(visible = fab.showFab) {
-                    FloatingActionButton(
+                    LargeFloatingActionButton(
                         shape = CircleShape,
                         onClick = fab.onClick,
-                        containerColor = MaterialTheme.colorScheme.tertiary,
-                        contentColor = MaterialTheme.colorScheme.onTertiary,
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(50.dp)
                     ) {
                         AnimatedContent(targetState = fabIcon, label = "Pause/Play") {
