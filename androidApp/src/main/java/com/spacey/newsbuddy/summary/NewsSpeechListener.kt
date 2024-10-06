@@ -1,4 +1,4 @@
-package com.spacey.newsbuddy.home
+package com.spacey.newsbuddy.summary
 
 import android.speech.tts.UtteranceProgressListener
 import android.util.Log

@@ -1,4 +1,4 @@
-package com.spacey.newsbuddy.home
+package com.spacey.newsbuddy.summary
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
