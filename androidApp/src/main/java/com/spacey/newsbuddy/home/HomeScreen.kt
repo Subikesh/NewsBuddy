@@ -10,9 +10,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -60,7 +63,7 @@ fun HomeScreen(
         Log.d("Speak", it.toString())
     }
     val uriHandler = LocalUriHandler.current
-    Column(Modifier.padding(16.dp)) {
+    Column {
         when (val state = uiState) {
             is ListedUiState.Loading -> {
                 CenteredColumn {
@@ -105,21 +108,25 @@ fun HomeScreen(
                     }
                     itemsIndexed(items = state.conversations) { i, conversation ->
                         val weight = if (i == currentSpeaking) FontWeight.ExtraBold else null
-                        Text(text = conversation.content,
-                            modifier = Modifier
-                                .padding(bottom = 8.dp)
-                                .combinedClickable(onLongClickLabel = "Open Url", onLongClick = {
-                                    conversation.link?.let {
-                                        uriHandler.openUri(it)
-                                    }
-                                }) {
-                                    textToSpeech.converse(state.conversations, i)
-                                },
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontWeight = weight,
-                                color = MaterialTheme.colorScheme.onSurface
+                        val shape = if (i == 0) RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp) else RoundedCornerShape(0.dp)
+                        val textPadding = if (i == 0) PaddingValues(top = 32.dp, start = 16.dp, end = 16.dp, bottom = 8.dp) else PaddingValues(vertical = 8.dp, horizontal = 16.dp)
+                        Card(shape = shape, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
+                            Text(text = conversation.content,
+                                modifier = Modifier
+                                    .padding(textPadding)
+                                    .combinedClickable(onLongClickLabel = "Open Url", onLongClick = {
+                                        conversation.link?.let {
+                                            uriHandler.openUri(it)
+                                        }
+                                    }) {
+                                        textToSpeech.converse(state.conversations, i)
+                                    },
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = weight,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }

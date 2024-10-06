@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -29,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -101,7 +103,8 @@ fun MainScaffold() {
                         shape = CircleShape,
                         onClick = fab.onClick,
                         containerColor = MaterialTheme.colorScheme.tertiary,
-                        contentColor = MaterialTheme.colorScheme.onTertiary
+                        contentColor = MaterialTheme.colorScheme.onTertiary,
+                        modifier = Modifier.size(50.dp)
                     ) {
                         AnimatedContent(targetState = fabIcon, label = "Pause/Play") {
                             Icon(it, contentDescription = "Pause/Play news")
@@ -116,13 +119,11 @@ fun MainScaffold() {
             .padding(padding)
             .background(Color.Transparent)) {
             composable<NewsHome> {
-                HomeScreen(setAppBarContent = {
-                    appBarContent = it
-                }, setFabIcon = {
-                    fabIcon = it
-                }, setFabConfig = {
-                    fabConfig = it
-                })
+                HomeScreen(
+                    setAppBarContent = { appBarContent = it },
+                    setFabIcon = { fabIcon = it },
+                    setFabConfig = { fabConfig = it }
+                )
             }
 
             composable<Feed> {
