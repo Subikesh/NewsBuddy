@@ -109,7 +109,7 @@ fun HomeScreen(
                     itemsIndexed(items = state.conversations) { i, conversation ->
                         val weight = if (i == currentSpeaking) FontWeight.ExtraBold else null
                         val shape = if (i == 0) RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp) else RoundedCornerShape(0.dp)
-                        val textPadding = if (i == 0) PaddingValues(top = 32.dp, start = 16.dp, end = 16.dp, bottom = 8.dp) else PaddingValues(vertical = 8.dp, horizontal = 16.dp)
+                        val textPadding = if (i == 0) PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 8.dp) else PaddingValues(vertical = 8.dp, horizontal = 16.dp)
                         Card(shape = shape, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
                             Text(text = conversation.content,
                                 modifier = Modifier

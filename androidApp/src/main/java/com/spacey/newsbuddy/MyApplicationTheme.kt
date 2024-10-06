@@ -42,13 +42,13 @@ fun MyApplicationTheme(
 //            dynamicLightColorScheme(context)
 //        } else {
             lightColorScheme(
-                primary = Color.Black,
+                primary = Color(0xFF03142a),
                 onPrimary = Color.White,
                 onTertiary = Color.Black,
-                primaryContainer = Color(0xFF497feb),
+                primaryContainer = Color(0xFF4a7feb),
                 onPrimaryContainer = Color.White,
-                secondary = Color(0xFFfdfefe),
                 secondaryContainer = Color(0xFFedf2f8),
+                secondary = Color(0xFFfdfefe),
                 tertiary = Color.White,
                 onSecondaryContainer = Color.Black
             )

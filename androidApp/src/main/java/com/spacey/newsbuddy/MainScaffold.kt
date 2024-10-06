@@ -53,7 +53,6 @@ fun MainScaffold() {
         User::class.qualifiedName -> 2
         else -> 0
     }
-    val defaultTitle = LocalContext.current.getString(com.spacey.newsbuddy.android.R.string.app_label)
     var appBarContent: AppBarContent? by remember {
         mutableStateOf(null)
     }

@@ -3,6 +3,7 @@ package com.spacey.newsbuddy
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -23,6 +24,7 @@ import kotlinx.serialization.Serializable
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
             val isDarkTheme = isSystemInDarkTheme()
             MyApplicationTheme(isDarkTheme) {
@@ -31,7 +33,7 @@ class MainActivity : ComponentActivity() {
                         if (isDarkTheme) {
                             it.background(gradientBackground())
                         } else {
-                            it.background(MaterialTheme.colorScheme.secondaryContainer)
+                            it.background(Color.LightGray)
                         }
                     },
                 ) {
