@@ -104,7 +104,6 @@ fun MainScaffold() {
                         onClick = fab.onClick,
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(50.dp)
                     ) {
                         AnimatedContent(targetState = fabIcon, label = "Pause/Play") {
                             Icon(it, contentDescription = "Pause/Play news")
