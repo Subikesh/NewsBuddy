@@ -13,11 +13,14 @@ import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
+import androidx.compose.material3.LocalAbsoluteTonalElevation
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -36,7 +39,6 @@ import com.spacey.newsbuddy.chat.ChatScreen
 import com.spacey.newsbuddy.home.HomeScreen
 import kotlinx.serialization.Serializable
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScaffold() {
     var bottomSelectedIndex by remember {
@@ -63,15 +65,13 @@ fun MainScaffold() {
     }
     Scaffold(
         containerColor = Color.Transparent,
-        topBar = {
-            val appBar = appBarContent
-            if (appBar != null) {
-                TopAppBar(title = {
-                    appBar.content?.invoke() ?: Text(defaultTitle)
-                }, Modifier.background(Color.Transparent))
-            }
-    }, bottomBar = {
-            NavigationBar {
+        bottomBar = {
+            val navBarColors = NavigationBarItemDefaults.colors(
+                selectedIconColor = MaterialTheme.colorScheme.tertiary,
+                unselectedIconColor = MaterialTheme.colorScheme.tertiary.copy(alpha = .4f),
+                indicatorColor = MaterialTheme.colorScheme.surfaceColorAtElevation(LocalAbsoluteTonalElevation.current)
+            )
+            NavigationBar(containerColor = MaterialTheme.colorScheme.secondary) {
                 NavigationBarItem(selected = bottomSelectedIndex == 0, onClick = {
                     if (bottomSelectedIndex != 0) {
                         navController.navigate(NewsHome)
@@ -79,21 +79,21 @@ fun MainScaffold() {
                     } else {
                         // TODO: Refresh page or something
                     }
-                }, icon = { Icon(imageVector = Icons.Default.Newspaper, contentDescription = "News home") })
+                }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Newspaper, contentDescription = "News home") })
 
                 NavigationBarItem(selected = bottomSelectedIndex == 1, onClick = {
                     if (bottomSelectedIndex != 1) {
                         navController.navigate(Feed)
                         bottomSelectedIndex = 1
                     }
-                }, icon = { Icon(imageVector = Icons.Default.Feed, contentDescription = "Feed") })
+                }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Feed, contentDescription = "Feed") })
 
                 NavigationBarItem(selected = bottomSelectedIndex == 2, onClick = {
                     if (bottomSelectedIndex != 2) {
                         navController.navigate(User)
                         bottomSelectedIndex = 2
                     }
-                }, icon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "User") })
+                }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "User") })
             }
         }, floatingActionButton = {
             val fab = fabConfig
