@@ -76,7 +76,7 @@ fun ChatScreen(
             }, navigationIcon = {
                 IconButton(
                     onClick = navBackToHome,
-                    colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.tertiary, contentColor = MaterialTheme.colorScheme.onTertiary),
+                    colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp).size(40.dp)
                 ) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "back")
@@ -103,13 +103,15 @@ fun ChatScreen(
                     LazyColumn(Modifier.weight(1f)) {
                         items(items = chat.conversations) { convo ->
                             val alignment = if (convo.isUser) Alignment.End else Alignment.Start
+                            val cardContainerColor = if (convo.isUser) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primary
+                            val cardContentColor = if (convo.isUser) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onPrimary
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .align(alignment)
                             ) {
                                 Card(
-                                    colors = CardDefaults.cardColors(if (convo.isUser) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant),
+                                    colors = CardDefaults.cardColors(containerColor = cardContainerColor, contentColor = cardContentColor),
                                     modifier = Modifier
                                         .fillMaxWidth(fraction = .9f)
                                         .padding(horizontal = 8.dp, vertical = 4.dp),
@@ -135,12 +137,16 @@ fun ChatScreen(
                             .fillMaxWidth()
                             .padding(4.dp),
                         colors = TextFieldDefaults.colors(
+                            disabledContainerColor = MaterialTheme.colorScheme.primary,
+                            focusedContainerColor = MaterialTheme.colorScheme.primary,
+                            errorContainerColor = MaterialTheme.colorScheme.primary,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.primary,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent,
                         ),
                         trailingIcon = {
-                            IconButton(onClick = ::onInputDone) {
+                            IconButton(onClick = ::onInputDone, colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
                                 Icon(Icons.Default.Send, "Send chat")
                             }
                         },
