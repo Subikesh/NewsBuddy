@@ -1,13 +1,10 @@
 package com.spacey.newsbuddy
 
-import android.os.Build
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Offset
@@ -19,27 +16,37 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.spacey.newsbuddy.ui.of
 
 @Composable
 fun MyApplicationTheme(
-    // TODO: Make dark theme changeable
-    darkTheme: Boolean = true,
-//    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean,
     content: @Composable () -> Unit
 ) {
+    val context = LocalContext.current
+    // TODO: Adopt multiple themes
+    val darkTheme = false
     val colors = if (darkTheme) {
-        darkColorScheme(
-            primary = Color(0xFFBB86FC),
-            secondary = Color(0xFF03DAC5),
-            tertiary = Color(0xFF3700B3)
-        )
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//            dynamicDarkColorScheme(context)
+//        } else {
+            darkColorScheme(
+                primary = Color(0xFFFFFFFF),
+                secondary = Color(0xFF1c2756),
+                tertiary = Color(0xFF292a33),
+                onTertiary = Color.White,
+                tertiaryContainer = Color(0xFFf4723a)
+            )
+//        }
     } else {
-        lightColorScheme(
-            primary = Color(0xFF6200EE),
-            secondary = Color(0xFF03DAC5),
-            tertiary = Color(0xFF3700B3)
-        )
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//            dynamicLightColorScheme(context)
+//        } else {
+            lightColorScheme(
+                primary = Color.White,
+                secondary = Color(0xFFfdfefe),
+                tertiary = Color.Black
+            )
+//        }
     }
     val typography = Typography(
         bodyMedium = TextStyle(
@@ -66,8 +73,8 @@ fun MyApplicationTheme(
 fun gradientBackground(): Brush {
     return Brush.radialGradient(
         colors = listOf(
-            Color.of("#322054"),
-            Color.of("#070707"),
+            Color(0xFF322054),
+            Color(0xFF070707),
         ), center = Offset(900f, 100f), radius = 800f
     )
 }

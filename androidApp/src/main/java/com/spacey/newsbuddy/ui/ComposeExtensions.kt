@@ -7,7 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.BlurEffect
+import androidx.compose.ui.graphics.RenderEffect
 
 @Composable
 fun CenteredColumn(
@@ -19,7 +20,6 @@ fun CenteredColumn(
     Column(modifier.fillMaxSize(), verticalArrangement, horizontalAlignment, content)
 }
 
-@Composable
-fun Color.Companion.of(stringHex: String): Color {
-    return Color(android.graphics.Color.parseColor(stringHex))
+fun getGlassEffect(): RenderEffect {
+    return BlurEffect(25f, 25f)
 }
