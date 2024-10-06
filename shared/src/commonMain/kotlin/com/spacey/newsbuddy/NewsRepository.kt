@@ -35,11 +35,13 @@ class NewsRepository(
                 generativeAiService.runPrompt(it).map { aiMsg ->
                     aiResponse = aiMsg
                     cacheDate = yesterday
-                    parseJson(aiMsg)
+                    parseAiResponse(aiMsg)
                 }
             }
         } else {
-            Result.success(parseJson(aiResponse))
+            runCatching {
+                parseAiResponse(aiResponse)
+            }
         }
     }
 
@@ -73,7 +75,8 @@ class NewsRepository(
         }
     }
 
-    private fun parseJson(json: String): List<Conversation> {
+    private fun parseAiResponse(json: String): List<Conversation> {
+
         val jsonObject: JsonObject = Json.decodeFromString(json.escapeAiContent())
         return Json.decodeFromJsonElement(jsonObject[GenerativeAiService.NEWS_CURATION]!!)
     }
