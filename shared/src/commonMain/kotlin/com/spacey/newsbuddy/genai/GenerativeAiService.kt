@@ -36,8 +36,6 @@ class GenerativeAiService(dependencies: Dependencies) {
         toolConfig = ToolConfig(FunctionCallingConfig(FunctionCallingConfig.Mode.ANY))
     )
 
-    private val chat = newsProcessingModel.startChat()
-
     suspend fun runPrompt(news: String): Result<String> {
         return runCatching {
             val contentStream = newsProcessingModel.generateContent(content { text(news) })

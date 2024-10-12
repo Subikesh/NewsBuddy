@@ -3,6 +3,7 @@ package com.spacey.newsbuddy
 import com.spacey.newsbuddy.base.Preference
 import com.spacey.newsbuddy.genai.Conversation
 import com.spacey.newsbuddy.genai.ConversationAiService
+import com.spacey.newsbuddy.genai.GenAiDao
 import com.spacey.newsbuddy.genai.GenerativeAiService
 import com.spacey.newsbuddy.news.NewsApiService
 import com.spacey.newsbuddy.news.NewsDao
@@ -22,28 +23,31 @@ class NewsRepository(
     private val newsApiService: NewsApiService,
     private val generativeAiService: GenerativeAiService,
     private val chatAiService: ConversationAiService,
-    private val newsDao: NewsDao
+    private val newsDao: NewsDao,
+    private val genAiDao: GenAiDao
 ) {
 
     private var cacheDate: String by Preference(Preference.CACHE_DATE)
     private var newsPreference: String by Preference(Preference.NEWS_RESPONSE)
     private var aiResponse: String by Preference(Preference.AI_RESPONSE)
 
-    suspend fun getNewsConversation(date: String, forceRefresh: Boolean = false): Result<List<Conversation>> {
-        return if (forceRefresh || aiResponse.isEmpty() || cacheDate != date) {
-            log("Date", "Response for cacheDate: $date")
-            val news = getTodaysNews(date, forceRefresh)
-            news.safeConvert {
-                log("News", "News response: $it")
-                generativeAiService.runPrompt(it).map { aiMsg ->
-                    aiResponse = aiMsg
-                    cacheDate = date
-                    parseAiResponse(aiMsg)
+    suspend fun getNewsConversation(date: String, forceRefresh: Boolean = false): Result<List<Conversation>> = withContext(Dispatchers.IO) {
+        val newsAiSummary = genAiDao.getNewsSummary(date)
+        if (!forceRefresh && newsAiSummary.isSuccess) {
+            return@withContext newsAiSummary.map { daySummary ->
+                daySummary.summary.map {
+                    Conversation(it.content, it.link)
                 }
             }
-        } else {
-            runCatching {
-                parseAiResponse(aiResponse)
+        }
+        log("Date", "Response for cacheDate: $date")
+        val news = getTodaysNews(date, forceRefresh)
+        news.safeConvert {
+            log("News", "News response: $it")
+            generativeAiService.runPrompt(it).map { aiMsg ->
+                aiResponse = aiMsg
+                cacheDate = date
+                parseAiResponse(aiMsg)
             }
         }
     }

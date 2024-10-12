@@ -3,6 +3,7 @@ package com.spacey.newsbuddy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.spacey.newsbuddy.NewsBuddyDatabase.Companion.DATABASE_VERSION
+import com.spacey.newsbuddy.genai.GenAiDao
 import com.spacey.newsbuddy.news.NewsDao
 import com.spacey.newsbuddy.news.NewsResponse
 
@@ -10,6 +11,7 @@ import com.spacey.newsbuddy.news.NewsResponse
 abstract class NewsBuddyDatabase: RoomDatabase() {
 
     abstract fun getNewsDao(): NewsDao
+    abstract fun getGenAiDao(): GenAiDao
 
     companion object {
         const val DATABASE_VERSION = 0
