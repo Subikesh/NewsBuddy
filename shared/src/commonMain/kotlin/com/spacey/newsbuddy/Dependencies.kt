@@ -7,4 +7,5 @@ interface Dependencies {
     fun getGeminiApiToken(): String
 
     fun getPreference(): AppPreference
+    fun getNewsBuddyDatabase(): NewsBuddyDatabase
 }
