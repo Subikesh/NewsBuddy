@@ -1,10 +1,11 @@
 package com.spacey.newsbuddy
 
-import com.spacey.newsbuddy.base.Preference
+import com.spacey.newsbuddy.genai.ChatBubble
 import com.spacey.newsbuddy.genai.Conversation
 import com.spacey.newsbuddy.genai.ConversationAiService
 import com.spacey.newsbuddy.genai.GenAiDao
 import com.spacey.newsbuddy.genai.GenerativeAiService
+import com.spacey.newsbuddy.genai.NewsSummary
 import com.spacey.newsbuddy.news.NewsApiService
 import com.spacey.newsbuddy.news.NewsDao
 import com.spacey.newsbuddy.news.NewsResponse
@@ -27,40 +28,46 @@ class NewsRepository(
     private val genAiDao: GenAiDao
 ) {
 
-    private var cacheDate: String by Preference(Preference.CACHE_DATE)
-    private var newsPreference: String by Preference(Preference.NEWS_RESPONSE)
-    private var aiResponse: String by Preference(Preference.AI_RESPONSE)
-
     suspend fun getNewsConversation(date: String, forceRefresh: Boolean = false): Result<List<Conversation>> = withContext(Dispatchers.IO) {
         val newsAiSummary = genAiDao.getNewsSummary(date)
         if (!forceRefresh && newsAiSummary.isSuccess) {
             return@withContext newsAiSummary.map { daySummary ->
-                daySummary.summary.map {
+                daySummary.map {
                     Conversation(it.content, it.link)
                 }
             }
         }
+        // Cache not found
         log("Date", "Response for cacheDate: $date")
         val news = getTodaysNews(date, forceRefresh)
         news.safeConvert {
             log("News", "News response: $it")
+            var i = 0
             generativeAiService.runPrompt(it).map { aiMsg ->
-                aiResponse = aiMsg
-                cacheDate = date
-                parseAiResponse(aiMsg)
+//                aiResponse = aiMsg
+//                cacheDate = date
+                parseAiResponse(aiMsg).also { convoList ->
+                    genAiDao.upsert(convoList.map { NewsSummary(date, it.content, it.link, i++) })
+                }
             }
         }
     }
 
-    suspend fun startAiChat(yesterday: String, forceRefresh: Boolean = false): Result<Flow<String?>> {
-        val news = getTodaysNews(yesterday)
+    suspend fun startAiChat(date: String): Result<List<ChatBubble>> {
+        val chatWindow = genAiDao.getChatWindow(date)
+        if (chatWindow.isSuccess) {
+            return chatWindow.map { it.chats }
+        }
+
+        val news = getTodaysNews(date)
         return news.safeConvert {
             log("News", "News response: $it")
             chatAiService.chat(it)
         }
     }
 
-    suspend fun chatWithAi(prompt: String): Result<Flow<String?>> {
+    suspend fun chatWithAi(prompt: String): Result<String?> {
+        genAiDao.
         return chatAiService.chat(prompt)
     }
 
@@ -70,14 +77,13 @@ class NewsRepository(
             if (!forceRefresh && summary.isSuccess) {
                 return@withContext summary
             }
-
             newsApiService.getTodaysTopHeadlines(date).let {
                 if (it.getOrThrow().jsonObject.getValue("totalResults").jsonPrimitive.int == 0) {
                     throw Exception("Empty articles list was returned from news API")
                 }
                 newsDao.upsert(listOf(NewsResponse(date, it.toString())))
             }
-            Result.success(newsPreference)
+            newsDao.getNewsResponse(date)
         } catch (e: Exception) {
             Result.failure(e)
         }

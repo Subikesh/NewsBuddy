@@ -17,6 +17,7 @@ interface NewsDao {
 
 @Entity
 data class NewsResponse(
+    @PrimaryKey(autoGenerate = true) val id: Int,
     @PrimaryKey val date: String,
     val content: String
 )

@@ -1,5 +1,6 @@
 package com.spacey.newsbuddy.chat
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -77,7 +78,9 @@ fun ChatScreen(
                 IconButton(
                     onClick = navBackToHome,
                     colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.tertiary, contentColor = MaterialTheme.colorScheme.onTertiary),
-                    modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp).size(40.dp)
+                    modifier = Modifier
+                        .padding(vertical = 16.dp, horizontal = 8.dp)
+                        .size(40.dp)
                 ) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "back")
                 }
@@ -146,8 +149,10 @@ fun ChatScreen(
                             disabledIndicatorColor = Color.Transparent,
                         ),
                         trailingIcon = {
-                            IconButton(onClick = ::onInputDone, colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
-                                Icon(Icons.Default.Send, "Send chat")
+                            AnimatedVisibility(chatInput.isNotEmpty()) {
+                                IconButton(onClick = ::onInputDone, colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
+                                    Icon(Icons.Default.Send, "Send chat")
+                                }
                             }
                         },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
