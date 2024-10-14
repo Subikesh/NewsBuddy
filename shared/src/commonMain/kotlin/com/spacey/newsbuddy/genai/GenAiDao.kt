@@ -2,6 +2,7 @@ package com.spacey.newsbuddy.genai
 
 import androidx.room.Dao
 import androidx.room.Embedded
+import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Relation
 import androidx.room.Upsert
@@ -10,20 +11,19 @@ import com.spacey.newsbuddy.news.NewsResponse
 @Dao
 interface GenAiDao {
     @Query("SELECT * FROM NewsSummary WHERE date = :date ORDER BY order ASC")
-    fun getNewsSummary(date: String): Result<List<NewsSummary>>
+    suspend fun getNewsSummary(date: String): Result<List<NewsSummary>>
 
     @Upsert
-    fun upsert(newsSummaries: List<NewsSummary>)
+    suspend fun upsert(newsSummaries: List<NewsSummary>)
 
-    // TODO: Select chat for that date, and order by sent timeand parse in repository
-    @Query("SELECT * FROM NewsResponse WHERE date = :date ORDER BY order ASC")
-    fun getChatWindow(date: String): Result<ChatWindow>
+    @Query("SELECT * FROM NewsResponse AS news JOIN ChatBubble as chat ON news.id = chat.news_id WHERE date = :date ORDER BY chat.time ASC")
+    suspend fun getChatWindow(date: String): Result<ChatWindow>
 
-    @Upsert
-    fun upsertChatWindow(newsSummaries: List<ChatWindow>)
+    @Insert
+    suspend fun insertChat(chatBubble: ChatBubble)
 }
 
 data class ChatWindow(
-    @Embedded val dayNews: NewsResponse,
+    @Embedded internal val dayNews: NewsResponse,
     @Relation(ChatBubble::class, "id", "newsId") val chats: List<ChatBubble>
 )
