@@ -72,12 +72,12 @@ class NewsRepository(
         }
     }
 
-    suspend fun chatWithAi(chatWindow: ChatWindow, prompt: String): Result<String?> {
+    suspend fun chatWithAi(chatWindow: ChatWindow, prompt: String): Result<ChatWindow> {
         genAiDao.insertChat(ChatBubble(chatWindow.dayNews.id, prompt, getCurrentTime(), ChatType.USER))
-        return chatAiService.chat(prompt).map { aiResponse ->
-            aiResponse.foldAsString().also { aiResponseStr ->
-                genAiDao.insertChat(ChatBubble(chatWindow.dayNews.id, aiResponseStr, getCurrentTime(), ChatType.AI))
-            }
+        return chatAiService.chat(prompt).safeConvert { aiResponse ->
+            val aiResponseStr = aiResponse.foldAsString()
+            genAiDao.insertChat(ChatBubble(chatWindow.dayNews.id, aiResponseStr, getCurrentTime(), ChatType.AI))
+            genAiDao.getChatWindow(chatWindow.dayNews.date)
         }
     }
 
