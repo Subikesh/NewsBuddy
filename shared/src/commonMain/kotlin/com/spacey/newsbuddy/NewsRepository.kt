@@ -1,6 +1,8 @@
 package com.spacey.newsbuddy
 
 import com.spacey.newsbuddy.genai.ChatBubble
+import com.spacey.newsbuddy.genai.ChatType
+import com.spacey.newsbuddy.genai.ChatWindow
 import com.spacey.newsbuddy.genai.Conversation
 import com.spacey.newsbuddy.genai.ConversationAiService
 import com.spacey.newsbuddy.genai.GenAiDao
@@ -43,7 +45,7 @@ class NewsRepository(
         news.safeConvert {
             log("News", "News response: $it")
             var i = 0
-            generativeAiService.runPrompt(it).map { aiMsg ->
+            generativeAiService.runPrompt(it.content).map { aiMsg ->
 //                aiResponse = aiMsg
 //                cacheDate = date
                 parseAiResponse(aiMsg).also { convoList ->
@@ -53,25 +55,33 @@ class NewsRepository(
         }
     }
 
-    suspend fun startAiChat(date: String): Result<List<ChatBubble>> {
+    suspend fun startAiChat(date: String): Result<ChatWindow> {
         val chatWindow = genAiDao.getChatWindow(date)
         if (chatWindow.isSuccess) {
-            return chatWindow.map { it.chats }
+            return chatWindow
         }
 
         val news = getTodaysNews(date)
         return news.safeConvert {
             log("News", "News response: $it")
-            chatAiService.chat(it)
+            chatAiService.chat(it.content).safeConvert { aiResponse ->
+                val aiResponseStr = aiResponse.foldAsString()
+                genAiDao.insertChat(ChatBubble(it.id, aiResponseStr, getCurrentTime(), ChatType.AI))
+                genAiDao.getChatWindow(it.date)
+            }
         }
     }
 
-    suspend fun chatWithAi(prompt: String): Result<String?> {
-        genAiDao.
-        return chatAiService.chat(prompt)
+    suspend fun chatWithAi(chatWindow: ChatWindow, prompt: String): Result<String?> {
+        genAiDao.insertChat(ChatBubble(chatWindow.dayNews.id, prompt, getCurrentTime(), ChatType.USER))
+        return chatAiService.chat(prompt).map { aiResponse ->
+            aiResponse.foldAsString().also { aiResponseStr ->
+                genAiDao.insertChat(ChatBubble(chatWindow.dayNews.id, aiResponseStr, getCurrentTime(), ChatType.AI))
+            }
+        }
     }
 
-    suspend fun getTodaysNews(date: String, forceRefresh: Boolean = false): Result<String> = withContext(Dispatchers.IO) {
+    suspend fun getTodaysNews(date: String, forceRefresh: Boolean = false): Result<NewsResponse> = withContext(Dispatchers.IO) {
         try {
             val summary = newsDao.getNewsResponse(date)
             if (!forceRefresh && summary.isSuccess) {
