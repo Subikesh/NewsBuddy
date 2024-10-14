@@ -21,4 +21,6 @@ suspend fun Flow<String?>.foldAsString(): String {
     return this.fold("") { curr, next -> curr + next }
 }
 
+expect fun getCurrentTime(): Long
+
 const val GEMINI_1_5_PRO = "gemini-1.5-pro"
