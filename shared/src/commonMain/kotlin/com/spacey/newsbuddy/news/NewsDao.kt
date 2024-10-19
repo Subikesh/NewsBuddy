@@ -9,7 +9,7 @@ import androidx.room.Upsert
 @Dao
 interface NewsDao {
     @Query("SELECT * FROM NewsResponse WHERE date = :date")
-    fun getNewsResponse(date: String): Result<NewsResponse>
+    fun getNewsResponse(date: String): NewsResponse
 
     @Upsert
     fun upsert(news: List<NewsResponse>)
@@ -17,7 +17,7 @@ interface NewsDao {
 
 @Entity
 data class NewsResponse(
-    @PrimaryKey val date: String,
+    val date: String,
     val content: String,
     @PrimaryKey(autoGenerate = true) val id: Int = 0
 )

@@ -8,12 +8,12 @@ import com.spacey.newsbuddy.genai.ConversationAiService
 import com.spacey.newsbuddy.genai.GenAiDao
 import com.spacey.newsbuddy.genai.GenerativeAiService
 import com.spacey.newsbuddy.genai.NewsSummary
+import com.spacey.newsbuddy.genai.safeGetChatWindow
 import com.spacey.newsbuddy.news.NewsApiService
 import com.spacey.newsbuddy.news.NewsDao
 import com.spacey.newsbuddy.news.NewsResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -31,7 +31,7 @@ class NewsRepository(
 ) {
 
     suspend fun getNewsConversation(date: String, forceRefresh: Boolean = false): Result<List<Conversation>> = withContext(Dispatchers.IO) {
-        val newsAiSummary = genAiDao.getNewsSummary(date)
+        val newsAiSummary = kotlin.runCatching { genAiDao.getNewsSummary(date) }
         if (!forceRefresh && newsAiSummary.isSuccess) {
             return@withContext newsAiSummary.map { daySummary ->
                 daySummary.map {
@@ -56,7 +56,7 @@ class NewsRepository(
     }
 
     suspend fun startAiChat(date: String): Result<ChatWindow> {
-        val chatWindow = genAiDao.getChatWindow(date)
+        val chatWindow = genAiDao.safeGetChatWindow(date)
         if (chatWindow.isSuccess) {
             return chatWindow
         }
@@ -66,24 +66,24 @@ class NewsRepository(
             log("News", "News response: $it")
             chatAiService.chat(it.content).safeConvert { aiResponse ->
                 val aiResponseStr = aiResponse.foldAsString()
-                genAiDao.insertChat(ChatBubble(it.id, aiResponseStr, getCurrentTime(), ChatType.AI))
-                genAiDao.getChatWindow(it.date)
+                genAiDao.insertChat(ChatBubble(it.id, getCurrentTime(), ChatType.AI, aiResponseStr))
+                genAiDao.safeGetChatWindow(it.date)
             }
         }
     }
 
     suspend fun chatWithAi(chatWindow: ChatWindow, prompt: String): Result<ChatWindow> {
-        genAiDao.insertChat(ChatBubble(chatWindow.dayNews.id, prompt, getCurrentTime(), ChatType.USER))
+        genAiDao.insertChat(ChatBubble(chatWindow.dayNews.id, getCurrentTime(), ChatType.USER, prompt))
         return chatAiService.chat(prompt).safeConvert { aiResponse ->
             val aiResponseStr = aiResponse.foldAsString()
-            genAiDao.insertChat(ChatBubble(chatWindow.dayNews.id, aiResponseStr, getCurrentTime(), ChatType.AI))
-            genAiDao.getChatWindow(chatWindow.dayNews.date)
+            genAiDao.insertChat(ChatBubble(chatWindow.dayNews.id, getCurrentTime(), ChatType.AI, aiResponseStr))
+            genAiDao.safeGetChatWindow(chatWindow.dayNews.date)
         }
     }
 
     suspend fun getTodaysNews(date: String, forceRefresh: Boolean = false): Result<NewsResponse> = withContext(Dispatchers.IO) {
         try {
-            val summary = newsDao.getNewsResponse(date)
+            val summary = runCatching { newsDao.getNewsResponse(date) }
             if (!forceRefresh && summary.isSuccess) {
                 return@withContext summary
             }
@@ -93,7 +93,7 @@ class NewsRepository(
                 }
                 newsDao.upsert(listOf(NewsResponse(date, it.toString())))
             }
-            newsDao.getNewsResponse(date)
+            kotlin.runCatching { newsDao.getNewsResponse(date) }
         } catch (e: Exception) {
             Result.failure(e)
         }
