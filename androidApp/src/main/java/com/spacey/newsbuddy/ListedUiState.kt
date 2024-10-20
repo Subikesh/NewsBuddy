@@ -6,9 +6,13 @@ sealed class ListedUiState<out T> {
     data class Success<T>(val resultList: List<T>) : ListedUiState<T>()
 }
 
-fun <T> Result<List<T>>.toListedUiState(): ListedUiState<T> {
+fun <T> Result<List<T>>.toListedUiState(emptyMsg: String? = null): ListedUiState<T> {
     return if (isSuccess) {
-        ListedUiState.Success(getOrThrow())
+        val res = getOrThrow()
+        if (res.isEmpty() && emptyMsg != null) {
+            return ListedUiState.Error(emptyMsg)
+        }
+        ListedUiState.Success(res)
     } else {
         ListedUiState.Error(exceptionOrNull()?.message ?: "Some error occurred")
     }

@@ -20,8 +20,8 @@ class HomeViewModel : ViewModel() {
     fun loadHome() {
         _uiState.value = HomeUiState.LOADING
         viewModelScope.launch {
-            val chats = kotlin.runCatching { genAiRepository.getRecentChats() }.toListedUiState()
-            val summaries = kotlin.runCatching { genAiRepository.getRecentSummaries() }.toListedUiState()
+            val chats = kotlin.runCatching { genAiRepository.getRecentChats() }.toListedUiState("No chats found")
+            val summaries = kotlin.runCatching { genAiRepository.getRecentSummaries() }.toListedUiState("No summaries found")
             _uiState.value = HomeUiState(chats, summaries)
         }
     }

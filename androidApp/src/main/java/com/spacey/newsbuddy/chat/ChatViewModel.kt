@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter
 
 class ChatViewModel : ViewModel() {
 
-    private val newsRepository by lazy { serviceLocator.newsRepository }
+    private val genAiRepository by lazy { serviceLocator.genAiRepository }
 
     private val _conversations = MutableStateFlow<ChatUiState>(ChatUiState.Loading)
     val conversation: StateFlow<ChatUiState> = _conversations
@@ -23,7 +23,7 @@ class ChatViewModel : ViewModel() {
     fun startChat() {
         _conversations.value = ChatUiState.Loading
         viewModelScope.launch {
-            val result = newsRepository.startAiChat(yesterday)
+            val result = genAiRepository.startAiChat(yesterday)
             if (result.isSuccess) {
                 _conversations.value = ChatUiState.Success(result.getOrThrow())
             } else {
@@ -48,7 +48,7 @@ class ChatViewModel : ViewModel() {
                 startChat()
                 return@launch
             }
-            val result = newsRepository.chatWithAi(chatWindow.chatWindow, prompt)
+            val result = genAiRepository.chatWithAi(chatWindow.chatWindow, prompt)
             if (result.isSuccess) {
                 _conversations.value = ChatUiState.Success(result.getOrThrow())
             } else {

@@ -17,13 +17,13 @@ class SummaryViewModel : ViewModel() {
     private val _uiState: MutableStateFlow<ListedUiState<SummaryParagraph>> = MutableStateFlow(ListedUiState.Loading())
     val uiState: StateFlow<ListedUiState<SummaryParagraph>> = _uiState
 
-    private val newsRepository = serviceLocator.newsRepository
+    private val genAiRepository = serviceLocator.genAiRepository
     private val cacheDate = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)
 
     fun promptTodaysNews(forceRefresh: Boolean = false) {
         _uiState.value = ListedUiState.Loading()
         viewModelScope.launch {
-            val newsConvo = newsRepository.getNewsConversation(cacheDate, forceRefresh)
+            val newsConvo = genAiRepository.getNewsSummary(cacheDate, forceRefresh)
             _uiState.value = newsConvo.fold(onSuccess = {
                 ListedUiState.Success(it)
             }, onFailure = {
