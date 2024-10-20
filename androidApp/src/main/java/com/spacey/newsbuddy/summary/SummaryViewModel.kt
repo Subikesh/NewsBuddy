@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class BuddyViewModel : ViewModel() {
+class SummaryViewModel : ViewModel() {
 
     private val _uiState: MutableStateFlow<ListedUiState<Conversation>> = MutableStateFlow(ListedUiState.Loading())
     val uiState: StateFlow<ListedUiState<Conversation>> = _uiState
