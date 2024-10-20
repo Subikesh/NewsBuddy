@@ -1,10 +1,12 @@
 package com.spacey.newsbuddy.genai
 
+import androidx.room.Dao
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Upsert
 
+@Dao
 interface SummaryDao {
     @Query("SELECT * FROM NewsSummary WHERE date = :date ORDER BY newsOrder ASC")
     suspend fun getNewsSummary(date: String): List<NewsSummary>
@@ -12,7 +14,7 @@ interface SummaryDao {
     @Upsert
     suspend fun upsert(newsSummaries: List<NewsSummary>)
 
-    @Query("SELECT news.date FROM NewsSummary WHERE date <= :date ORDER BY date DESC LIMIT :offset, :limit")
+    @Query("SELECT date FROM NewsSummary ORDER BY date DESC LIMIT :offset, :limit")
     suspend fun getRecentSummaries(offset: Int, limit: Int): List<String>
 }
 

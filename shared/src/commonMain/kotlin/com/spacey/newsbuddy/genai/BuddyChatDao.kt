@@ -18,7 +18,7 @@ interface BuddyChatDao {
     suspend fun insert(chatBubble: ChatBubble)
 
     // TODO: add a title and return that too
-    @Query("SELECT news.date FROM ChatBubble as chat LEFT JOIN NewsResponse as news ON news.id = chat.newsId WHERE date <= :date ORDER BY date DESC LIMIT :offset, :limit")
+    @Query("SELECT news.date FROM ChatBubble as chat LEFT JOIN NewsResponse as news ON news.id = chat.newsId ORDER BY date DESC LIMIT :offset, :limit")
     suspend fun getRecentChats(offset: Int, limit: Int): List<String>
 }
 
