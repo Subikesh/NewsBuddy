@@ -1,4 +1,6 @@
-package com.spacey.newsbuddy.base
+package com.spacey.newsbuddy.common
+
+import com.spacey.newsbuddy.persistance.AppPreference
 
 class PreferencesImpl: AppPreference {
     override fun getString(key: String): String {

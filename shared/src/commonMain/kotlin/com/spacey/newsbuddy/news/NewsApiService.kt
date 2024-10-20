@@ -1,10 +1,10 @@
 package com.spacey.newsbuddy.news
 
-import com.spacey.newsbuddy.BASE_URL
-import com.spacey.newsbuddy.Dependencies
-import com.spacey.newsbuddy.NEWS_LANGUAGE
-import com.spacey.newsbuddy.NEWS_PAGE_SIZE
-import com.spacey.newsbuddy.base.BaseApiService
+import com.spacey.newsbuddy.common.BASE_URL
+import com.spacey.newsbuddy.common.Dependencies
+import com.spacey.newsbuddy.common.NEWS_LANGUAGE
+import com.spacey.newsbuddy.common.NEWS_PAGE_SIZE
+import com.spacey.newsbuddy.common.BaseApiService
 import io.ktor.client.call.body
 import io.ktor.client.request.parameter
 import io.ktor.http.isSuccess

@@ -2,7 +2,7 @@ package com.spacey.newsbuddy.home
 
 import androidx.lifecycle.ViewModel
 import com.spacey.newsbuddy.ListedUiState
-import com.spacey.newsbuddy.NewsRepository
+import com.spacey.newsbuddy.news.NewsRepository
 import com.spacey.newsbuddy.genai.ChatWindow
 import com.spacey.newsbuddy.genai.NewsSummary
 import com.spacey.newsbuddy.serviceLocator

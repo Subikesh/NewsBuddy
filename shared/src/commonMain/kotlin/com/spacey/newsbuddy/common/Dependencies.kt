@@ -1,6 +1,7 @@
-package com.spacey.newsbuddy
+package com.spacey.newsbuddy.common
 
-import com.spacey.newsbuddy.base.AppPreference
+import com.spacey.newsbuddy.persistance.AppPreference
+import com.spacey.newsbuddy.persistance.NewsBuddyDatabase
 
 interface Dependencies {
     fun getNewsApiToken(): String

@@ -1,4 +1,4 @@
-package com.spacey.newsbuddy.base
+package com.spacey.newsbuddy.persistance
 
 import androidx.room.TypeConverter
 import com.spacey.newsbuddy.genai.ChatType

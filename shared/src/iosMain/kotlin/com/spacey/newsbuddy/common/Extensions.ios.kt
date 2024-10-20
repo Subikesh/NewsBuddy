@@ -1,4 +1,4 @@
-package com.spacey.newsbuddy
+package com.spacey.newsbuddy.common
 
 actual fun log(tag: String, message: String) {
     println("$tag: $message")

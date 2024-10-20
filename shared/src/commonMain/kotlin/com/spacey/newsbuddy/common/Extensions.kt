@@ -1,4 +1,4 @@
-package com.spacey.newsbuddy
+package com.spacey.newsbuddy.common
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.fold

@@ -6,7 +6,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.AppBarContent
 import com.spacey.newsbuddy.FabConfig
-import com.spacey.newsbuddy.genai.Conversation
+import com.spacey.newsbuddy.genai.SummaryParagraph
 import com.spacey.newsbuddy.summary.SummaryScreen
 
 @Composable
@@ -23,9 +23,9 @@ fun HomeScreen(
     SummaryScreen()
 }
 
-fun TextToSpeech.converse(conversations: List<Conversation>, index: Int) {
+fun TextToSpeech.converse(summaries: List<SummaryParagraph>, index: Int) {
     stop()
-    for (i in index until conversations.size) {
-        speak(conversations[i].escapedContent, TextToSpeech.QUEUE_ADD, null, i.toString())
+    for (i in index until summaries.size) {
+        speak(summaries[i].escapedContent, TextToSpeech.QUEUE_ADD, null, i.toString())
     }
 }

@@ -1,4 +1,4 @@
-package com.spacey.newsbuddy.base
+package com.spacey.newsbuddy.common
 
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.darwin.Darwin

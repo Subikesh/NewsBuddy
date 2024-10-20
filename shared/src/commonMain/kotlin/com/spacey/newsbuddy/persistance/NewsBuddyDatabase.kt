@@ -1,8 +1,8 @@
-package com.spacey.newsbuddy
+package com.spacey.newsbuddy.persistance
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.spacey.newsbuddy.NewsBuddyDatabase.Companion.DATABASE_VERSION
+import com.spacey.newsbuddy.persistance.NewsBuddyDatabase.Companion.DATABASE_VERSION
 import com.spacey.newsbuddy.genai.ChatBubble
 import com.spacey.newsbuddy.genai.GenAiDao
 import com.spacey.newsbuddy.genai.NewsSummary

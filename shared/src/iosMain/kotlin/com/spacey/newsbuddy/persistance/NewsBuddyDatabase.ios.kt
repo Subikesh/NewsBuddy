@@ -1,4 +1,4 @@
-package com.spacey.newsbuddy
+package com.spacey.newsbuddy.persistance
 
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver

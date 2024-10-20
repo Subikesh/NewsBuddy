@@ -1,4 +1,4 @@
-package com.spacey.newsbuddy
+package com.spacey.newsbuddy.persistance
 
 import android.content.Context
 import androidx.room.Room

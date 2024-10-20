@@ -1,53 +1,43 @@
-package com.spacey.newsbuddy
+package com.spacey.newsbuddy.genai
 
-import com.spacey.newsbuddy.genai.ChatBubble
-import com.spacey.newsbuddy.genai.ChatType
-import com.spacey.newsbuddy.genai.ChatWindow
-import com.spacey.newsbuddy.genai.Conversation
-import com.spacey.newsbuddy.genai.ConversationAiService
-import com.spacey.newsbuddy.genai.GenAiDao
-import com.spacey.newsbuddy.genai.GenerativeAiService
-import com.spacey.newsbuddy.genai.NewsSummary
-import com.spacey.newsbuddy.genai.safeGetChatWindow
-import com.spacey.newsbuddy.news.NewsApiService
-import com.spacey.newsbuddy.news.NewsDao
-import com.spacey.newsbuddy.news.NewsResponse
+import com.spacey.newsbuddy.common.foldAsString
+import com.spacey.newsbuddy.common.getCurrentTime
+import com.spacey.newsbuddy.common.log
+import com.spacey.newsbuddy.common.safeConvert
+import com.spacey.newsbuddy.news.NewsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.int
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 
-class NewsRepository(
-    private val newsApiService: NewsApiService,
+class GenAiRepository(
+    private val newsRepository: NewsRepository,
     private val generativeAiService: GenerativeAiService,
     private val chatAiService: ConversationAiService,
-    private val newsDao: NewsDao,
     private val genAiDao: GenAiDao
 ) {
 
-    suspend fun getNewsConversation(date: String, forceRefresh: Boolean = false): Result<List<Conversation>> = withContext(Dispatchers.IO) {
+    suspend fun getNewsConversation(date: String, forceRefresh: Boolean = false): Result<List<SummaryParagraph>> = withContext(
+        Dispatchers.IO) {
         val newsAiSummary = kotlin.runCatching { genAiDao.getNewsSummary(date) }
         if (!forceRefresh && newsAiSummary.isSuccess) {
             return@withContext newsAiSummary.map { daySummary ->
                 daySummary.map {
-                    Conversation(it.content, it.link)
+                    SummaryParagraph(it.content, it.link)
                 }
             }
         }
         // Cache not found
         log("Date", "Response for cacheDate: $date")
-        val news = getTodaysNews(date, forceRefresh)
+        val news = newsRepository.getTodaysNews(date, forceRefresh)
         news.safeConvert {
             log("News", "News response: $it")
             var i = 0
             generativeAiService.runPrompt(it.content).map { aiMsg ->
-//                aiResponse = aiMsg
-//                cacheDate = date
                 parseAiResponse(aiMsg).also { convoList ->
                     genAiDao.upsert(convoList.map { NewsSummary(date, it.content, it.link, i++) })
                 }
@@ -61,7 +51,7 @@ class NewsRepository(
             return chatWindow
         }
 
-        val news = getTodaysNews(date)
+        val news = newsRepository.getTodaysNews(date)
         return news.safeConvert {
             log("News", "News response: $it")
             chatAiService.chat(it.content).safeConvert { aiResponse ->
@@ -81,25 +71,7 @@ class NewsRepository(
         }
     }
 
-    suspend fun getTodaysNews(date: String, forceRefresh: Boolean = false): Result<NewsResponse> = withContext(Dispatchers.IO) {
-        try {
-            val summary = runCatching { newsDao.getNewsResponse(date) }
-            if (!forceRefresh && summary.isSuccess) {
-                return@withContext summary
-            }
-            newsApiService.getTodaysTopHeadlines(date).let {
-                if (it.getOrThrow().jsonObject.getValue("totalResults").jsonPrimitive.int == 0) {
-                    throw Exception("Empty articles list was returned from news API")
-                }
-                newsDao.upsert(listOf(NewsResponse(date, it.toString())))
-            }
-            kotlin.runCatching { newsDao.getNewsResponse(date) }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    private fun parseAiResponse(json: String): List<Conversation> {
+    private fun parseAiResponse(json: String): List<SummaryParagraph> {
         val jsonObject: JsonObject = Json.decodeFromString(json.escapeAiContent())
         return Json.decodeFromJsonElement(jsonObject[GenerativeAiService.NEWS_CURATION]!!)
     }
@@ -107,4 +79,12 @@ class NewsRepository(
     private fun String.escapeAiContent(): String {
         return replace("\\$", "$")
     }
+}
+
+@Serializable
+data class SummaryParagraph(
+    @SerialName(GenerativeAiService.CONTENT) val content: String,
+    @SerialName(GenerativeAiService.LINK) val link: String? = null
+) {
+    val escapedContent: String = content.replace("/[\u2190-\u21FF]|[\u2600-\u26FF]|[\u2700-\u27BF]|[\u3000-\u303F]|[\u1F300-\u1F64F]|[\u1F680-\u1F6FF]/g", "");
 }

@@ -1,4 +1,4 @@
-package com.spacey.newsbuddy
+package com.spacey.newsbuddy.common
 
 import android.util.Log
 
