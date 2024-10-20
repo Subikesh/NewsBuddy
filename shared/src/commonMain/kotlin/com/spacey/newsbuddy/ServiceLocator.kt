@@ -2,9 +2,10 @@ package com.spacey.newsbuddy
 
 import com.spacey.newsbuddy.common.Dependencies
 import com.spacey.newsbuddy.genai.ConversationAiService
-import com.spacey.newsbuddy.genai.GenAiDao
+import com.spacey.newsbuddy.genai.BuddyChatDao
 import com.spacey.newsbuddy.genai.GenAiRepository
 import com.spacey.newsbuddy.genai.GenerativeAiService
+import com.spacey.newsbuddy.genai.SummaryDao
 import com.spacey.newsbuddy.news.NewsApiService
 import com.spacey.newsbuddy.news.NewsDao
 import com.spacey.newsbuddy.news.NewsRepository
@@ -20,12 +21,13 @@ class ServiceLocator(private val dependencies: Dependencies) {
 
     private val newsBuddyDatabase: NewsBuddyDatabase by lazy { dependencies.getNewsBuddyDatabase() }
     private val newsDao: NewsDao by lazy { newsBuddyDatabase.getNewsDao() }
-    private val genAiDao: GenAiDao by lazy { newsBuddyDatabase.getGenAiDao() }
+    private val buddyChatDao: BuddyChatDao by lazy { newsBuddyDatabase.getGenAiDao() }
+    private val summaryDao: SummaryDao by lazy { newsBuddyDatabase.getSummaryDao() }
 
     internal val preference: AppPreference by lazy { dependencies.getPreference() }
 
     val newsRepository by lazy { NewsRepository(newsApiService, newsDao) }
-    val genAiRepository by lazy { GenAiRepository(newsRepository, generativeAiService, conversationAiService, genAiDao) }
+    val genAiRepository by lazy { GenAiRepository(newsRepository, generativeAiService, conversationAiService, buddyChatDao, summaryDao) }
 
     companion object {
         fun initiate(dependencies: Dependencies) {

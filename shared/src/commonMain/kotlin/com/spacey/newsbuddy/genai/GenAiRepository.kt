@@ -18,12 +18,20 @@ class GenAiRepository(
     private val newsRepository: NewsRepository,
     private val generativeAiService: GenerativeAiService,
     private val chatAiService: ConversationAiService,
-    private val genAiDao: GenAiDao
+    private val buddyChatDao: BuddyChatDao,
+    private val newsSummaryDao: SummaryDao
 ) {
 
-    suspend fun getNewsConversation(date: String, forceRefresh: Boolean = false): Result<List<SummaryParagraph>> = withContext(
-        Dispatchers.IO) {
-        val newsAiSummary = kotlin.runCatching { genAiDao.getNewsSummary(date) }
+    suspend fun getRecentChats(offset: Int = 0, limit: Int = 10): List<String> = withContext(Dispatchers.IO) {
+        buddyChatDao.getRecentChats(offset, limit)
+    }
+
+    suspend fun getRecentSummaries(offset: Int = 0, limit: Int = 10): List<String> = withContext(Dispatchers.IO) {
+        newsSummaryDao.getRecentSummaries(offset, limit)
+    }
+
+    suspend fun getNewsSummary(date: String, forceRefresh: Boolean = false): Result<List<SummaryParagraph>> = withContext(Dispatchers.IO) {
+        val newsAiSummary = kotlin.runCatching { newsSummaryDao.getNewsSummary(date) }
         if (!forceRefresh && newsAiSummary.isSuccess) {
             return@withContext newsAiSummary.map { daySummary ->
                 daySummary.map {
@@ -39,14 +47,14 @@ class GenAiRepository(
             var i = 0
             generativeAiService.runPrompt(it.content).map { aiMsg ->
                 parseAiResponse(aiMsg).also { convoList ->
-                    genAiDao.upsert(convoList.map { NewsSummary(date, it.content, it.link, i++) })
+                    newsSummaryDao.upsert(convoList.map { NewsSummary(date, it.content, it.link, i++) })
                 }
             }
         }
     }
 
     suspend fun startAiChat(date: String): Result<ChatWindow> {
-        val chatWindow = genAiDao.safeGetChatWindow(date)
+        val chatWindow = buddyChatDao.safeGetChatWindow(date)
         if (chatWindow.isSuccess) {
             return chatWindow
         }
@@ -56,18 +64,18 @@ class GenAiRepository(
             log("News", "News response: $it")
             chatAiService.chat(it.content).safeConvert { aiResponse ->
                 val aiResponseStr = aiResponse.foldAsString()
-                genAiDao.insertChat(ChatBubble(it.id, getCurrentTime(), ChatType.AI, aiResponseStr))
-                genAiDao.safeGetChatWindow(it.date)
+                buddyChatDao.insert(ChatBubble(it.id, getCurrentTime(), ChatType.AI, aiResponseStr))
+                buddyChatDao.safeGetChatWindow(it.date)
             }
         }
     }
 
     suspend fun chatWithAi(chatWindow: ChatWindow, prompt: String): Result<ChatWindow> {
-        genAiDao.insertChat(ChatBubble(chatWindow.dayNews.id, getCurrentTime(), ChatType.USER, prompt))
+        buddyChatDao.insert(ChatBubble(chatWindow.dayNews.id, getCurrentTime(), ChatType.USER, prompt))
         return chatAiService.chat(prompt).safeConvert { aiResponse ->
             val aiResponseStr = aiResponse.foldAsString()
-            genAiDao.insertChat(ChatBubble(chatWindow.dayNews.id, getCurrentTime(), ChatType.AI, aiResponseStr))
-            genAiDao.safeGetChatWindow(chatWindow.dayNews.date)
+            buddyChatDao.insert(ChatBubble(chatWindow.dayNews.id, getCurrentTime(), ChatType.AI, aiResponseStr))
+            buddyChatDao.safeGetChatWindow(chatWindow.dayNews.date)
         }
     }
 
