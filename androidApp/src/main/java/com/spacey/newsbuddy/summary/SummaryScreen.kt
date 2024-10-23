@@ -80,40 +80,12 @@ fun SummaryScreen(viewModel: BuddyViewModel = viewModel()) {
 //            textToSpeech.setOnUtteranceProgressListener(NewsSpeechListener(setFabIcon) {
 //                currentSpeaking = it
 //            })
-            LazyColumn(contentPadding = PaddingValues()) {
-                item {
-                    Row(
-                        Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        IconButton(onClick = { /*TODO*/ }, colors = IconButtonDefaults.iconButtonColors(
-                            MaterialTheme.colorScheme.secondaryContainer)) {
-                            Icon(Icons.Default.AccountCircle, contentDescription = "Account", tint = MaterialTheme.colorScheme.onSurface)
-                        }
-                        IconButton(
-                            colors = IconButtonDefaults.iconButtonColors(MaterialTheme.colorScheme.secondaryContainer),
-                            onClick = {
-                                viewModel.promptTodaysNews(true)
-                            }
-                        ) {
-                            Icon(Icons.Default.Refresh, "Refresh", tint = MaterialTheme.colorScheme.onSurface)
-                        }
-                    }
-                }
-                item {
-                    Text(
-                        "Good Morning!",
-                        Modifier.padding(16.dp),
-                        // TODO: Text size based on screen
-                        style = MaterialTheme.typography.displayMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
+            LazyColumn {
                 itemsIndexed(items = state.conversations) { i, conversation ->
                     val weight = if (i == currentSpeaking) FontWeight.ExtraBold else null
                     val shape = if (i == 0) RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp) else RoundedCornerShape(0.dp)
                     val textPadding = if (i == 0) PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 8.dp) else PaddingValues(vertical = 8.dp, horizontal = 16.dp)
-                    Card(shape = shape, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
+                    Card(shape = shape, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiary)) {
                         Text(text = conversation.content,
                             modifier = Modifier
                                 .padding(textPadding)

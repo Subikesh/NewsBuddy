@@ -6,10 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Chat
-import androidx.compose.material.icons.filled.Feed
 import androidx.compose.material.icons.filled.Newspaper
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.LocalAbsoluteTonalElevation
@@ -46,7 +45,7 @@ fun MainScaffold() {
     bottomSelectedIndex = when (backstack?.destination?.route) {
         // TODO: will reflection change on proguard names
         NewsHome::class.qualifiedName -> 0
-        Feed::class.qualifiedName -> 1
+        Chat::class.qualifiedName -> 1
         User::class.qualifiedName -> 2
         else -> 0
     }
@@ -79,17 +78,17 @@ fun MainScaffold() {
 
                 NavigationBarItem(selected = bottomSelectedIndex == 1, onClick = {
                     if (bottomSelectedIndex != 1) {
-                        navController.navigate(Feed)
+                        navController.navigate(Chat)
                         bottomSelectedIndex = 1
                     }
-                }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Feed, contentDescription = "Feed") })
+                }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Chat, contentDescription = "Feed") })
 
                 NavigationBarItem(selected = bottomSelectedIndex == 2, onClick = {
                     if (bottomSelectedIndex != 2) {
                         navController.navigate(User)
                         bottomSelectedIndex = 2
                     }
-                }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "User") })
+                }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Settings, contentDescription = "User") })
             }
         }, floatingActionButton = {
             val fab = fabConfig
@@ -116,11 +115,12 @@ fun MainScaffold() {
             composable<NewsHome> {
                 HomeScreen(
                     setAppBarContent = { appBarContent = it },
-                    setFabConfig = { fabConfig = it }
+                    setFabConfig = { fabConfig = it },
+                    navigateToChat = { navController.navigate(Chat) }
                 )
             }
 
-            composable<Feed> {
+            composable<Chat> {
                 ChatScreen(setFabConfig = {
                     fabConfig = it
                 }, setAppBarContent = {
@@ -146,7 +146,7 @@ data class FabConfig(val showFab: Boolean = true, val onClick: () -> Unit)
 data object NewsHome
 
 @Serializable
-data object Feed
+data object Chat
 
 @Serializable
 data object User
