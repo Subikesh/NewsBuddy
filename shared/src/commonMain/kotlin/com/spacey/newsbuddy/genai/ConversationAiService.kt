@@ -1,7 +1,7 @@
 package com.spacey.newsbuddy.genai
 
-import com.spacey.newsbuddy.Dependencies
-import com.spacey.newsbuddy.GEMINI_1_5_PRO
+import com.spacey.newsbuddy.common.Dependencies
+import com.spacey.newsbuddy.common.GEMINI_1_5_PRO
 import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
 import dev.shreyaspatil.ai.client.generativeai.type.BlockThreshold
 import dev.shreyaspatil.ai.client.generativeai.type.Content

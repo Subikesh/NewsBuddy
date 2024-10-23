@@ -2,32 +2,33 @@ package com.spacey.newsbuddy.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
+import com.spacey.newsbuddy.ListedUiState
+import com.spacey.newsbuddy.genai.GenAiRepository
+import com.spacey.newsbuddy.serviceLocator
+import com.spacey.newsbuddy.toListedUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import kotlin.time.Duration.Companion.seconds
 
 class HomeViewModel : ViewModel() {
 
-    private val _uiState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState.Loading)
+    private val _uiState = MutableStateFlow(HomeUiState.LOADING)
     val uiState: StateFlow<HomeUiState> = _uiState
 
-    fun fetchHomeData() {
-        _uiState.value = HomeUiState.Loading
+    private val genAiRepository: GenAiRepository = serviceLocator.genAiRepository
+
+    fun loadHome() {
+        _uiState.value = HomeUiState.LOADING
         viewModelScope.launch {
-            delay(1.seconds)
-            _uiState.value = HomeUiState.Success(listOf(SummaryData("Yesterday's news", LocalDate.now())))
+            val chats = kotlin.runCatching { genAiRepository.getRecentChats() }.toListedUiState("No chats found")
+            val summaries = kotlin.runCatching { genAiRepository.getRecentSummaries() }.toListedUiState("No summaries found")
+            _uiState.value = HomeUiState(chats, summaries)
         }
     }
 }
 
-sealed class HomeUiState {
-    data object Loading : HomeUiState()
-
-    data class Success(val summaryList: List<SummaryData>) : HomeUiState()
-    data class Failure(val error: String) : HomeUiState()
+data class HomeUiState(val chatHistory: ListedUiState<String>, val summaryHistory: ListedUiState<String>) {
+    companion object {
+        val LOADING = HomeUiState(ListedUiState.Loading(), ListedUiState.Loading())
+    }
 }
-
-data class SummaryData(val heading: String, val date: LocalDate)

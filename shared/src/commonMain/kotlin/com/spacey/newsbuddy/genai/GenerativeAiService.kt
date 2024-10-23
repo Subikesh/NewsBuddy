@@ -1,8 +1,8 @@
 package com.spacey.newsbuddy.genai
 
-import com.spacey.newsbuddy.Dependencies
-import com.spacey.newsbuddy.GEMINI_1_5_PRO
-import com.spacey.newsbuddy.log
+import com.spacey.newsbuddy.common.Dependencies
+import com.spacey.newsbuddy.common.GEMINI_1_5_PRO
+import com.spacey.newsbuddy.common.log
 import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
 import dev.shreyaspatil.ai.client.generativeai.type.FunctionCallingConfig
 import dev.shreyaspatil.ai.client.generativeai.type.FunctionType
@@ -35,8 +35,6 @@ class GenerativeAiService(dependencies: Dependencies) {
         },
         toolConfig = ToolConfig(FunctionCallingConfig(FunctionCallingConfig.Mode.ANY))
     )
-
-    private val chat = newsProcessingModel.startChat()
 
     suspend fun runPrompt(news: String): Result<String> {
         return runCatching {

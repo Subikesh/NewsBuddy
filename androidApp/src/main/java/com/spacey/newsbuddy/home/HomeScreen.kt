@@ -24,8 +24,24 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -34,23 +50,23 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.AppBarContent
 import com.spacey.newsbuddy.FabConfig
-import com.spacey.newsbuddy.genai.Conversation
+import com.spacey.newsbuddy.genai.SummaryParagraph
 import com.spacey.newsbuddy.summary.SummaryScreen
-
 
 @Composable
 fun HomeScreen(
     setAppBarContent: (AppBarContent?) -> Unit,
     setFabConfig: (FabConfig) -> Unit,
     navigateToChat: () -> Unit,
-    homeViewModel: HomeViewModel = viewModel()
 ) {
     LaunchedEffect(key1 = true) {
         setAppBarContent(null)
         setFabConfig(FabConfig {})
     }
-    val uiState by homeViewModel.uiState.collectAsState()
-    Column(Modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
+    Column(
+        Modifier
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             IconButton(
                 onClick = { /*TODO*/ }, colors = IconButtonDefaults.iconButtonColors(
@@ -96,50 +112,16 @@ fun HomeScreen(
             modifier = Modifier.padding(vertical = 16.dp),
             style = MaterialTheme.typography.headlineLarge
         )
-        LazyRow {
-            when (val state = uiState) {
-                HomeUiState.Loading -> item {
-                    CircularProgressIndicator()
-                }
-                is HomeUiState.Success -> items(state.summaryList) {
-                    Card() {
 
-                    }
-                }
-                is HomeUiState.Failure -> TODO()
-            }
-        }
+        HomeChatList(viewModel())
+
         SummaryScreen()
     }
-
-//
-//    val shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp)
-//    val textPadding = if (i == 0) PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 8.dp) else PaddingValues(vertical = 8.dp, horizontal = 16.dp)
-//    Card(shape = shape, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
-//        Text(text = conversation.content,
-//            modifier = Modifier
-//                .padding(textPadding)
-//                .combinedClickable(
-//                    onLongClickLabel = "Open Url",
-//                    onLongClick = {
-//                        conversation.link?.let {
-//                            uriHandler.openUri(it)
-//                        }
-//                    }) {
-//                    textToSpeech.converse(state.conversations, i)
-//                },
-//            style = MaterialTheme.typography.bodyLarge.copy(
-//                fontWeight = weight,
-//                color = MaterialTheme.colorScheme.onSurface
-//            )
-//        )
-//    }
-
 }
 
-fun TextToSpeech.converse(conversations: List<Conversation>, index: Int) {
+fun TextToSpeech.converse(summaries: List<SummaryParagraph>, index: Int) {
     stop()
-    for (i in index until conversations.size) {
-        speak(conversations[i].escapedContent, TextToSpeech.QUEUE_ADD, null, i.toString())
+    for (i in index until summaries.size) {
+        speak(summaries[i].escapedContent, TextToSpeech.QUEUE_ADD, null, i.toString())
     }
 }

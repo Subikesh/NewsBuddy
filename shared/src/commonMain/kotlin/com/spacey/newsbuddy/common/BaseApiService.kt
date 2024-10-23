@@ -1,7 +1,5 @@
-package com.spacey.newsbuddy.base
+package com.spacey.newsbuddy.common
 
-import com.spacey.newsbuddy.Dependencies
-import com.spacey.newsbuddy.log
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation

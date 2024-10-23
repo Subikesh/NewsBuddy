@@ -1,4 +1,4 @@
-package com.spacey.newsbuddy.base
+package com.spacey.newsbuddy.persistance
 
 import com.spacey.newsbuddy.serviceLocator
 import kotlin.reflect.KProperty

@@ -1,5 +1,6 @@
 package com.spacey.newsbuddy.chat
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,6 +46,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.AppBarContent
 import com.spacey.newsbuddy.FabConfig
 import com.spacey.newsbuddy.ListedUiState
+import com.spacey.newsbuddy.genai.ChatType
 
 // Create an app design with modern and material colors to it. Choose a proper color and minimalistic look for it. The app is a chat bot, where you have different chats on different topics and has a date label to it. So every day a new chat will be created. I want two screens, one which lists all the chats, and one with the actual chat window. Be creative in making the design
 
@@ -77,34 +79,37 @@ fun ChatScreen(
                 IconButton(
                     onClick = navBackToHome,
                     colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.tertiary, contentColor = MaterialTheme.colorScheme.onTertiary),
-                    modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp).size(40.dp)
+                    modifier = Modifier
+                        .padding(vertical = 16.dp, horizontal = 8.dp)
+                        .size(40.dp)
                 ) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "back")
                 }
             })
         when (val chat = conversations) {
-            is ListedUiState.Error -> {
+            is ChatUiState.Error -> {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Text(text = chat.message, color = MaterialTheme.colorScheme.error)
                 }
             }
 
-            is ListedUiState.Loading -> {
+            is ChatUiState.Loading -> {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     CircularProgressIndicator()
                 }
             }
 
-            is ListedUiState.Success -> {
+            is ChatUiState.Success -> {
                 var chatInput by remember {
                     mutableStateOf("")
                 }
                 Column(Modifier.fillMaxSize()) {
                     LazyColumn(Modifier.weight(1f)) {
-                        items(items = chat.conversations) { convo ->
-                            val alignment = if (convo.isUser) Alignment.End else Alignment.Start
-                            val cardContainerColor = if (convo.isUser) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiary
-                            val cardContentColor = if (convo.isUser) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onTertiary
+                        items(items = chat.chatWindow.chats) { convo ->
+                            val isUserChat = convo.type == ChatType.USER
+                            val alignment = if (isUserChat) Alignment.End else Alignment.Start
+                            val cardContainerColor = if (isUserChat) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiary
+                            val cardContentColor = if (isUserChat) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onTertiary
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -117,11 +122,12 @@ fun ChatScreen(
                                         .padding(horizontal = 8.dp, vertical = 4.dp),
                                     shape = RoundedCornerShape(20.dp)
                                 ) {
-                                    if (convo.isLoading) {
-                                        CircularProgressIndicator()
-                                    } else {
-                                        Text(text = convo.text, modifier = Modifier.padding(16.dp))
-                                    }
+                                    // TODO: Loading chat bubble
+//                                    if (convo.isLoading) {
+//                                        CircularProgressIndicator()
+//                                    } else {
+                                    Text(text = convo.chatText, modifier = Modifier.padding(16.dp))
+//                                    }
                                 }
                             }
                         }
@@ -146,8 +152,10 @@ fun ChatScreen(
                             disabledIndicatorColor = Color.Transparent,
                         ),
                         trailingIcon = {
-                            IconButton(onClick = ::onInputDone, colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
-                                Icon(Icons.Default.Send, "Send chat")
+                            AnimatedVisibility(chatInput.isNotEmpty()) {
+                                IconButton(onClick = ::onInputDone, colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
+                                    Icon(Icons.Default.Send, "Send chat")
+                                }
                             }
                         },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),

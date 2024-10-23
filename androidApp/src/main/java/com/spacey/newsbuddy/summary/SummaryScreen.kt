@@ -42,7 +42,7 @@ import com.spacey.newsbuddy.ui.CenteredColumn
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SummaryScreen(viewModel: BuddyViewModel = viewModel()) {
+fun SummaryScreen(viewModel: SummaryViewModel = viewModel()) {
 
     LaunchedEffect(key1 = true) {
         viewModel.promptTodaysNews()
@@ -96,7 +96,7 @@ fun SummaryScreen(viewModel: BuddyViewModel = viewModel()) {
                                             uriHandler.openUri(it)
                                         }
                                     }) {
-                                    textToSpeech.converse(state.conversations, i)
+                                    textToSpeech.converse(state.resultList, i)
                                 },
                             style = MaterialTheme.typography.bodyLarge.copy(
                                 fontWeight = weight,

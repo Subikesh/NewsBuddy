@@ -1,4 +1,4 @@
-package com.spacey.newsbuddy
+package com.spacey.newsbuddy.common
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.fold
@@ -20,5 +20,7 @@ inline fun <T, R> Result<T>.safeConvert(block: (T) -> Result<R>): Result<R> {
 suspend fun Flow<String?>.foldAsString(): String {
     return this.fold("") { curr, next -> curr + next }
 }
+
+expect fun getCurrentTime(): Long
 
 const val GEMINI_1_5_PRO = "gemini-1.5-pro"

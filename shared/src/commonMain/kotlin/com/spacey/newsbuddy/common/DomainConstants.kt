@@ -1,4 +1,4 @@
-package com.spacey.newsbuddy
+package com.spacey.newsbuddy.common
 
 const val BASE_URL = "https://newsapi.org/v2/"
 const val NEWS_PAGE_SIZE = 50
