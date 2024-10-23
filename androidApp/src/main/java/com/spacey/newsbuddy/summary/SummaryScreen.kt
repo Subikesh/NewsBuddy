@@ -81,7 +81,7 @@ fun SummaryScreen(viewModel: SummaryViewModel = viewModel()) {
 //                currentSpeaking = it
 //            })
             LazyColumn {
-                itemsIndexed(items = state.conversations) { i, conversation ->
+                itemsIndexed(items = state.resultList) { i, conversation ->
                     val weight = if (i == currentSpeaking) FontWeight.ExtraBold else null
                     val shape = if (i == 0) RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp) else RoundedCornerShape(0.dp)
                     val textPadding = if (i == 0) PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 8.dp) else PaddingValues(vertical = 8.dp, horizontal = 16.dp)
