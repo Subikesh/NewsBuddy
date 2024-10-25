@@ -26,7 +26,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val isDarkTheme = isSystemInDarkTheme()
+            // TODO: Adopt multiple themes
+//            val isDarkTheme = isSystemInDarkTheme()
+            val isDarkTheme = false
             MyApplicationTheme(isDarkTheme) {
                 Box(
                     modifier = Modifier.fillMaxSize().let {
@@ -37,7 +39,7 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                 ) {
-                    if (!isSystemInDarkTheme()) {
+                    if (!isDarkTheme) {
                         Image(
                             painter = painterResource(R.drawable.polka_dot_background),
                             contentDescription = "background image",

@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -22,9 +21,6 @@ fun MyApplicationTheme(
     darkTheme: Boolean,
     content: @Composable () -> Unit
 ) {
-    val context = LocalContext.current
-    // TODO: Adopt multiple themes
-    val darkTheme = false
     val colors = if (darkTheme) {
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
 //            dynamicDarkColorScheme(context)
