@@ -1,9 +1,7 @@
 package com.spacey.newsbuddy.home
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -66,9 +64,18 @@ fun ListUiState(uiState: ListedUiState<String>) {
         }
 
         is ListedUiState.Success -> {
-            LazyRow(contentPadding = PaddingValues(16.dp)) {
+            LazyRow {
                 items(uiState.resultList) { chat ->
-                    Card(Modifier.height(100.dp)) {
+                    Card(
+                        Modifier
+                            .height(100.dp)
+                            .padding(horizontal = 8.dp),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.tertiary.copy(0.7f),
+                            contentColor = MaterialTheme.colorScheme.onTertiary
+                        )
+                    ) {
                         Text(chat, Modifier.padding(16.dp))
                     }
                 }
@@ -79,8 +86,7 @@ fun ListUiState(uiState: ListedUiState<String>) {
             Card(
                 Modifier
                     .height(100.dp)
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.tertiary.copy(0.7f),

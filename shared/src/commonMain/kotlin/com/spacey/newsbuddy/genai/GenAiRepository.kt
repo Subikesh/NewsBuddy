@@ -32,7 +32,7 @@ class GenAiRepository(
 
     suspend fun getNewsSummary(date: String, forceRefresh: Boolean = false): Result<List<SummaryParagraph>> = withContext(Dispatchers.IO) {
         val newsAiSummary = kotlin.runCatching { newsSummaryDao.getNewsSummary(date) }
-        if (!forceRefresh && newsAiSummary.isSuccess) {
+        if (!forceRefresh && newsAiSummary.isSuccess && newsAiSummary.getOrThrow().isNotEmpty()) {
             return@withContext newsAiSummary.map { daySummary ->
                 daySummary.map {
                     SummaryParagraph(it.content, it.link)

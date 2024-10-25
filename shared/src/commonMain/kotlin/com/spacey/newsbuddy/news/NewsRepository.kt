@@ -18,12 +18,11 @@ class NewsRepository(
             if (!forceRefresh && summary.isSuccess) {
                 return@withContext summary
             }
-            newsApiService.getTodaysTopHeadlines(date).let {
-                if (it.getOrThrow().jsonObject.getValue("totalResults").jsonPrimitive.int == 0) {
-                    throw Exception("Empty articles list was returned from news API")
-                }
-                newsDao.upsert(listOf(NewsResponse(date, it.toString())))
+            val news = newsApiService.getTodaysTopHeadlines(date)
+            if (news.getOrThrow().jsonObject.getValue("totalResults").jsonPrimitive.int == 0) {
+                throw Exception("Empty articles list was returned from news API")
             }
+            newsDao.upsert(listOf(NewsResponse(date, news.toString())))
             kotlin.runCatching { newsDao.getNewsResponse(date) }
         } catch (e: Exception) {
             Result.failure(e)

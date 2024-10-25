@@ -14,7 +14,7 @@ interface SummaryDao {
     @Upsert
     suspend fun upsert(newsSummaries: List<NewsSummary>)
 
-    @Query("SELECT date FROM NewsSummary ORDER BY date DESC LIMIT :offset, :limit")
+    @Query("SELECT date FROM NewsSummary GROUP BY date ORDER BY date DESC LIMIT :offset, :limit")
     suspend fun getRecentSummaries(offset: Int, limit: Int): List<String>
 }
 
