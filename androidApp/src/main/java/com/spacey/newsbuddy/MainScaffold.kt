@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Newspaper
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.LocalAbsoluteTonalElevation
@@ -33,6 +33,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.spacey.newsbuddy.chat.ChatScreen
 import com.spacey.newsbuddy.home.HomeScreen
+import com.spacey.newsbuddy.summary.SummaryScreen
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -42,13 +43,8 @@ fun MainScaffold() {
     }
     val navController = rememberNavController()
     val backstack by navController.currentBackStackEntryAsState()
-    bottomSelectedIndex = when (backstack?.destination?.route) {
-        // TODO: will reflection change on proguard names
-        NewsHome::class.qualifiedName -> 0
-        Chat::class.qualifiedName -> 1
-        User::class.qualifiedName -> 2
-        else -> 0
-    }
+    val bottomNavList = listOf(NewsHome::class, Summary::class, Chat::class)
+    bottomSelectedIndex = bottomNavList.indexOfFirst { backstack?.destination?.route == it.qualifiedName }.takeIf { it != -1 } ?: 0
     var appBarContent: AppBarContent? by remember {
         mutableStateOf(null)
     }
@@ -74,21 +70,24 @@ fun MainScaffold() {
                     } else {
                         // TODO: Refresh page or something
                     }
-                }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Newspaper, contentDescription = "News home") })
+                }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "News home") })
+
 
                 NavigationBarItem(selected = bottomSelectedIndex == 1, onClick = {
                     if (bottomSelectedIndex != 1) {
-                        navController.navigate(Chat)
+                        navController.navigate(Summary)
                         bottomSelectedIndex = 1
+                    } else {
+                        // TODO: Refresh page or something
                     }
-                }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Chat, contentDescription = "Feed") })
+                }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Newspaper, contentDescription = "Summary") })
 
                 NavigationBarItem(selected = bottomSelectedIndex == 2, onClick = {
                     if (bottomSelectedIndex != 2) {
-                        navController.navigate(User)
+                        navController.navigate(Chat)
                         bottomSelectedIndex = 2
                     }
-                }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Settings, contentDescription = "User") })
+                }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Chat, contentDescription = "Feed") })
             }
         }, floatingActionButton = {
             val fab = fabConfig
@@ -105,7 +104,6 @@ fun MainScaffold() {
                         }
                     }
                 }
-
             }
         }
     ) { padding ->
@@ -118,6 +116,10 @@ fun MainScaffold() {
                     setFabConfig = { fabConfig = it },
                     navigateToChat = { navController.navigate(Chat) }
                 )
+            }
+
+            composable<Summary> {
+                SummaryScreen()
             }
 
             composable<Chat> {
@@ -141,6 +143,9 @@ fun MainScaffold() {
 
 data class AppBarContent(val content: (@Composable () -> Unit)? = null)
 data class FabConfig(val showFab: Boolean = true, val onClick: () -> Unit)
+
+@Serializable
+data object Summary
 
 @Serializable
 data object NewsHome
