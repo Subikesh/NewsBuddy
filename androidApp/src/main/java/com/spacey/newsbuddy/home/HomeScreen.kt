@@ -32,7 +32,8 @@ import com.spacey.newsbuddy.genai.SummaryParagraph
 fun HomeScreen(
     setAppBarContent: (AppBarContent?) -> Unit,
     setFabConfig: (FabConfig) -> Unit,
-    navigateToChat: () -> Unit,
+    navigateToChat: (String?) -> Unit,
+    navigateToSummary: (String?) -> Unit
 ) {
     LaunchedEffect(key1 = true) {
         setAppBarContent(null)
@@ -69,7 +70,7 @@ fun HomeScreen(
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
             onClick = {
-                navigateToChat()
+                navigateToChat(null)
             }) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -80,7 +81,7 @@ fun HomeScreen(
             }
         }
 
-        HomeChatList(viewModel())
+        HomeChatList(viewModel(), navigateToChat, navigateToSummary)
 //        SummaryScreen()
     }
 }

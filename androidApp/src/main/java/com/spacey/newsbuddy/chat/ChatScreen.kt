@@ -45,21 +45,19 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.AppBarContent
 import com.spacey.newsbuddy.FabConfig
-import com.spacey.newsbuddy.ListedUiState
 import com.spacey.newsbuddy.genai.ChatType
-
-// Create an app design with modern and material colors to it. Choose a proper color and minimalistic look for it. The app is a chat bot, where you have different chats on different topics and has a date label to it. So every day a new chat will be created. I want two screens, one which lists all the chats, and one with the actual chat window. Be creative in making the design
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
+    date: String,
     setAppBarContent: (AppBarContent?) -> Unit,
     setFabConfig: (FabConfig?) -> Unit,
     navBackToHome: () -> Unit,
     viewModel: ChatViewModel = viewModel()
 ) {
     LaunchedEffect(key1 = true) {
-        viewModel.startChat()
+        viewModel.startChat(date)
         setAppBarContent(null)
         setFabConfig(null)
     }

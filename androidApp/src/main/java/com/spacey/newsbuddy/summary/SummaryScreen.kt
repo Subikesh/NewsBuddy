@@ -34,7 +34,8 @@ import com.spacey.newsbuddy.ui.CenteredColumn
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SummaryScreen(viewModel: SummaryViewModel = viewModel()) {
+fun SummaryScreen(date: String, viewModel: SummaryViewModel = viewModel()) {
+    // TODO: Use date
 
     LaunchedEffect(key1 = true) {
         viewModel.promptTodaysNews()

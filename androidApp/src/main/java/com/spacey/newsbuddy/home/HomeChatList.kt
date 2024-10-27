@@ -1,5 +1,6 @@
 package com.spacey.newsbuddy.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.spacey.newsbuddy.ListedUiState
@@ -27,9 +29,9 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun HomeChatList(viewModel: HomeViewModel) {
+fun HomeChatList(viewModel: HomeViewModel, navToChat: (String?) -> Unit, navToSummary: (String?) -> Unit) {
     LaunchedEffect(true) {
-        viewModel.loadHome()
+        viewModel.loadHome(navToChat, navToSummary)
     }
 
     val homeUiState by viewModel.uiState.collectAsState()
@@ -40,18 +42,22 @@ fun HomeChatList(viewModel: HomeViewModel) {
             Modifier.padding(vertical = 16.dp),
             style = MaterialTheme.typography.headlineLarge
         )
-        ListUiState("What's up today!", homeUiState.chatHistory)
+        ListUiState("What's up today!", homeUiState.chatHistory) {
+            navToChat(null)
+        }
         Text(
             "Recent Summaries",
             Modifier.padding(vertical = 16.dp),
             style = MaterialTheme.typography.headlineLarge
         )
-        ListUiState("Today's Summary", homeUiState.summaryHistory)
+        ListUiState("Today's Summary", homeUiState.summaryHistory) {
+            navToSummary(null)
+        }
     }
 }
 
 @Composable
-fun ListUiState(todayMsg: String, uiState: ListedUiState<String>) {
+fun ListUiState(todayMsg: String, uiState: ListedUiState<HomeBubble>, navToday: () -> Unit) {
     when (uiState) {
         is ListedUiState.Loading -> {
             Column(
@@ -65,18 +71,18 @@ fun ListUiState(todayMsg: String, uiState: ListedUiState<String>) {
 
         is ListedUiState.Success -> {
             LazyRow {
-                if (!isTodaysDate(uiState.resultList[0])) {
+                if (!isTodaysDate(uiState.resultList[0].title)) {
                     item {
-                        HomeCard(modifier = Modifier.padding(horizontal = 8.dp)) {
+                        HomeCard(modifier = Modifier.padding(horizontal = 8.dp), onClick = navToday) {
                             Text(todayMsg, Modifier.padding(16.dp))
                         }
                     }
                 }
                 itemsIndexed(uiState.resultList) { i, chat ->
-                    HomeCard(modifier = Modifier.padding(horizontal = 8.dp)) {
-                        val chat = if (i == 0 && isTodaysDate(chat)) {
+                    HomeCard(modifier = Modifier.padding(horizontal = 8.dp), onClick = chat.onClick) {
+                        val chat = if (i == 0 && isTodaysDate(chat.title)) {
                             todayMsg
-                        } else chat
+                        } else chat.title
                         Text(chat, Modifier.padding(16.dp))
                     }
                 }
@@ -84,7 +90,7 @@ fun ListUiState(todayMsg: String, uiState: ListedUiState<String>) {
         }
 
         is ListedUiState.Error -> {
-            HomeCard(Modifier.fillMaxWidth()) {
+            HomeCard(Modifier.fillMaxWidth(), {}) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -98,10 +104,9 @@ fun ListUiState(todayMsg: String, uiState: ListedUiState<String>) {
 }
 
 @Composable
-fun HomeCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+fun HomeCard(modifier: Modifier = Modifier, onClick: () -> Unit, content: @Composable () -> Unit) {
     Card(
-        modifier.height(100.dp),
-        shape = RoundedCornerShape(20.dp),
+        modifier.height(100.dp).clip(RoundedCornerShape(20.dp)).clickable { onClick() },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.tertiary.copy(0.7f),
             contentColor = MaterialTheme.colorScheme.onTertiary

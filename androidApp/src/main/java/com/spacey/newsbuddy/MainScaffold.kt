@@ -31,10 +31,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.spacey.newsbuddy.chat.ChatScreen
 import com.spacey.newsbuddy.home.HomeScreen
 import com.spacey.newsbuddy.summary.SummaryScreen
 import kotlinx.serialization.Serializable
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun MainScaffold() {
@@ -111,25 +114,31 @@ fun MainScaffold() {
             .padding(padding)
             .background(Color.Transparent)) {
             composable<NewsHome> {
+                val todayDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
                 HomeScreen(
                     setAppBarContent = { appBarContent = it },
                     setFabConfig = { fabConfig = it },
-                    navigateToChat = { navController.navigate(Chat) }
+                    navigateToChat = { navController.navigate(Chat(it ?: todayDate)) },
+                    navigateToSummary = { navController.navigate(Summary(it ?: todayDate)) }
                 )
             }
 
             composable<Summary> {
-                SummaryScreen()
+                SummaryScreen(it.toRoute<Summary>().date)
             }
 
             composable<Chat> {
-                ChatScreen(setFabConfig = {
-                    fabConfig = it
-                }, setAppBarContent = {
-                    appBarContent = it
-                }, navBackToHome = {
-                    navController.navigateUp()
-                })
+                val route: Chat = it.toRoute()
+                ChatScreen(
+                    route.date,
+                    setFabConfig = {
+                        fabConfig = it
+                    }, setAppBarContent = {
+                        appBarContent = it
+                    }, navBackToHome = {
+                        navController.navigateUp()
+                    }
+                )
             }
             composable<User> {
                 EmptyScreen()
@@ -145,13 +154,13 @@ data class AppBarContent(val content: (@Composable () -> Unit)? = null)
 data class FabConfig(val showFab: Boolean = true, val onClick: () -> Unit)
 
 @Serializable
-data object Summary
+data class Summary(val date: String)
 
 @Serializable
 data object NewsHome
 
 @Serializable
-data object Chat
+data class Chat(val date: String)
 
 @Serializable
 data object User
