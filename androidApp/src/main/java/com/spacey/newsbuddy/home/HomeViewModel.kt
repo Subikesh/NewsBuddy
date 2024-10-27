@@ -17,18 +17,35 @@ class HomeViewModel : ViewModel() {
 
     private val genAiRepository: GenAiRepository = serviceLocator.genAiRepository
 
-    fun loadHome() {
+    fun loadHome(navToChat: (String) -> Unit, navToSummary: (String) -> Unit) {
         _uiState.value = HomeUiState.LOADING
         viewModelScope.launch {
-            val chats = kotlin.runCatching { genAiRepository.getRecentChats() }.toListedUiState("No chats found")
-            val summaries = kotlin.runCatching { genAiRepository.getRecentSummaries() }.toListedUiState("No summaries found")
+            val chats = kotlin.runCatching {
+                genAiRepository.getRecentChats().map {
+                    HomeBubble(it) {
+                        navToChat(it)
+                    }
+                }
+            }.toListedUiState("No chats found")
+            val summaries = kotlin.runCatching {
+                genAiRepository.getRecentSummaries().map {
+                    HomeBubble(it) {
+                        navToSummary(it)
+                    }
+                }
+            }.toListedUiState("No summaries found")
             _uiState.value = HomeUiState(chats, summaries)
         }
     }
 }
 
-data class HomeUiState(val chatHistory: ListedUiState<String>, val summaryHistory: ListedUiState<String>) {
+data class HomeUiState(
+    val chatHistory: ListedUiState<HomeBubble>,
+    val summaryHistory: ListedUiState<HomeBubble>
+) {
     companion object {
         val LOADING = HomeUiState(ListedUiState.Loading(), ListedUiState.Loading())
     }
 }
+
+class HomeBubble(val title: String, val onClick: () -> Unit)

@@ -8,8 +8,6 @@ import com.spacey.newsbuddy.serviceLocator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class ChatViewModel : ViewModel() {
 
@@ -18,12 +16,13 @@ class ChatViewModel : ViewModel() {
     private val _conversations = MutableStateFlow<ChatUiState>(ChatUiState.Loading)
     val conversation: StateFlow<ChatUiState> = _conversations
 
-    private val yesterday = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)
+    private var date: String? = null
 
-    fun startChat() {
+    fun startChat(date: String) {
+        this.date = date
         _conversations.value = ChatUiState.Loading
         viewModelScope.launch {
-            val result = genAiRepository.startAiChat(yesterday)
+            val result = genAiRepository.startAiChat(date)
             if (result.isSuccess) {
                 _conversations.value = ChatUiState.Success(result.getOrThrow())
             } else {
@@ -42,10 +41,14 @@ class ChatViewModel : ViewModel() {
         } else {
             _conversations.value = ChatUiState.Loading
         }
+        if (date == null) {
+            _conversations.value = ChatUiState.Error("Chat for this date is not started yet")
+            return
+        }
         viewModelScope.launch {
             val chatWindow = conversation.value
             if (chatWindow !is ChatUiState.Success) {
-                startChat()
+                startChat(date!!)
                 return@launch
             }
             val result = genAiRepository.chatWithAi(chatWindow.chatWindow, prompt)
