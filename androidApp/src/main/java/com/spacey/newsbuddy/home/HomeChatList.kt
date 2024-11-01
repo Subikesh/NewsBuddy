@@ -25,8 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.spacey.newsbuddy.ListedUiState
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import com.spacey.newsbuddy.ui.getLatestDate
 
 @Composable
 fun HomeChatList(viewModel: HomeViewModel, navToChat: (String?) -> Unit, navToSummary: (String?) -> Unit) {
@@ -104,9 +103,12 @@ fun ListUiState(todayMsg: String, uiState: ListedUiState<HomeBubble>, navToday: 
 }
 
 @Composable
-fun HomeCard(modifier: Modifier = Modifier, onClick: () -> Unit, content: @Composable () -> Unit) {
+fun HomeCard(modifier: Modifier = Modifier, onClick: (() -> Unit)?, content: @Composable () -> Unit) {
+    val cardModifier = if (onClick != null) {
+        modifier.clickable { onClick() }
+    } else modifier
     Card(
-        modifier.height(100.dp).clip(RoundedCornerShape(20.dp)).clickable { onClick() },
+        cardModifier.height(100.dp).clip(RoundedCornerShape(20.dp)),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.tertiary.copy(0.7f),
             contentColor = MaterialTheme.colorScheme.onTertiary
@@ -117,5 +119,5 @@ fun HomeCard(modifier: Modifier = Modifier, onClick: () -> Unit, content: @Compo
 }
 
 private fun isTodaysDate(dateStr: String): Boolean {
-    return dateStr == LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+    return dateStr == getLatestDate()
 }

@@ -9,6 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.RenderEffect
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun CenteredColumn(
@@ -22,4 +24,8 @@ fun CenteredColumn(
 
 fun getGlassEffect(): RenderEffect {
     return BlurEffect(25f, 25f)
+}
+
+fun getLatestDate(): String {
+    return LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)
 }

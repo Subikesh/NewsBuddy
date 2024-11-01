@@ -35,9 +35,8 @@ import androidx.navigation.toRoute
 import com.spacey.newsbuddy.chat.ChatScreen
 import com.spacey.newsbuddy.home.HomeScreen
 import com.spacey.newsbuddy.summary.SummaryScreen
+import com.spacey.newsbuddy.ui.getLatestDate
 import kotlinx.serialization.Serializable
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun MainScaffold() {
@@ -78,7 +77,7 @@ fun MainScaffold() {
 
                 NavigationBarItem(selected = bottomSelectedIndex == 1, onClick = {
                     if (bottomSelectedIndex != 1) {
-                        navController.navigate(Summary)
+                        navController.navigate(Summary(getLatestDate()))
                         bottomSelectedIndex = 1
                     } else {
                         // TODO: Refresh page or something
@@ -87,7 +86,7 @@ fun MainScaffold() {
 
                 NavigationBarItem(selected = bottomSelectedIndex == 2, onClick = {
                     if (bottomSelectedIndex != 2) {
-                        navController.navigate(Chat)
+                        navController.navigate(Chat(getLatestDate()))
                         bottomSelectedIndex = 2
                     }
                 }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Chat, contentDescription = "Feed") })
@@ -114,7 +113,7 @@ fun MainScaffold() {
             .padding(padding)
             .background(Color.Transparent)) {
             composable<NewsHome> {
-                val todayDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+                val todayDate = getLatestDate()
                 HomeScreen(
                     setAppBarContent = { appBarContent = it },
                     setFabConfig = { fabConfig = it },
