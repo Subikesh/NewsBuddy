@@ -1,8 +1,10 @@
 package com.spacey.newsbuddy.chat
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -105,14 +107,10 @@ fun ChatScreen(
                     LazyColumn(Modifier.weight(1f)) {
                         items(items = chat.chatWindow.chats) { convo ->
                             val isUserChat = convo.type == ChatType.USER
-                            val alignment = if (isUserChat) Alignment.End else Alignment.Start
+                            val alignment = if (isUserChat) Arrangement.End else Arrangement.Start
                             val cardContainerColor = if (isUserChat) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiary
                             val cardContentColor = if (isUserChat) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onTertiary
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .align(alignment)
-                            ) {
+                            Row(horizontalArrangement = alignment, modifier = Modifier.fillMaxWidth()) {
                                 Card(
                                     colors = CardDefaults.cardColors(containerColor = cardContainerColor, contentColor = cardContentColor),
                                     modifier = Modifier
