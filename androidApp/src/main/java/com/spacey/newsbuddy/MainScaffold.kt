@@ -39,7 +39,7 @@ import com.spacey.newsbuddy.ui.getLatestDate
 import kotlinx.serialization.Serializable
 
 @Composable
-fun MainScaffold() {
+fun MainScaffold(navigateToChat: (String?) -> Unit) {
     var bottomSelectedIndex by remember {
         mutableIntStateOf(0)
     }
@@ -54,7 +54,7 @@ fun MainScaffold() {
         mutableStateOf(Icons.Filled.Chat)
     }
     var fabConfig: FabConfig? by remember {
-        mutableStateOf(FabConfig(onClick = {}))
+        mutableStateOf(FabConfig(onClick = { navigateToChat(null) }))
     }
     Scaffold(
         containerColor = Color.Transparent,
@@ -86,7 +86,7 @@ fun MainScaffold() {
 
                 NavigationBarItem(selected = bottomSelectedIndex == 2, onClick = {
                     if (bottomSelectedIndex != 2) {
-                        navController.navigate(Chat(getLatestDate()))
+                        navigateToChat(null)
                         bottomSelectedIndex = 2
                     }
                 }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Chat, contentDescription = "Feed") })
@@ -117,7 +117,7 @@ fun MainScaffold() {
                 HomeScreen(
                     setAppBarContent = { appBarContent = it },
                     setFabConfig = { fabConfig = it },
-                    navigateToChat = { navController.navigate(Chat(it ?: todayDate)) },
+                    navigateToChat = navigateToChat,
                     navigateToSummary = { navController.navigate(Summary(it ?: todayDate)) }
                 )
             }
@@ -126,19 +126,6 @@ fun MainScaffold() {
                 SummaryScreen(it.toRoute<Summary>().date)
             }
 
-            composable<Chat> {
-                val route: Chat = it.toRoute()
-                ChatScreen(
-                    route.date,
-                    setFabConfig = {
-                        fabConfig = it
-                    }, setAppBarContent = {
-                        appBarContent = it
-                    }, navBackToHome = {
-                        navController.navigateUp()
-                    }
-                )
-            }
             composable<User> {
                 EmptyScreen()
                 appBarContent = AppBarContent {
@@ -157,9 +144,6 @@ data class Summary(val date: String)
 
 @Serializable
 data object NewsHome
-
-@Serializable
-data class Chat(val date: String)
 
 @Serializable
 data object User

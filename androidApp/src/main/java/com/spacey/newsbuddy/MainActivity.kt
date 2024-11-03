@@ -18,7 +18,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.spacey.newsbuddy.android.R
+import com.spacey.newsbuddy.chat.ChatScreen
+import com.spacey.newsbuddy.ui.getLatestDate
 import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
@@ -64,11 +67,29 @@ fun MainNavigation() {
         Modifier.background(Color.Transparent)
     ) {
         composable<Home> {
-            MainScaffold()
+            MainScaffold {
+                navController.navigate(Chat(it ?: getLatestDate()))
+            }
         }
 
         composable<Login> {
 //            HomeScreen(setFabConfig = {}, setFabIcon = {})
+        }
+
+
+        composable<Chat> {
+            val route: Chat = it.toRoute()
+            ChatScreen(
+                route.date,
+//                setFabConfig = {
+//                    fabConfig = it
+//                }, setAppBarContent = {
+//                    appBarContent = it
+//                },
+                navBackToHome = {
+                    navController.navigateUp()
+                }
+            )
         }
     }
 }
@@ -78,3 +99,6 @@ data object Home
 
 @Serializable
 data object Login
+
+@Serializable
+data class Chat(val date: String)

@@ -37,7 +37,7 @@ fun HomeScreen(
 ) {
     LaunchedEffect(key1 = true) {
         setAppBarContent(null)
-        setFabConfig(FabConfig {})
+        setFabConfig(FabConfig { navigateToChat(null) })
     }
     Column(Modifier.padding(16.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
