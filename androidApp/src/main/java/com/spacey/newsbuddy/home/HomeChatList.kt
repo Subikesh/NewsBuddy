@@ -89,7 +89,7 @@ fun ListUiState(todayMsg: String, uiState: ListedUiState<HomeBubble>, navToday: 
         }
 
         is ListedUiState.Error -> {
-            HomeCard(Modifier.fillMaxWidth(), {}) {
+            HomeCard(Modifier.fillMaxWidth(), null) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -104,11 +104,13 @@ fun ListUiState(todayMsg: String, uiState: ListedUiState<HomeBubble>, navToday: 
 
 @Composable
 fun HomeCard(modifier: Modifier = Modifier, onClick: (() -> Unit)?, content: @Composable () -> Unit) {
-    val cardModifier = if (onClick != null) {
-        modifier.clickable { onClick() }
-    } else modifier
+    val clickModifier: Modifier.() -> Modifier = {
+        if (onClick != null) {
+            clickable { onClick() }
+        } else this
+    }
     Card(
-        cardModifier.height(100.dp).clip(RoundedCornerShape(20.dp)),
+        modifier.height(100.dp).clip(RoundedCornerShape(20.dp)).clickModifier(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.tertiary.copy(0.7f),
             contentColor = MaterialTheme.colorScheme.onTertiary

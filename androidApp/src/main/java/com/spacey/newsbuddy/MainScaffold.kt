@@ -92,7 +92,7 @@ fun MainScaffold(navigateToChat: (String?) -> Unit) {
                 }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Chat, contentDescription = "Feed") })
             }
         }, floatingActionButton = {
-            val fab = fabConfig
+            /*val fab = fabConfig
             if (fab != null) {
                 AnimatedVisibility(visible = fab.showFab) {
                     LargeFloatingActionButton(
@@ -106,7 +106,7 @@ fun MainScaffold(navigateToChat: (String?) -> Unit) {
                         }
                     }
                 }
-            }
+            }*/
         }
     ) { padding ->
         NavHost(navController = navController, startDestination = NewsHome, modifier = Modifier
