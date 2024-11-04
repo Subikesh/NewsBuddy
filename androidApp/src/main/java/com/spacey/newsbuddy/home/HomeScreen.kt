@@ -40,7 +40,7 @@ fun HomeScreen(
         setFabConfig(FabConfig { navigateToChat(null) })
     }
     Column(Modifier.padding(16.dp)) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             IconButton(
                 onClick = { /*TODO*/ }, colors = IconButtonDefaults.iconButtonColors(
                     MaterialTheme.colorScheme.secondaryContainer
@@ -51,12 +51,6 @@ fun HomeScreen(
                     contentDescription = "Account",
                     tint = MaterialTheme.colorScheme.onSurface
                 )
-            }
-            IconButton(colors = IconButtonDefaults.iconButtonColors(MaterialTheme.colorScheme.secondaryContainer),
-                onClick = {
-//                    viewModel.promptTodaysNews(true)
-                }) {
-                Icon(Icons.Default.Refresh, "Refresh", tint = MaterialTheme.colorScheme.onSurface)
             }
         }
 

@@ -1,16 +1,12 @@
 package com.spacey.newsbuddy
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.LocalAbsoluteTonalElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -32,7 +28,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.spacey.newsbuddy.chat.ChatScreen
 import com.spacey.newsbuddy.home.HomeScreen
 import com.spacey.newsbuddy.summary.SummaryScreen
 import com.spacey.newsbuddy.ui.getLatestDate
@@ -89,7 +84,7 @@ fun MainScaffold(navigateToChat: (String?) -> Unit) {
                         navigateToChat(null)
                         bottomSelectedIndex = 2
                     }
-                }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Chat, contentDescription = "Feed") })
+                }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Chat, contentDescription = "Chat") })
             }
         }, floatingActionButton = {
             /*val fab = fabConfig
