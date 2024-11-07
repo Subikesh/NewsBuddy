@@ -58,5 +58,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
 
+    implementation(libs.work.manager.ktx)
+
     debugImplementation(libs.compose.ui.tooling)
 }

@@ -13,6 +13,7 @@ google-genai = "0.7.0"
 roomCommon = "2.7.0-alpha07"
 ksp = "2.0.0-1.0.22"
 sqlite = "2.5.0-alpha07"
+workManager = "2.7.1"
 
 [libraries]
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
@@ -37,6 +38,8 @@ ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "kto
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomCommon" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCommon" }
 room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "roomCommon" }
+work-manager-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workManager"}
+
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 
 [plugins]
