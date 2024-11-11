@@ -34,7 +34,8 @@ class MyApplication : Application() {
 //            .setInitialDelay(calculateTimeTillNextMorning(4, 0), TimeUnit.MILLISECONDS)
             .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 1, TimeUnit.HOURS)
             .build()
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork("NewsSync", ExistingPeriodicWorkPolicy.REPLACE, newsSyncWorker)
+        WorkManager.getInstance(this)
+            .enqueueUniquePeriodicWork("NewsSync", ExistingPeriodicWorkPolicy.KEEP, newsSyncWorker)
     }
 
     private fun calculateTimeTillNextMorning(hour: Int, minute: Int): Long {

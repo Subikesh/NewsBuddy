@@ -58,7 +58,7 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) : Corouti
         )
 
         return Notification.Builder(applicationContext, MyApplication.SYNC_NOTIFICATION_CHANNEL)
-            .setSmallIcon(R.mipmap.ic_launcher_round)
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(title)
             .setContentText(content)
             .setContentIntent(contentIndent)
