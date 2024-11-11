@@ -1,6 +1,8 @@
 package com.spacey.newsbuddy
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -17,12 +19,19 @@ class MyApplication : Application() {
         super.onCreate()
         ServiceLocator.initiate(DependenciesImpl(this))
 
+        val notificationManager = getSystemService(NotificationManager::class.java)
+        notificationManager.createNotificationChannel(NotificationChannel(
+            SYNC_NOTIFICATION_CHANNEL,
+            "News and Gen AI daily sync",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ))
+
         val workConstraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
         val newsSyncWorker = PeriodicWorkRequestBuilder<NewsSyncWorker>(1L, TimeUnit.DAYS)
             .setConstraints(workConstraints)
-            .setInitialDelay(calculateTimeTillNextMorning(4, 0), TimeUnit.MILLISECONDS)
+//            .setInitialDelay(calculateTimeTillNextMorning(4, 0), TimeUnit.MILLISECONDS)
             .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 1, TimeUnit.HOURS)
             .build()
         WorkManager.getInstance(this).enqueueUniquePeriodicWork("NewsSync", ExistingPeriodicWorkPolicy.REPLACE, newsSyncWorker)
@@ -36,5 +45,9 @@ class MyApplication : Application() {
         calendar.set(Calendar.SECOND, 0)
         val now = Calendar.getInstance()
         return calendar.timeInMillis - now.timeInMillis
+    }
+
+    companion object {
+        const val SYNC_NOTIFICATION_CHANNEL = "NewsSyncNotifications"
     }
 }

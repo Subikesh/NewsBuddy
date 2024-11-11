@@ -1,5 +1,9 @@
 package com.spacey.newsbuddy.ui
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -29,3 +33,7 @@ fun getGlassEffect(): RenderEffect {
 fun getLatestDate(): String {
     return LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)
 }
+
+// TODO: Add notification permission kotlin contract
+fun Context.isNotificationAllowed() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+        applicationContext.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
