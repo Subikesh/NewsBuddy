@@ -33,8 +33,7 @@ class ChatViewModel : ViewModel() {
     }
 
     fun chat(prompt: String) {
-        var current = conversation.value
-        if (current is ChatUiState.Success) {
+        if (conversation.value is ChatUiState.Success) {
         // TODO: Add loading bubble
 //            current = current.copy(current.conversations + listOf(ChatBubble(prompt, true), ChatBubble("", isUser = false, true)))
 //            _conversations.value = current

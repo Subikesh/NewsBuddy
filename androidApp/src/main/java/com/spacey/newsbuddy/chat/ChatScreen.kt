@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -41,6 +42,7 @@ import com.spacey.newsbuddy.genai.ChatType
 import com.spacey.newsbuddy.ui.BackIconButton
 import com.spacey.newsbuddy.ui.CenteredTopBarScaffold
 import com.spacey.newsbuddy.ui.ContentCard
+import com.spacey.newsbuddy.ui.keyboardVisibility
 
 @Composable
 fun ChatScreen(
@@ -78,8 +80,14 @@ fun ChatScreen(
                     var chatInput by remember {
                         mutableStateOf("")
                     }
+                    // TODO: Scroll when keyborad opens is not working fine
+                    val lazyColumnState = rememberLazyListState()
+                    val keyboardState by keyboardVisibility()
+                    LaunchedEffect(chat.chatWindow.chats.size, key2 = keyboardState) {
+                        lazyColumnState.animateScrollToItem(chat.chatWindow.chats.size-1)
+                    }
                     Column(Modifier.fillMaxSize()) {
-                        LazyColumn(Modifier.weight(1f)) {
+                        LazyColumn(Modifier.weight(1f), state = lazyColumnState) {
                             items(items = chat.chatWindow.chats) { convo ->
                                 val isUserChat = convo.type == ChatType.USER
                                 val alignment =
