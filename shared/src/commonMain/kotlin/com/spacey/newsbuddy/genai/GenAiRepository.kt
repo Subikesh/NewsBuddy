@@ -7,6 +7,9 @@ import com.spacey.newsbuddy.common.safeConvert
 import com.spacey.newsbuddy.news.NewsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -53,14 +56,14 @@ class GenAiRepository(
         }
     }
 
-    suspend fun startAiChat(date: String): Result<ChatWindow> {
+    suspend fun startAiChat(date: String): Result<ChatWindow> = withContext(Dispatchers.IO) {
         val chatWindow = buddyChatDao.safeGetChatWindow(date)
         if (chatWindow.isSuccess) {
-            return chatWindow
+            return@withContext chatWindow
         }
 
         val news = newsRepository.getTodaysNews(date)
-        return news.safeConvert {
+        news.safeConvert {
             log("News", "News response: $it")
             chatAiService.chat(it.content).safeConvert { aiResponse ->
                 val aiResponseStr = aiResponse.foldAsString()
@@ -70,14 +73,15 @@ class GenAiRepository(
         }
     }
 
-    suspend fun chatWithAi(chatWindow: ChatWindow, prompt: String): Result<ChatWindow> {
+    fun chatWithAi(chatWindow: ChatWindow, prompt: String): Flow<Result<ChatWindow>> = flow {
         buddyChatDao.insert(ChatBubble(chatWindow.dayNews.id, getCurrentTime(), ChatType.USER, prompt))
-        return chatAiService.chat(prompt).safeConvert { aiResponse ->
+        emit(buddyChatDao.safeGetChatWindow(chatWindow.dayNews.date))
+        emit(chatAiService.chat(prompt).safeConvert { aiResponse ->
             val aiResponseStr = aiResponse.foldAsString()
             buddyChatDao.insert(ChatBubble(chatWindow.dayNews.id, getCurrentTime(), ChatType.AI, aiResponseStr))
             buddyChatDao.safeGetChatWindow(chatWindow.dayNews.date)
-        }
-    }
+        })
+    }.flowOn(Dispatchers.IO)
 
     private fun parseAiResponse(json: String): List<SummaryParagraph> {
         val jsonObject: JsonObject = Json.decodeFromString(json.escapeAiContent())

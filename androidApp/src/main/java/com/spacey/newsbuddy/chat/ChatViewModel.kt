@@ -3,6 +3,7 @@ package com.spacey.newsbuddy.chat
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.spacey.newsbuddy.genai.ChatBubble
 import com.spacey.newsbuddy.genai.ChatWindow
 import com.spacey.newsbuddy.serviceLocator
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,7 +34,6 @@ class ChatViewModel : ViewModel() {
 
     fun chat(prompt: String) {
         var current = conversation.value
-//        val prompt = prompt.ifBlank { "Continue" }
         if (current is ChatUiState.Success) {
         // TODO: Add loading bubble
 //            current = current.copy(current.conversations + listOf(ChatBubble(prompt, true), ChatBubble("", isUser = false, true)))
@@ -51,12 +51,13 @@ class ChatViewModel : ViewModel() {
                 startChat(date!!)
                 return@launch
             }
-            val result = genAiRepository.chatWithAi(chatWindow.chatWindow, prompt)
-            if (result.isSuccess) {
-                _conversations.value = ChatUiState.Success(result.getOrThrow())
-            } else {
-                Log.e("Error", "Convo chat response failed", result.exceptionOrNull())
-                _conversations.value = ChatUiState.Error(result.exceptionOrNull().toString())
+            genAiRepository.chatWithAi(chatWindow.chatWindow, prompt).collect { result ->
+                if (result.isSuccess) {
+                    _conversations.value = ChatUiState.Success(result.getOrThrow())
+                } else {
+                    Log.e("Error", "Convo chat response failed", result.exceptionOrNull())
+                    _conversations.value = ChatUiState.Error(result.exceptionOrNull().toString())
+                }
             }
         }
     }
