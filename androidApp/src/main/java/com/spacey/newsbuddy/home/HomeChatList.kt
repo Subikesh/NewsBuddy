@@ -1,5 +1,6 @@
 package com.spacey.newsbuddy.home
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.spacey.newsbuddy.ListedUiState
+import com.spacey.newsbuddy.android.BuildConfig
 import com.spacey.newsbuddy.ui.getLatestDate
 
 @Composable
@@ -95,7 +97,10 @@ fun ListUiState(todayMsg: String, uiState: ListedUiState<HomeBubble>, navToday: 
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text(text = uiState.message, textAlign = TextAlign.Center, modifier = Modifier)
+                    Log.e("HomeError", uiState.message)
+                    val errorText = if (BuildConfig.DEBUG) uiState.message
+                        else "Something went wrong when fetching data. Please feel free to contact support."
+                    Text(text = errorText, textAlign = TextAlign.Center, modifier = Modifier)
                 }
             }
         }
