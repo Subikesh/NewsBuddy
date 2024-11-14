@@ -11,11 +11,18 @@ import androidx.work.WorkerParameters
 import com.spacey.newsbuddy.MyApplication
 import com.spacey.newsbuddy.android.BuildConfig
 import com.spacey.newsbuddy.android.R
+import com.spacey.newsbuddy.datasync.SyncEntry
+import com.spacey.newsbuddy.genai.ChatWindow
+import com.spacey.newsbuddy.genai.SummaryParagraph
+import com.spacey.newsbuddy.news.NewsResponse
 import com.spacey.newsbuddy.serviceLocator
 import com.spacey.newsbuddy.ui.getLatestDate
 import com.spacey.newsbuddy.ui.isNotificationAllowed
 
-class NewsSyncWorker(context: Context, workerParams: WorkerParameters) : CoroutineWorker(context, workerParams) {
+class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
+    CoroutineWorker(context, workerParams) {
+
+    private val syncRepository = serviceLocator.syncRepository
 
     @SuppressLint("MissingPermission")
     override suspend fun doWork(): Result {
@@ -23,6 +30,8 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) : Corouti
         val newsResult = serviceLocator.newsRepository.getTodaysNews(date)
         val summaryResult = serviceLocator.genAiRepository.getNewsSummary(date)
         val chatResult = serviceLocator.genAiRepository.startAiChat(date)
+
+        makeSyncEntry(newsResult, summaryResult, chatResult)
         return if (newsResult.isSuccess && summaryResult.isSuccess && chatResult.isSuccess) {
             if (applicationContext.isNotificationAllowed()) {
                 NotificationManagerCompat.from(applicationContext).notify(
@@ -48,6 +57,20 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) : Corouti
         }
     }
 
+    private fun makeSyncEntry(
+        newsResult: kotlin.Result<NewsResponse>,
+        summaryResult: kotlin.Result<List<SummaryParagraph>>,
+        chatResult: kotlin.Result<ChatWindow>
+    ) {
+        val syncEntry = SyncEntry(
+            System.currentTimeMillis(),
+            newsResult.isSuccess.toString(),
+            summaryResult.exceptionOrNull()?.message ?: true.toString(),
+            chatResult.exceptionOrNull()?.message ?: true.toString(),
+        )
+        syncRepository.insert(syncEntry)
+    }
+
     private fun createNotification(title: String, content: String, date: String): Notification {
         // TODO: Open date's content rather than activity
         val contentIndent = PendingIntent.getActivity(
@@ -63,6 +86,7 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) : Corouti
             .setContentText(content)
             .setContentIntent(contentIndent)
             .setAutoCancel(true)
+            .setShowWhen(true)
             .build()
     }
 }
