@@ -34,7 +34,7 @@ import com.spacey.newsbuddy.ui.getLatestDate
 import kotlinx.serialization.Serializable
 
 @Composable
-fun MainScaffold(navigateToChat: (String?) -> Unit) {
+fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Unit) {
     var bottomSelectedIndex by remember {
         mutableIntStateOf(0)
     }
@@ -113,7 +113,8 @@ fun MainScaffold(navigateToChat: (String?) -> Unit) {
                     setAppBarContent = { appBarContent = it },
                     setFabConfig = { fabConfig = it },
                     navigateToChat = navigateToChat,
-                    navigateToSummary = { navController.navigate(Summary(it ?: todayDate)) }
+                    navigateToSummary = { navController.navigate(Summary(it ?: todayDate)) },
+                    navigateToSettings = navigateToSettings
                 )
             }
 

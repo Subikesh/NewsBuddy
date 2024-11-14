@@ -21,6 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.spacey.newsbuddy.android.R
 import com.spacey.newsbuddy.chat.ChatScreen
+import com.spacey.newsbuddy.settings.SettingsScreen
 import com.spacey.newsbuddy.ui.getLatestDate
 import kotlinx.serialization.Serializable
 
@@ -34,13 +35,15 @@ class MainActivity : ComponentActivity() {
             val isDarkTheme = false
             MyApplicationTheme(isDarkTheme) {
                 Box(
-                    modifier = Modifier.fillMaxSize().let {
-                        if (isDarkTheme) {
-                            it.background(gradientBackground())
-                        } else {
-                            it.background(Color.LightGray)
-                        }
-                    },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .let {
+                            if (isDarkTheme) {
+                                it.background(gradientBackground())
+                            } else {
+                                it.background(Color.LightGray)
+                            }
+                        },
                 ) {
                     if (!isDarkTheme) {
                         Image(
@@ -67,9 +70,14 @@ fun MainNavigation() {
         Modifier.background(Color.Transparent)
     ) {
         composable<Home> {
-            MainScaffold {
-                navController.navigate(Chat(it ?: getLatestDate()))
-            }
+            MainScaffold(
+                navigateToChat = {
+                    navController.navigate(Chat(it ?: getLatestDate()))
+                },
+                navigateToSettings = {
+                    navController.navigate(Settings)
+                }
+            )
         }
 
         composable<Login> {
@@ -91,6 +99,10 @@ fun MainNavigation() {
                 }
             )
         }
+
+        composable<Settings> {
+            SettingsScreen(navigateBack = { navController.navigateUp() })
+        }
     }
 }
 
@@ -102,3 +114,6 @@ data object Login
 
 @Serializable
 data class Chat(val date: String)
+
+@Serializable
+data object Settings

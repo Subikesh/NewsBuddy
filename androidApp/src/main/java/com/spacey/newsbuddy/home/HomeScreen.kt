@@ -35,7 +35,8 @@ fun HomeScreen(
     setAppBarContent: (AppBarContent?) -> Unit,
     setFabConfig: (FabConfig) -> Unit,
     navigateToChat: (String?) -> Unit,
-    navigateToSummary: (String?) -> Unit
+    navigateToSummary: (String?) -> Unit,
+    navigateToSettings: () -> Unit
 ) {
     LaunchedEffect(key1 = true) {
         setAppBarContent(null)
@@ -51,7 +52,9 @@ fun HomeScreen(
     Column(Modifier.padding(16.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             IconButton(
-                onClick = { /*TODO*/ }, colors = IconButtonDefaults.iconButtonColors(
+                onClick = {
+                    navigateToSettings()
+                }, colors = IconButtonDefaults.iconButtonColors(
                     MaterialTheme.colorScheme.secondaryContainer
                 )
             ) {
