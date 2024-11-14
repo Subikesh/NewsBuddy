@@ -24,6 +24,9 @@ internal class Preference(private val key: String) {
     }
 
     companion object {
+        // Usage
+        // private var somePrefs: String by Preference("some_key")
+
         const val NEWS_RESPONSE = "news_response"
         const val AI_RESPONSE = "ai_response"
         const val CACHE_DATE = "cache_date"

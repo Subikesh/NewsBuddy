@@ -8,5 +8,7 @@ fun getNewsBuddyDatabase(context: Context): NewsBuddyDatabase {
     return Room.databaseBuilder<NewsBuddyDatabase>(
         context.applicationContext,
         name = dbFile.absolutePath
-    ).build()
+    )
+        .fallbackToDestructiveMigration(false)
+        .build()
 }
