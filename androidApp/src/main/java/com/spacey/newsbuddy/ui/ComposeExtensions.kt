@@ -5,15 +5,18 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -46,9 +49,14 @@ fun CenteredColumn(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CenteredTopBarScaffold(title: String, navigationIcon: @Composable () -> Unit, content: @Composable (PaddingValues) -> Unit) {
+fun CenteredTopBarScaffold(
+    title: String,
+    navigationIcon: @Composable () -> Unit,
+    content: @Composable () -> Unit
+) {
     Scaffold(containerColor = Color.Transparent, modifier = Modifier.imePadding(), topBar = {
-        CenterAlignedTopAppBar(colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+        CenterAlignedTopAppBar(
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
             title = {
                 Text(
                     title,
@@ -60,7 +68,9 @@ fun CenteredTopBarScaffold(title: String, navigationIcon: @Composable () -> Unit
             }, navigationIcon = navigationIcon
         )
     }, content = { padding ->
-        content(padding)
+        Box(Modifier.padding(padding)) {
+            content()
+        }
     })
 }
 
@@ -91,3 +101,21 @@ fun getLatestDate(): String {
 // TODO: Add notification permission kotlin contract
 fun Context.isNotificationAllowed() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
         applicationContext.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+
+@Composable
+fun ContentCard(
+    modifier: Modifier = Modifier,
+    cardContainerColor: Color = MaterialTheme.colorScheme.tertiary,
+    cardContentColor: Color = MaterialTheme.colorScheme.onTertiary,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = cardContainerColor,
+            contentColor = cardContentColor
+        ),
+        modifier = modifier,
+        shape = RoundedCornerShape(20.dp),
+        content = content
+    )
+}

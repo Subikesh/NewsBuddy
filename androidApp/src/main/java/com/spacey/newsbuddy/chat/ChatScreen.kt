@@ -15,8 +15,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,6 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.genai.ChatType
 import com.spacey.newsbuddy.ui.BackIconButton
 import com.spacey.newsbuddy.ui.CenteredTopBarScaffold
+import com.spacey.newsbuddy.ui.ContentCard
 
 @Composable
 fun ChatScreen(
@@ -59,8 +58,8 @@ fun ChatScreen(
     val conversations by viewModel.conversation.collectAsState()
     CenteredTopBarScaffold(title = "News Buddy", navigationIcon = {
         BackIconButton(navBackToHome)
-    }) { padding ->
-        Column(Modifier.padding(padding)) {
+    }) {
+        Column {
             when (val chat = conversations) {
                 is ChatUiState.Error -> {
                     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
@@ -92,15 +91,12 @@ fun ChatScreen(
                                     horizontalArrangement = alignment,
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    Card(
-                                        colors = CardDefaults.cardColors(
-                                            containerColor = cardContainerColor,
-                                            contentColor = cardContentColor
-                                        ),
+                                    ContentCard(
                                         modifier = Modifier
                                             .fillMaxWidth(fraction = .9f)
                                             .padding(horizontal = 8.dp, vertical = 4.dp),
-                                        shape = RoundedCornerShape(20.dp)
+                                        cardContainerColor,
+                                        cardContentColor
                                     ) {
                                         // TODO: Loading chat bubble
 //                                    if (convo.isLoading) {
