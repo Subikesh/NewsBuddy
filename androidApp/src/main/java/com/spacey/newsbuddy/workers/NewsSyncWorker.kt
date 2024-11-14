@@ -57,7 +57,7 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
         }
     }
 
-    private fun makeSyncEntry(
+    private suspend fun makeSyncEntry(
         newsResult: kotlin.Result<NewsResponse>,
         summaryResult: kotlin.Result<List<SummaryParagraph>>,
         chatResult: kotlin.Result<ChatWindow>

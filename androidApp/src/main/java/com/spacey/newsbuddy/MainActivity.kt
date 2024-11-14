@@ -6,10 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +20,7 @@ import androidx.navigation.toRoute
 import com.spacey.newsbuddy.android.R
 import com.spacey.newsbuddy.chat.ChatScreen
 import com.spacey.newsbuddy.settings.SettingsScreen
+import com.spacey.newsbuddy.settings.sync.DataSyncScreen
 import com.spacey.newsbuddy.ui.getLatestDate
 import kotlinx.serialization.Serializable
 
@@ -101,19 +100,29 @@ fun MainNavigation() {
         }
 
         composable<Settings> {
-            SettingsScreen(navigateBack = { navController.navigateUp() })
+            SettingsScreen(
+                navigateDataSyncScreen = { navController.navigate(DataSyncList) },
+                navigateBack = { navController.navigateUp() })
+        }
+        composable<DataSyncList> {
+            DataSyncScreen(navigateBack = { navController.navigateUp() })
         }
     }
 }
 
+// Bottom nav
 @Serializable
-data object Home
+private data object Home
 
 @Serializable
-data object Login
+private data object Login
 
 @Serializable
 data class Chat(val date: String)
 
+// Settings
 @Serializable
-data object Settings
+private data object Settings
+
+@Serializable
+private data object DataSyncList
