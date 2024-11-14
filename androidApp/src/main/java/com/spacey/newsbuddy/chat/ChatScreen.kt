@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.genai.ChatType
@@ -122,7 +123,7 @@ fun ChatScreen(
                             shape = RoundedCornerShape(30.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(4.dp),
+                                .padding(top = 4.dp),
                             colors = TextFieldDefaults.colors(
                                 disabledContainerColor = MaterialTheme.colorScheme.tertiary,
                                 focusedContainerColor = MaterialTheme.colorScheme.tertiary,
@@ -142,7 +143,10 @@ fun ChatScreen(
                                     }
                                 }
                             },
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                            keyboardOptions = KeyboardOptions(
+                                capitalization = KeyboardCapitalization.Sentences,
+                                imeAction = ImeAction.Done
+                            ),
                             keyboardActions = KeyboardActions(onDone = {
 //                            focus.requestFocus()
                                 onInputDone()
