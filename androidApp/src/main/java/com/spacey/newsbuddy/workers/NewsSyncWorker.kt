@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.spacey.newsbuddy.MyApplication
 import com.spacey.newsbuddy.android.BuildConfig
@@ -26,10 +27,17 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
 
     @SuppressLint("MissingPermission")
     override suspend fun doWork(): Result {
+        setForeground(ForegroundInfo(
+            0,
+            createNotification(
+                "Data Sync in Progress",
+                "Latest news syncing. Infinite wisdom awaits..."
+            )
+        ))
         val date = getLatestDate()
         val newsResult = serviceLocator.newsRepository.getTodaysNews(date)
-        val summaryResult = serviceLocator.genAiRepository.getNewsSummary(date)
         val chatResult = serviceLocator.genAiRepository.startAiChat(date)
+        val summaryResult = serviceLocator.genAiRepository.getNewsSummary(date)
 
         makeSyncEntry(newsResult, summaryResult, chatResult)
         return if (newsResult.isSuccess && summaryResult.isSuccess && chatResult.isSuccess) {
@@ -37,8 +45,7 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
                 NotificationManagerCompat.from(applicationContext).notify(
                     0, createNotification(
                         "News Sync Completed!",
-                        "Latest news synced and I cant wait to talk about it!",
-                        getLatestDate()
+                        "Latest news synced and I cant wait to talk about it!"
                     )
                 )
             }
@@ -48,8 +55,7 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
                 NotificationManagerCompat.from(applicationContext).notify(
                     0, createNotification(
                         "News Sync Failed!",
-                        "News result: ${newsResult.isSuccess}; Summary result: ${summaryResult.isSuccess}; Chat Result: ${chatResult.isSuccess}",
-                        getLatestDate()
+                        "News result: ${newsResult.isSuccess}; Summary result: ${summaryResult.isSuccess}; Chat Result: ${chatResult.isSuccess}"
                     )
                 )
             }
@@ -71,7 +77,7 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
         syncRepository.insert(syncEntry)
     }
 
-    private fun createNotification(title: String, content: String, date: String): Notification {
+    private fun createNotification(title: String, content: String): Notification {
         // TODO: Open date's content rather than activity
         val contentIndent = PendingIntent.getActivity(
             applicationContext,
