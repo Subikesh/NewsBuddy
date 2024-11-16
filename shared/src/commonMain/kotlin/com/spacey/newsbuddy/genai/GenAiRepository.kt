@@ -5,6 +5,8 @@ import com.spacey.newsbuddy.common.getCurrentTime
 import com.spacey.newsbuddy.common.log
 import com.spacey.newsbuddy.common.safeConvert
 import com.spacey.newsbuddy.news.NewsRepository
+import com.spacey.newsbuddy.persistance.Preference
+import io.ktor.http.HttpMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -100,3 +102,5 @@ data class SummaryParagraph(
 ) {
     val escapedContent: String = content.replace("/[\u2190-\u21FF]|[\u2600-\u26FF]|[\u2700-\u27BF]|[\u3000-\u303F]|[\u1F300-\u1F64F]|[\u1F680-\u1F6FF]/g", "");
 }
+
+class AiBusyException(message: String): Exception(message)

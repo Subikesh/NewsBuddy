@@ -2,6 +2,7 @@ package com.spacey.newsbuddy.genai
 
 import com.spacey.newsbuddy.common.Dependencies
 import com.spacey.newsbuddy.common.GEMINI_1_5_PRO
+import com.spacey.newsbuddy.persistance.Preference
 import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
 import dev.shreyaspatil.ai.client.generativeai.type.BlockThreshold
 import dev.shreyaspatil.ai.client.generativeai.type.Content
@@ -12,6 +13,7 @@ import dev.shreyaspatil.ai.client.generativeai.type.generationConfig
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 
 class ConversationAiService(dependencies: Dependencies) {
 
@@ -49,16 +51,24 @@ class ConversationAiService(dependencies: Dependencies) {
         )
     )
 
+    private var ongoingChatRequest: Boolean by Preference("ongoing_chat_request")
+
     private val chatHistory: List<Content> = listOf()
 
     private val chat = convoProcessingModel.startChat(chatHistory)
 
     suspend fun chat(prompt: String): Result<Flow<String?>> {
+        if (ongoingChatRequest) {
+            return Result.failure(AiBusyException("Another Chat AI request is already running"))
+        }
+        ongoingChatRequest = true
         return runCatching {
             val result = chat.sendMessageStream(prompt)
             result.map { it.text }.catch { ex ->
                 ex.printStackTrace()
                 emit("Error in generating text: ${ex.message}")
+            }.onCompletion {
+                ongoingChatRequest = false
             }
         }
     }

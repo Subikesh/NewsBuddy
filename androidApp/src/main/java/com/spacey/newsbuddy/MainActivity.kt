@@ -1,8 +1,8 @@
 package com.spacey.newsbuddy
 
-import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
-import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -27,11 +27,12 @@ import com.spacey.newsbuddy.ui.getLatestDate
 import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
-    @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        window.decorView.windowInsetsController?.setSystemBarsAppearance(APPEARANCE_LIGHT_STATUS_BARS, APPEARANCE_LIGHT_STATUS_BARS)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.setSystemBarsAppearance(WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+        }
         setContent {
             // TODO: Adopt multiple themes
 //            val isDarkTheme = isSystemInDarkTheme()

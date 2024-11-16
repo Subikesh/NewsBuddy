@@ -6,12 +6,15 @@ import kotlin.reflect.KProperty
 interface AppPreference {
     fun getString(key: String): String
     fun putString(key: String, value: String)
+    fun getBoolean(key: String): Boolean
+    fun putBoolean(key: String, value: Boolean)
 }
 
 internal class Preference(private val key: String) {
     inline operator fun <reified T> getValue(thisRef: Any?, property: KProperty<*>): T {
         return when (T::class) {
             String::class -> serviceLocator.preference.getString(key)
+            Boolean::class -> serviceLocator.preference.getBoolean(key)
             else -> TODO("Not yet implemented")
         } as T
     }
@@ -19,6 +22,7 @@ internal class Preference(private val key: String) {
     operator fun <T> setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         when (value) {
             is String -> serviceLocator.preference.putString(key, value)
+            is Boolean -> serviceLocator.preference.putBoolean(key, value)
             else -> TODO("Not yet implemented")
         }
     }

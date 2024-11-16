@@ -11,4 +11,12 @@ class PreferencesImpl: AppPreference {
         TODO("Not yet implemented")
     }
 
+    override fun getBoolean(key: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun putBoolean(key: String, value: Boolean) {
+        TODO("Not yet implemented")
+    }
+
 }
