@@ -1,5 +1,6 @@
 package com.spacey.newsbuddy.datasync
 
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Entity
 import androidx.room.Insert
@@ -17,7 +18,7 @@ interface SyncDao {
 
 @Entity
 data class SyncEntry(
-    @PrimaryKey val syncTime: Long,
+    @PrimaryKey @ColumnInfo("syncTime") val syncTimeMillis: Long,
     val newsResult: String,
     val summaryResult: String,
     val chatResult: String

@@ -2,6 +2,7 @@ package com.spacey.newsbuddy.settings.sync
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,6 +28,9 @@ import com.spacey.newsbuddy.ui.BackIconButton
 import com.spacey.newsbuddy.ui.CenteredTopBarScaffold
 import com.spacey.newsbuddy.ui.ContentCard
 import com.spacey.newsbuddy.workers.NewsSyncWorker
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 @Composable
 fun DataSyncScreen(navigateBack: () -> Unit, viewModel: DataSyncViewModel = viewModel()) {
@@ -38,51 +42,52 @@ fun DataSyncScreen(navigateBack: () -> Unit, viewModel: DataSyncViewModel = view
         BackIconButton(navigateBack)
     }) {
         val context = LocalContext.current
-        Button(onClick = {
-            WorkManager.getInstance(context).enqueue(OneTimeWorkRequestBuilder<NewsSyncWorker>().run {
-                setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                build()
-            })
-        }) {
-            Text("Sync Now")
-        }
-
-        ContentCard(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)) {
-            when (val dataSyncList = syncList) {
-                is ListedUiState.Loading -> {
-                    Column(
-                        Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        CircularProgressIndicator()
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
+            ContentCard(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                when (val dataSyncList = syncList) {
+                    is ListedUiState.Loading -> {
+                        Column(
+                            Modifier.padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
                     }
-                }
 
-                is ListedUiState.Success -> {
-                    LazyColumn {
-                        itemsIndexed(dataSyncList.resultList) { i, syncDetails ->
-                            Column(Modifier.padding(16.dp)) {
-                                Text("Sync time: ${syncDetails.syncTime}")
-                                Text("News Result: ${syncDetails.newsResult}")
-                                Text("Summary Result: ${syncDetails.summaryResult}")
-                                Text("Chat Result: ${syncDetails.chatResult}")
-                            }
-                            if (i < dataSyncList.resultList.size-1) {
-                                Divider()
+                    is ListedUiState.Success -> {
+                        LazyColumn {
+                            itemsIndexed(dataSyncList.resultList) { i, syncDetails ->
+                                Column(Modifier.padding(16.dp)) {
+                                    val dateString = LocalDateTime.ofInstant(Instant.ofEpochMilli(syncDetails.syncTimeMillis), ZoneId.systemDefault())
+                                    Text("Sync time: $dateString")
+                                    Text("News Result: ${syncDetails.newsResult}")
+                                    Text("Summary Result: ${syncDetails.summaryResult}")
+                                    Text("Chat Result: ${syncDetails.chatResult}")
+                                }
+                                if (i < dataSyncList.resultList.size-1) {
+                                    Divider()
+                                }
                             }
                         }
                     }
-                }
 
-                is ListedUiState.Error -> {
-                    Text(dataSyncList.message, Modifier.padding(16.dp))
-                }
+                    is ListedUiState.Error -> {
+                        Text(dataSyncList.message, Modifier.padding(16.dp))
+                    }
 
+                }
+            }
+
+            Button(modifier = Modifier.fillMaxWidth().padding(16.dp), onClick = {
+                WorkManager.getInstance(context).enqueue(OneTimeWorkRequestBuilder<NewsSyncWorker>().run {
+                    setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                    build()
+                })
+            }) {
+                Text("Sync Now")
             }
         }
+
     }
 }
