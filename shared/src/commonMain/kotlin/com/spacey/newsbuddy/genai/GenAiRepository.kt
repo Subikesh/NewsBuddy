@@ -1,12 +1,12 @@
 package com.spacey.newsbuddy.genai
 
+import com.spacey.newsbuddy.common.Dependencies
 import com.spacey.newsbuddy.common.foldAsString
 import com.spacey.newsbuddy.common.getCurrentTime
 import com.spacey.newsbuddy.common.log
 import com.spacey.newsbuddy.common.safeConvert
 import com.spacey.newsbuddy.news.NewsRepository
-import com.spacey.newsbuddy.persistance.Preference
-import io.ktor.http.HttpMessage
+import dev.shreyaspatil.ai.client.generativeai.type.content
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -22,10 +22,12 @@ import kotlinx.serialization.json.decodeFromJsonElement
 class GenAiRepository(
     private val newsRepository: NewsRepository,
     private val generativeAiService: GenerativeAiService,
-    private val chatAiService: ConversationAiService,
     private val buddyChatDao: BuddyChatDao,
-    private val newsSummaryDao: SummaryDao
+    private val newsSummaryDao: SummaryDao,
+    private val dependencies: Dependencies
 ) {
+
+    private lateinit var currentChatAiService: ConversationAiService
 
     suspend fun getRecentChats(offset: Int = 0, limit: Int = 10): List<String> = withContext(Dispatchers.IO) {
         buddyChatDao.getRecentChats(offset, limit)
@@ -60,17 +62,20 @@ class GenAiRepository(
 
     suspend fun startAiChat(date: String): Result<ChatWindow> = withContext(Dispatchers.IO) {
         val chatWindow = buddyChatDao.safeGetChatWindow(date)
+        // TODO: Check if chatWindow was error or chatWindow for that date was empty
         if (chatWindow.isSuccess) {
+            currentChatAiService = getConversationAiService(chatWindow.getOrThrow())
             return@withContext chatWindow
         }
 
         val news = newsRepository.getTodaysNews(date)
-        news.safeConvert {
-            log("News", "News response: $it")
-            chatAiService.chat(it.content).safeConvert { aiResponse ->
+        news.safeConvert { newsResponse ->
+            currentChatAiService = getConversationAiService(ChatWindow(newsResponse, emptyList()))
+            log("News", "News response: $newsResponse")
+            currentChatAiService.chat(newsResponse.content).safeConvert { aiResponse ->
                 val aiResponseStr = aiResponse.foldAsString()
-                buddyChatDao.insert(ChatBubble(it.id, getCurrentTime(), ChatType.AI, aiResponseStr))
-                buddyChatDao.safeGetChatWindow(it.date)
+                buddyChatDao.insert(ChatBubble(newsResponse.id, getCurrentTime(), ChatType.AI, aiResponseStr))
+                buddyChatDao.safeGetChatWindow(newsResponse.date)
             }
         }
     }
@@ -78,12 +83,20 @@ class GenAiRepository(
     fun chatWithAi(chatWindow: ChatWindow, prompt: String): Flow<Result<ChatWindow>> = flow {
         buddyChatDao.insert(ChatBubble(chatWindow.dayNews.id, getCurrentTime(), ChatType.USER, prompt))
         emit(buddyChatDao.safeGetChatWindow(chatWindow.dayNews.date))
-        emit(chatAiService.chat(prompt).safeConvert { aiResponse ->
+        emit(currentChatAiService.chat(prompt).safeConvert { aiResponse ->
             val aiResponseStr = aiResponse.foldAsString()
             buddyChatDao.insert(ChatBubble(chatWindow.dayNews.id, getCurrentTime(), ChatType.AI, aiResponseStr))
             buddyChatDao.safeGetChatWindow(chatWindow.dayNews.date)
         })
     }.flowOn(Dispatchers.IO)
+
+    private fun getConversationAiService(chatWindow: ChatWindow): ConversationAiService {
+        return ConversationAiService(dependencies, chatWindow.chats.map { chatBubble ->
+            content(if (chatBubble.type == ChatType.USER) "user" else "model") {
+                text(chatBubble.chatText)
+            }
+        }, chatWindow.dayNews.content)
+    }
 
     private fun parseAiResponse(json: String): List<SummaryParagraph> {
         val jsonObject: JsonObject = Json.decodeFromString(json.escapeAiContent())

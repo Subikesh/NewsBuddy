@@ -1,7 +1,6 @@
 package com.spacey.newsbuddy.genai
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
 // Chat
 @Entity(primaryKeys = ["newsId", "time"])

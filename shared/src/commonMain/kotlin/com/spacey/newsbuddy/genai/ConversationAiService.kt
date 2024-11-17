@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 
-class ConversationAiService(dependencies: Dependencies) {
+class ConversationAiService(dependencies: Dependencies, chatHistory: List<Content>, newsResponse: String) {
 
     private val convoProcessingModel = GenerativeModel(
         GEMINI_1_5_PRO,
@@ -34,26 +34,23 @@ class ConversationAiService(dependencies: Dependencies) {
         systemInstruction = content(role = "system") {
             text(
                 "INSTRUCTIONS: You are being used as a voice chat companion. \n" +
-                "You will be provided an elaborate summary of news articles and recent happenings at first with the heading: 'news_input'.\n" +
                 "The user will chat with you regarding the given news articles and you can answer user's queries and also lead \n" +
                 "them to different topics and articles to cover all the news of his interest, also be sure to add some \n" +
                 "questions and interesting facts linking to another news article to make the conversation flowing. As a voice assistant, you will provide brief response\n" +
                 " to the prompts unless if you are asked to elaborate on particular matter. Prioritise on the actual \n" +
                 "facts and logic over speculation or guess and try to find the most relevant news article to the prompt and respond. Start with a \n" +
-                "greeting and a moderate summary to start the conversation just after I share the news_input for the chat."
+                "greeting and a moderate summary to start the conversation.\n Here's the news response for context: $newsResponse"
             )
         },
         safetySettings = listOf(
-            SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.NONE),
+            SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.ONLY_HIGH),
             SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.NONE),
             SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.NONE),
-            SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.NONE)
+            SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.ONLY_HIGH)
         )
     )
 
     private var ongoingChatRequest: Boolean by Preference("ongoing_chat_request")
-
-    private val chatHistory: List<Content> = listOf()
 
     private val chat = convoProcessingModel.startChat(chatHistory)
 
