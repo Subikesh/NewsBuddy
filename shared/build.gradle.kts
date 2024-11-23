@@ -47,6 +47,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
 //            implementation(libs.room.runtime.android)
+            implementation(libs.firebase.vertexai)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
