@@ -8,12 +8,10 @@ import com.google.firebase.vertexai.type.content
 import com.google.firebase.vertexai.type.generationConfig
 import com.google.firebase.vertexai.vertexAI
 import com.spacey.newsbuddy.common.Dependencies
-import com.spacey.newsbuddy.common.GEMINI_1_5_FLASH
-import com.spacey.newsbuddy.common.GEMINI_1_5_PRO
 import com.spacey.newsbuddy.common.log
 import com.spacey.newsbuddy.persistance.Preference
 
-class GenerativeAiService(dependencies: Dependencies) {
+actual class SummaryAiService actual constructor(dependencies: Dependencies) {
 
     private val newsProcessingModel = Firebase.vertexAI.generativeModel(
         GEMINI_1_5_FLASH,
@@ -38,13 +36,13 @@ class GenerativeAiService(dependencies: Dependencies) {
 
     private var ongoingSummaryRequest: Boolean by Preference("ongoing_summary_request")
 
-    suspend fun runPrompt(news: String): Result<String> {
+    actual suspend fun prompt(message: String): Result<String> {
         if (ongoingSummaryRequest) {
             return Result.failure(AiBusyException("Another AI summary request is already running"))
         }
         ongoingSummaryRequest = true
         return runCatching {
-            val contentStream = newsProcessingModel.generateContent(content { text(news) })
+            val contentStream = newsProcessingModel.generateContent(content { text(message) })
             val content = contentStream.text?.substringAfter('\n')?.substringBeforeLast('\n') ?: ""
             log("AI response", content)
             content
