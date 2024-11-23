@@ -1,7 +1,6 @@
 package com.spacey.newsbuddy.genai
 
 import com.spacey.newsbuddy.common.Dependencies
-import com.spacey.newsbuddy.news.NewsResponse
 import kotlinx.coroutines.flow.Flow
 
 /*interface AiService {
@@ -12,7 +11,13 @@ expect class SummaryAiService(dependencies: Dependencies) {
     suspend fun prompt(message: String): Result<String>
 }
 
-expect class ChatAiService(dependencies: Dependencies, chatHistory: List<ChatContent>, newsResponse: NewsResponse) {
+object SummaryConstants {
+    const val CONTENT = "content"
+    const val NEWS_CURATION = "news_curation"
+    const val LINK = "link"
+}
+
+expect class ChatAiService(dependencies: Dependencies, chatHistory: List<ChatBubble>, newsResponseText: String) {
     suspend fun prompt(message: String): Result<Flow<String?>>
 }
 

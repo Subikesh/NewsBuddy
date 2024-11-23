@@ -9,7 +9,6 @@ import com.google.firebase.vertexai.type.generationConfig
 import com.google.firebase.vertexai.vertexAI
 import com.spacey.newsbuddy.common.Dependencies
 import com.spacey.newsbuddy.common.toGeminiContent
-import com.spacey.newsbuddy.news.NewsResponse
 import com.spacey.newsbuddy.persistance.Preference
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -18,8 +17,8 @@ import kotlinx.coroutines.flow.onCompletion
 
 actual class ChatAiService actual constructor(
     dependencies: Dependencies,
-    chatHistory: List<ChatContent>,
-    newsResponse: NewsResponse
+    chatHistory: List<ChatBubble>,
+    newsResponseText: String
 ) {
 
     // TODO: Authentication?
@@ -42,7 +41,7 @@ actual class ChatAiService actual constructor(
                         "questions and interesting facts linking to another news article to make the conversation flowing. As a voice assistant, you will provide brief response\n" +
                         " to the prompts unless if you are asked to elaborate on particular matter. Prioritise on the actual \n" +
                         "facts and logic over speculation or guess and try to find the most relevant news article to the prompt and respond. Start with a \n" +
-                        "greeting and a moderate summary to start the conversation.\n Here's the news response for context: $newsResponse"
+                        "greeting and a moderate summary to start the conversation.\n Here's the news response for context: $newsResponseText"
             )
         },
         safetySettings = listOf(

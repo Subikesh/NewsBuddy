@@ -5,8 +5,9 @@ import com.spacey.newsbuddy.common.foldAsString
 import com.spacey.newsbuddy.common.getCurrentTime
 import com.spacey.newsbuddy.common.log
 import com.spacey.newsbuddy.common.safeConvert
+import com.spacey.newsbuddy.genai.SummaryConstants.CONTENT
+import com.spacey.newsbuddy.genai.SummaryConstants.LINK
 import com.spacey.newsbuddy.news.NewsRepository
-import dev.shreyaspatil.ai.client.generativeai.type.content
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -21,13 +22,13 @@ import kotlinx.serialization.json.decodeFromJsonElement
 
 class GenAiRepository(
     private val newsRepository: NewsRepository,
-    private val generativeAiService: GenerativeAiService,
+    private val generativeAiService: SummaryAiService,
     private val buddyChatDao: BuddyChatDao,
     private val newsSummaryDao: SummaryDao,
     private val dependencies: Dependencies
 ) {
 
-    private lateinit var currentChatAiService: ConversationAiService
+    private lateinit var currentChatAiService: ChatAiService
 
     suspend fun getRecentChats(offset: Int = 0, limit: Int = 10): List<String> = withContext(Dispatchers.IO) {
         buddyChatDao.getRecentChats(offset, limit)
@@ -52,7 +53,7 @@ class GenAiRepository(
         news.safeConvert {
             log("News", "News response: $it")
             var i = 0
-            generativeAiService.runPrompt(it.content).map { aiMsg ->
+            generativeAiService.prompt(it.content).map { aiMsg ->
                 parseAiResponse(aiMsg).also { convoList ->
                     newsSummaryDao.upsert(convoList.map { NewsSummary(date, it.content, it.link, i++) })
                 }
@@ -72,7 +73,7 @@ class GenAiRepository(
         news.safeConvert { newsResponse ->
             currentChatAiService = getConversationAiService(ChatWindow(newsResponse, emptyList()))
             log("News", "News response: $newsResponse")
-            currentChatAiService.chat(newsResponse.content).safeConvert { aiResponse ->
+            currentChatAiService.prompt(newsResponse.content).safeConvert { aiResponse ->
                 val aiResponseStr = aiResponse.foldAsString()
                 buddyChatDao.insert(ChatBubble(newsResponse.id, getCurrentTime(), ChatType.AI, aiResponseStr))
                 buddyChatDao.safeGetChatWindow(newsResponse.date)
@@ -83,24 +84,20 @@ class GenAiRepository(
     fun chatWithAi(chatWindow: ChatWindow, prompt: String): Flow<Result<ChatWindow>> = flow {
         buddyChatDao.insert(ChatBubble(chatWindow.dayNews.id, getCurrentTime(), ChatType.USER, prompt))
         emit(buddyChatDao.safeGetChatWindow(chatWindow.dayNews.date))
-        emit(currentChatAiService.chat(prompt).safeConvert { aiResponse ->
+        emit(currentChatAiService.prompt(prompt).safeConvert { aiResponse ->
             val aiResponseStr = aiResponse.foldAsString()
             buddyChatDao.insert(ChatBubble(chatWindow.dayNews.id, getCurrentTime(), ChatType.AI, aiResponseStr))
             buddyChatDao.safeGetChatWindow(chatWindow.dayNews.date)
         })
     }.flowOn(Dispatchers.IO)
 
-    private fun getConversationAiService(chatWindow: ChatWindow): ConversationAiService {
-        return ConversationAiService(dependencies, chatWindow.chats.map { chatBubble ->
-            content(if (chatBubble.type == ChatType.USER) "user" else "model") {
-                text(chatBubble.chatText)
-            }
-        }, chatWindow.dayNews.content)
+    private fun getConversationAiService(chatWindow: ChatWindow): ChatAiService {
+        return ChatAiService(dependencies, chatWindow.chats, chatWindow.dayNews.content)
     }
 
     private fun parseAiResponse(json: String): List<SummaryParagraph> {
         val jsonObject: JsonObject = Json.decodeFromString(json.escapeAiContent())
-        return Json.decodeFromJsonElement(jsonObject[GenerativeAiService.NEWS_CURATION]!!)
+        return Json.decodeFromJsonElement(jsonObject[SummaryConstants.NEWS_CURATION]!!)
     }
 
     private fun String.escapeAiContent(): String {
@@ -110,8 +107,8 @@ class GenAiRepository(
 
 @Serializable
 data class SummaryParagraph(
-    @SerialName(GenerativeAiService.CONTENT) val content: String,
-    @SerialName(GenerativeAiService.LINK) val link: String? = null
+    @SerialName(CONTENT) val content: String,
+    @SerialName(LINK) val link: String? = null
 ) {
     val escapedContent: String = content.replace("/[\u2190-\u21FF]|[\u2600-\u26FF]|[\u2700-\u27BF]|[\u3000-\u303F]|[\u1F300-\u1F64F]|[\u1F680-\u1F6FF]/g", "");
 }
