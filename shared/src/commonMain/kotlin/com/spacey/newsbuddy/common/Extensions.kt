@@ -22,6 +22,3 @@ suspend fun Flow<String?>.foldAsString(): String {
 }
 
 expect fun getCurrentTime(): Long
-
-const val GEMINI_1_5_PRO = "gemini-1.5-pro"
-const val GEMINI_1_5_FLASH = "gemini-1.5-flash-001"
