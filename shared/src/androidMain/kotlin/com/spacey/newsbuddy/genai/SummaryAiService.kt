@@ -9,6 +9,9 @@ import com.google.firebase.vertexai.type.generationConfig
 import com.google.firebase.vertexai.vertexAI
 import com.spacey.newsbuddy.common.Dependencies
 import com.spacey.newsbuddy.common.log
+import com.spacey.newsbuddy.genai.SummaryConstants.CONTENT
+import com.spacey.newsbuddy.genai.SummaryConstants.LINK
+import com.spacey.newsbuddy.genai.SummaryConstants.NEWS_CURATION
 import com.spacey.newsbuddy.persistance.Preference
 
 actual class SummaryAiService actual constructor(dependencies: Dependencies) {
@@ -50,9 +53,6 @@ actual class SummaryAiService actual constructor(dependencies: Dependencies) {
     }
 
     companion object {
-        const val NEWS_CURATION = "news_curation"
-        const val CONTENT = "content"
-        const val LINK = "link"
         private const val GEMINI_SYSTEM_CMD =
             "I will share you a json array of today's news headlines response. " +
                     "Summarise those and create a conversation styled news curation. \n" +
@@ -62,16 +62,15 @@ actual class SummaryAiService actual constructor(dependencies: Dependencies) {
                     ", but try to focus on important articles or topics at first. "
 
         private val schema = Schema.obj(
-//            "News article as conversation",
             description = "News articles converted as conversation with proper link mapped for each conversation",
             properties = mapOf(
-                "news" to Schema.array(
+                NEWS_CURATION to Schema.array(
                     description = "An array of news articles with conversations and links",
                     items = Schema.obj(
                         description = "Single article news item",
                         properties = mapOf(
                             CONTENT to Schema.string(
-                                "The conversation content for the news article",
+                                "The conversation content summary for that news article",
                                 nullable = false
                             ),
                             LINK to Schema.string(
