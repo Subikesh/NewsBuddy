@@ -8,9 +8,9 @@ import com.spacey.newsbuddy.persistance.NewsBuddyDatabase
 import com.spacey.newsbuddy.common.PreferenceImpl
 
 class DependenciesImpl(private val context: Application) : Dependencies {
+    override val preference = lazy { PreferenceImpl(context) }
+    override val newsBuddyDatabase = lazy { com.spacey.newsbuddy.persistance.getNewsBuddyDatabase(context) }
+
     override fun getNewsApiToken(): String = BuildConfig.NEWS_API_KEY
     override fun getGeminiApiToken(): String = BuildConfig.GEMINI_API_KEY
-    override fun getPreference(): AppPreference = PreferenceImpl(context)
-    override fun getNewsBuddyDatabase(): NewsBuddyDatabase =
-        com.spacey.newsbuddy.persistance.getNewsBuddyDatabase(context)
 }

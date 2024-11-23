@@ -9,6 +9,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.spacey.newsbuddy.common.initiateFireBaseSdk
 import com.spacey.newsbuddy.workers.NewsSyncWorker
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -17,6 +18,7 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        initiateFireBaseSdk(this)
         ServiceLocator.initiate(DependenciesImpl(this))
 
         val notificationManager = getSystemService(NotificationManager::class.java)

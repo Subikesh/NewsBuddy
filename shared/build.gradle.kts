@@ -40,7 +40,6 @@ kotlin {
             implementation(libs.ktor.serialization.json)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
-            implementation(libs.generativeai.google)
             implementation(libs.room.runtime)
             implementation(libs.sqlite.bundled)
         }
