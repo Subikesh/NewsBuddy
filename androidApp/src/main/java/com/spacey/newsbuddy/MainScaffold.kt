@@ -23,25 +23,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.spacey.newsbuddy.home.HomeScreen
 import com.spacey.newsbuddy.summary.SummaryScreen
 import com.spacey.newsbuddy.ui.getLatestDate
+import com.spacey.newsbuddy.ui.navigateFromHome
 import kotlinx.serialization.Serializable
+import kotlin.reflect.KClass
 
 @Composable
 fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Unit) {
-    var bottomSelectedIndex by remember {
-        mutableIntStateOf(0)
-    }
     val navController = rememberNavController()
-    val backstack by navController.currentBackStackEntryAsState()
-    val bottomNavList = listOf(NewsHome::class, Summary::class, Chat::class)
-    bottomSelectedIndex = bottomNavList.indexOfFirst { backstack?.destination?.route == it.qualifiedName }.takeIf { it != -1 } ?: 0
     var appBarContent: AppBarContent? by remember {
         mutableStateOf(null)
     }
@@ -51,6 +47,33 @@ fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Un
     var fabConfig: FabConfig? by remember {
         mutableStateOf(FabConfig(onClick = { navigateToChat(null) }))
     }
+    var bottomSelectedIndex by remember {
+        mutableIntStateOf(0)
+    }
+
+    data class BottomNavItem(val navClass: KClass<*>, val icon: ImageVector, val contentDescription: String, val navOnClick: () -> Unit, val onClickWhenSelected: () -> Unit)
+
+    val bottomBarItems = remember {
+        listOf(
+            BottomNavItem(NewsHome::class, Icons.Default.Home, "News home", navOnClick = {
+                navController.navigateFromHome(NewsHome, true)
+            }) {
+                // TODO: Refresh page or something
+            },
+            BottomNavItem(Summary::class, Icons.Default.Newspaper, "Summary", navOnClick = {
+                navController.navigateFromHome(Summary(getLatestDate()))
+            }) { },
+            BottomNavItem(Chat::class, Icons.Default.Chat, "Chat", navOnClick = {
+                navigateToChat(null)
+            }) {}
+        )
+    }
+    navController.addOnDestinationChangedListener { _, destination, _ ->
+        bottomBarItems.indexOfFirst { destination.route?.contains(it.navClass.qualifiedName!!) == true }.let {
+            bottomSelectedIndex = it
+        }
+    }
+
     Scaffold(
         containerColor = Color.Transparent,
         bottomBar = {
@@ -60,31 +83,18 @@ fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Un
                 indicatorColor = MaterialTheme.colorScheme.surfaceColorAtElevation(LocalAbsoluteTonalElevation.current)
             )
             NavigationBar(containerColor = MaterialTheme.colorScheme.secondary) {
-                NavigationBarItem(selected = bottomSelectedIndex == 0, onClick = {
-                    if (bottomSelectedIndex != 0) {
-                        navController.navigate(NewsHome)
-                        bottomSelectedIndex = 0
-                    } else {
-                        // TODO: Refresh page or something
-                    }
-                }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "News home") })
-
-
-                NavigationBarItem(selected = bottomSelectedIndex == 1, onClick = {
-                    if (bottomSelectedIndex != 1) {
-                        navController.navigate(Summary(getLatestDate()))
-                        bottomSelectedIndex = 1
-                    } else {
-                        // TODO: Refresh page or something
-                    }
-                }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Newspaper, contentDescription = "Summary") })
-
-                NavigationBarItem(selected = bottomSelectedIndex == 2, onClick = {
-                    if (bottomSelectedIndex != 2) {
-                        navigateToChat(null)
-                        bottomSelectedIndex = 2
-                    }
-                }, colors = navBarColors, icon = { Icon(imageVector = Icons.Default.Chat, contentDescription = "Chat") })
+                bottomBarItems.forEachIndexed { i, bottomBarItem ->
+                    NavigationBarItem(selected = bottomSelectedIndex == i, onClick = {
+                        if (bottomSelectedIndex != i) {
+                            bottomBarItem.navOnClick()
+                            bottomSelectedIndex = i
+                        } else {
+                            bottomBarItem.onClickWhenSelected()
+                        }
+                    }, colors = navBarColors, icon = {
+                        Icon(imageVector = bottomBarItem.icon, contentDescription = bottomBarItem.contentDescription)
+                    })
+                }
             }
         }, floatingActionButton = {
             /*val fab = fabConfig
@@ -113,7 +123,7 @@ fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Un
                     setAppBarContent = { appBarContent = it },
                     setFabConfig = { fabConfig = it },
                     navigateToChat = navigateToChat,
-                    navigateToSummary = { navController.navigate(Summary(it ?: todayDate)) },
+                    navigateToSummary = { navController.navigateFromHome(Summary(it ?: todayDate)) },
                     navigateToSettings = navigateToSettings
                 )
             }

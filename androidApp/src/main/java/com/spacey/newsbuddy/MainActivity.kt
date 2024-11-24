@@ -24,6 +24,7 @@ import com.spacey.newsbuddy.chat.ChatScreen
 import com.spacey.newsbuddy.settings.SettingsScreen
 import com.spacey.newsbuddy.settings.sync.DataSyncScreen
 import com.spacey.newsbuddy.ui.getLatestDate
+import com.spacey.newsbuddy.ui.navigateFromHome
 import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
@@ -76,10 +77,10 @@ fun MainNavigation() {
         composable<Home> {
             MainScaffold(
                 navigateToChat = {
-                    navController.navigate(Chat(it ?: getLatestDate()))
+                    navController.navigateFromHome(Chat(it ?: getLatestDate()))
                 },
                 navigateToSettings = {
-                    navController.navigate(Settings)
+                    navController.navigateFromHome(Settings)
                 }
             )
         }

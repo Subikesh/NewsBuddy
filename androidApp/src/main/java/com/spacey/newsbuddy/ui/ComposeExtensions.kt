@@ -39,6 +39,9 @@ import androidx.compose.ui.graphics.RenderEffect
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavOptions
+import com.spacey.newsbuddy.NewsHome
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -93,6 +96,10 @@ fun BackIconButton(onClick: () -> Unit) {
     ) {
         Icon(Icons.Default.ArrowBack, contentDescription = "back")
     }
+}
+
+fun <T : Any> NavController.navigateFromHome(route: T, inclusive: Boolean = false) {
+    navigate(route, NavOptions.Builder().setPopUpTo<NewsHome>(inclusive).build())
 }
 
 fun getGlassEffect(): RenderEffect {
