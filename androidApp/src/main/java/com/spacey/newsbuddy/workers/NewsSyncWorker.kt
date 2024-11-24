@@ -20,6 +20,8 @@ import com.spacey.newsbuddy.serviceLocator
 import com.spacey.newsbuddy.ui.getLatestDate
 import com.spacey.newsbuddy.ui.isNotificationAllowed
 
+private typealias KResult<T> = Result<T>
+
 class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
     CoroutineWorker(context, workerParams) {
 
@@ -37,7 +39,7 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
         val date = getLatestDate()
         val newsResult = serviceLocator.newsRepository.getTodaysNews(date)
         val chatResult = serviceLocator.genAiRepository.startAiChat(date)
-        val summaryResult = serviceLocator.genAiRepository.getNewsSummary(date)
+        val summaryResult: KResult<List<SummaryParagraph>> = if (BuildConfig.DEBUG) KResult.success(emptyList()) else serviceLocator.genAiRepository.getNewsSummary(date)
 
         makeSyncEntry(newsResult, summaryResult, chatResult)
         return if (newsResult.isSuccess && summaryResult.isSuccess && chatResult.isSuccess) {
@@ -64,9 +66,9 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
     }
 
     private suspend fun makeSyncEntry(
-        newsResult: kotlin.Result<NewsResponse>,
-        summaryResult: kotlin.Result<List<SummaryParagraph>>,
-        chatResult: kotlin.Result<ChatWindow>
+        newsResult: KResult<NewsResponse>,
+        summaryResult: KResult<List<SummaryParagraph>>,
+        chatResult: KResult<ChatWindow>
     ) {
         val syncEntry = SyncEntry(
             System.currentTimeMillis(),
