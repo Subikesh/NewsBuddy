@@ -23,5 +23,3 @@ expect class ChatAiService(dependencies: Dependencies, chatHistory: List<ChatBub
 
 const val GEMINI_1_5_PRO = "gemini-1.5-pro"
 const val GEMINI_1_5_FLASH = "gemini-1.5-flash-001"
-
-data class ChatContent(val text: String, val role: ChatType)

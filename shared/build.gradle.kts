@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
+    id("com.google.gms.google-services")
 }
 
 repositories {
@@ -45,7 +46,9 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
-//            implementation(libs.room.runtime.android)
+            implementation(project.dependencies.platform("com.google.firebase:firebase-bom:33.6.0"))
+            implementation(libs.firebase.analytics)
+//            implementation(libs.firebase.appCheck)
             implementation(libs.firebase.vertexai)
         }
         iosMain.dependencies {

@@ -16,26 +16,28 @@ import com.spacey.newsbuddy.persistance.Preference
 
 actual class SummaryAiService actual constructor(dependencies: Dependencies) {
 
-    private val newsProcessingModel = Firebase.vertexAI.generativeModel(
-        GEMINI_1_5_FLASH,
-        // Retrieve API key as an environmental variable defined in a Build Configuration
-        // see https://github.com/google/secrets-gradle-plugin for further instructions
+    private val newsProcessingModel by lazy {
+        Firebase.vertexAI.generativeModel(
+            GEMINI_1_5_FLASH,
+            // Retrieve API key as an environmental variable defined in a Build Configuration
+            // see https://github.com/google/secrets-gradle-plugin for further instructions
 //        dependencies.getGeminiApiToken(),
-        generationConfig = generationConfig {
-            temperature = 1f
-            topK = 64
-            topP = 0.95f
-            maxOutputTokens = 8192
-            responseMimeType = "application/json"
-            responseSchema = schema
-        },
-        // safetySettings = Adjust safety settings
-        // See https://ai.google.dev/gemini-api/docs/safety-settings
-        systemInstruction = content(role = "system") {
-            text(GEMINI_SYSTEM_CMD)
-        },
-        toolConfig = ToolConfig(FunctionCallingConfig.any())
-    )
+            generationConfig = generationConfig {
+                temperature = 1f
+                topK = 40
+                topP = 0.95f
+                maxOutputTokens = 8192
+                responseMimeType = "application/json"
+                responseSchema = schema
+            },
+            // safetySettings = Adjust safety settings
+            // See https://ai.google.dev/gemini-api/docs/safety-settings
+            systemInstruction = content(role = "system") {
+                text(GEMINI_SYSTEM_CMD)
+            },
+            toolConfig = ToolConfig(FunctionCallingConfig.any())
+        )
+    }
 
     private var ongoingSummaryRequest: Boolean by Preference("ongoing_summary_request")
 

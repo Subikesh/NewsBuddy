@@ -22,7 +22,7 @@ import kotlinx.serialization.json.decodeFromJsonElement
 
 class GenAiRepository(
     private val newsRepository: NewsRepository,
-    private val generativeAiService: SummaryAiService,
+    private val summaryAiService: SummaryAiService,
     private val buddyChatDao: BuddyChatDao,
     private val newsSummaryDao: SummaryDao,
     private val dependencies: Dependencies
@@ -53,7 +53,7 @@ class GenAiRepository(
         news.safeConvert {
             log("News", "News response: $it")
             var i = 0
-            generativeAiService.prompt(it.content).map { aiMsg ->
+            summaryAiService.prompt(it.content).map { aiMsg ->
                 parseAiResponse(aiMsg).also { convoList ->
                     newsSummaryDao.upsert(convoList.map { NewsSummary(date, it.content, it.link, i++) })
                 }

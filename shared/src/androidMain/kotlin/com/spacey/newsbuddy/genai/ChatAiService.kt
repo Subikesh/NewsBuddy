@@ -22,35 +22,37 @@ actual class ChatAiService actual constructor(
 ) {
 
     // TODO: Authentication?
-    private val convoProcessingModel = Firebase.vertexAI.generativeModel(
-        GEMINI_1_5_FLASH,
-        generationConfig = generationConfig {
-            temperature = 0.7f
-            topK = 64
-            topP = 0.95f
-            maxOutputTokens = 600
-            responseMimeType = "text/plain"
-        },
-        // safetySettings = Adjust safety settings
-        // See https://ai.google.dev/gemini-api/docs/safety-settings
-        systemInstruction = content(role = "system") {
-            text(
-                "INSTRUCTIONS: You are being used as a voice chat companion. \n" +
-                        "The user will chat with you regarding the given news articles and you can answer user's queries and also lead \n" +
-                        "them to different topics and articles to cover all the news of his interest, also be sure to add some \n" +
-                        "questions and interesting facts linking to another news article to make the conversation flowing. As a voice assistant, you will provide brief response\n" +
-                        " to the prompts unless if you are asked to elaborate on particular matter. Prioritise on the actual \n" +
-                        "facts and logic over speculation or guess and try to find the most relevant news article to the prompt and respond. Start with a \n" +
-                        "greeting and a moderate summary to start the conversation.\n Here's the news response for context: $newsResponseText"
+    private val convoProcessingModel by lazy {
+        Firebase.vertexAI.generativeModel(
+            GEMINI_1_5_FLASH,
+            generationConfig = generationConfig {
+                temperature = 0.7f
+                topK = 28
+                topP = 0.95f
+                maxOutputTokens = 600
+                responseMimeType = "text/plain"
+            },
+            // safetySettings = Adjust safety settings
+            // See https://ai.google.dev/gemini-api/docs/safety-settings
+            systemInstruction = content(role = "system") {
+                text(
+                    "INSTRUCTIONS: You are being used as a voice chat companion. \n" +
+                            "The user will chat with you regarding the given news articles and you can answer user's queries and also lead \n" +
+                            "them to different topics and articles to cover all the news of his interest, also be sure to add some \n" +
+                            "questions and interesting facts linking to another news article to make the conversation flowing. As a voice assistant, you will provide brief response\n" +
+                            " to the prompts unless if you are asked to elaborate on particular matter. Prioritise on the actual \n" +
+                            "facts and logic over speculation or guess and try to find the most relevant news article to the prompt and respond. Start with a \n" +
+                            "greeting and a moderate summary to start the conversation.\n Here's the news response for context: $newsResponseText"
+                )
+            },
+            safetySettings = listOf(
+                SafetySetting(HarmCategory.DANGEROUS_CONTENT, HarmBlockThreshold.ONLY_HIGH),
+                SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, HarmBlockThreshold.NONE),
+                SafetySetting(HarmCategory.HATE_SPEECH, HarmBlockThreshold.NONE),
+                SafetySetting(HarmCategory.HARASSMENT, HarmBlockThreshold.ONLY_HIGH)
             )
-        },
-        safetySettings = listOf(
-            SafetySetting(HarmCategory.DANGEROUS_CONTENT, HarmBlockThreshold.ONLY_HIGH),
-            SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, HarmBlockThreshold.NONE),
-            SafetySetting(HarmCategory.HATE_SPEECH, HarmBlockThreshold.NONE),
-            SafetySetting(HarmCategory.HARASSMENT, HarmBlockThreshold.ONLY_HIGH)
         )
-    )
+    }
 
     private var ongoingChatRequest: Boolean by Preference("ongoing_chat_request")
 

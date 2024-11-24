@@ -19,6 +19,7 @@ workManager = "2.7.1"
 [libraries]
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-vertexai = { module = "com.google.firebase:firebase-vertexai", version.ref = "firebaseVertexai" }
 generativeai-google = { module = "dev.shreyaspatil.generativeai:generativeai-google", version.ref = "generativeaiGoogle" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

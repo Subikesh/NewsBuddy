@@ -2,14 +2,14 @@ package com.spacey.newsbuddy.common
 
 import android.app.Application
 import android.util.Log
-import com.google.firebase.Firebase
-import com.google.firebase.initialize
+import com.google.firebase.FirebaseApp
 import com.google.firebase.vertexai.type.Content
 import com.google.firebase.vertexai.type.content
 import com.spacey.newsbuddy.genai.ChatBubble
+import com.spacey.newsbuddy.genai.ChatType
 
 fun initiateFireBaseSdk(context: Application) {
-    Firebase.initialize(context)
+    FirebaseApp.initializeApp(context)
 }
 
 actual fun log(tag: String, message: String) {
@@ -21,7 +21,13 @@ actual fun getCurrentTime(): Long {
 }
 
 fun List<ChatBubble>.toGeminiContent(): List<Content> = map {
-    content(role = it.type.name.lowercase()) {
+    content(role = it.type.toGeminiRole()) {
         text(it.chatText)
     }
 }
+
+fun ChatType.toGeminiRole(): String =
+    when (this) {
+        ChatType.USER -> "user"
+        ChatType.AI -> "model"
+    }

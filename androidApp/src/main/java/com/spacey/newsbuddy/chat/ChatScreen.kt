@@ -80,7 +80,7 @@ fun ChatScreen(
                     var chatInput by remember {
                         mutableStateOf("")
                     }
-                    // TODO: Scroll when keyborad opens is not working fine
+                    // TODO: Scroll when keyboard opens is not working fine
                     val lazyColumnState = rememberLazyListState()
                     val keyboardState by keyboardVisibility()
                     LaunchedEffect(chat.chatWindow.chats.size, key2 = keyboardState) {
