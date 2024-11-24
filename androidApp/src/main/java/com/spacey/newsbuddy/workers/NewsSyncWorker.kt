@@ -9,6 +9,9 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.logEvent
+import com.google.firebase.ktx.Firebase
 import com.spacey.newsbuddy.MyApplication
 import com.spacey.newsbuddy.android.BuildConfig
 import com.spacey.newsbuddy.android.R
@@ -39,7 +42,8 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
         val date = getLatestDate()
         val newsResult = serviceLocator.newsRepository.getTodaysNews(date)
         val chatResult = serviceLocator.genAiRepository.startAiChat(date)
-        val summaryResult: KResult<List<SummaryParagraph>> = if (BuildConfig.DEBUG) KResult.success(emptyList()) else serviceLocator.genAiRepository.getNewsSummary(date)
+//        val summaryResult: KResult<List<SummaryParagraph>> = if (BuildConfig.DEBUG) KResult.success(emptyList()) else serviceLocator.genAiRepository.getNewsSummary(date)
+        val summaryResult = serviceLocator.genAiRepository.getNewsSummary(date)
 
         makeSyncEntry(newsResult, summaryResult, chatResult)
         return if (newsResult.isSuccess && summaryResult.isSuccess && chatResult.isSuccess) {
@@ -53,6 +57,11 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
             }
             Result.success()
         } else {
+            Firebase.analytics.logEvent("workmanager_error") {
+                param("news_result", newsResult.toString())
+                param("chat_result", chatResult.toString())
+                param("summary_result", summaryResult.toString())
+            }
             if (applicationContext.isNotificationAllowed() && BuildConfig.DEBUG) {
                 NotificationManagerCompat.from(applicationContext).notify(
                     0, createNotification(

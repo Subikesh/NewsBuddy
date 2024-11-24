@@ -1,7 +1,6 @@
 [versions]
 agp = "8.5.0"
-firebaseVertexai = "16.0.2"
-generativeaiGoogle = "0.9.0-1.0.0-wasm"
+firebaseBom = "33.6.0"
 kotlin = "2.0.0"
 compose = "1.5.4"
 compose-material3 = "1.1.2"
@@ -10,7 +9,6 @@ kotlinxCoroutinesCore = "1.9.0"
 kotlinxSerializationJson = "1.7.1"
 ktor = "2.3.12"
 navigationCompose = "2.8.1"
-google-genai = "0.7.0"
 roomCommon = "2.7.0-alpha07"
 ksp = "2.0.0-1.0.22"
 sqlite = "2.5.0-alpha07"
@@ -19,9 +17,9 @@ workManager = "2.7.1"
 [libraries]
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom"}
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
-firebase-vertexai = { module = "com.google.firebase:firebase-vertexai", version.ref = "firebaseVertexai" }
-generativeai-google = { module = "dev.shreyaspatil.generativeai:generativeai-google", version.ref = "generativeaiGoogle" }
+firebase-vertexai = { module = "com.google.firebase:firebase-vertexai" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
@@ -31,7 +29,6 @@ compose-foundation = { module = "androidx.compose.foundation:foundation", versio
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
-google-generativeai = { module = "com.google.ai.client.generativeai:generativeai", version.ref = "google-genai"}
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
