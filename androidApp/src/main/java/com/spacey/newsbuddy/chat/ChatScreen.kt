@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -84,7 +85,7 @@ fun ChatScreen(
                     val lazyColumnState = rememberLazyListState()
                     val keyboardState by keyboardVisibility()
                     LaunchedEffect(chat.chatWindow.chats.size, key2 = keyboardState) {
-                        lazyColumnState.animateScrollToItem(chat.chatWindow.chats.size-1)
+                        lazyColumnState.animateScrollToItem(chat.chatWindow.chats.size - 1)
                     }
                     Column(Modifier.fillMaxSize()) {
                         LazyColumn(Modifier.weight(1f), state = lazyColumnState) {
@@ -96,16 +97,18 @@ fun ChatScreen(
                                     if (isUserChat) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiary
                                 val cardContentColor =
                                     if (isUserChat) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onTertiary
+                                val inclinedDir = if (isUserChat) 'r' else 'l'
                                 Row(
                                     horizontalArrangement = alignment,
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     ContentCard(
                                         modifier = Modifier
-                                            .fillMaxWidth(fraction = .9f)
+                                            .widthIn(min = 0.dp, max = 330.dp)
                                             .padding(horizontal = 8.dp, vertical = 4.dp),
                                         cardContainerColor,
-                                        cardContentColor
+                                        cardContentColor,
+                                        inclinedTo = inclinedDir
                                     ) {
                                         // TODO: Loading chat bubble
 //                                    if (convo.isLoading) {

@@ -119,6 +119,7 @@ fun ContentCard(
     modifier: Modifier = Modifier,
     cardContainerColor: Color = MaterialTheme.colorScheme.tertiary,
     cardContentColor: Color = MaterialTheme.colorScheme.onTertiary,
+    inclinedTo: Char? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Card(
@@ -127,7 +128,14 @@ fun ContentCard(
             contentColor = cardContentColor
         ),
         modifier = modifier,
-        shape = RoundedCornerShape(20.dp),
+        shape = if (inclinedTo == null)
+            RoundedCornerShape(20.dp)
+        else
+            RoundedCornerShape(
+                topStart = if (inclinedTo == 'l') 0.dp else 20.dp,
+                topEnd = if (inclinedTo == 'r') 0.dp else 20.dp,
+                bottomStart = 20.dp, bottomEnd = 20.dp
+            ),
         content = content
     )
 }
