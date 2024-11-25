@@ -4,6 +4,13 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +46,7 @@ import androidx.compose.ui.graphics.RenderEffect
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import com.spacey.newsbuddy.NewsHome
@@ -144,4 +152,24 @@ fun ContentCard(
 fun keyboardVisibility(): State<Boolean> {
     val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     return rememberUpdatedState(isImeVisible)
+}
+
+// Animations
+fun AnimatedContentTransitionScope<NavBackStackEntry>.enterSlideTransition(towards: AnimatedContentTransitionScope.SlideDirection, durationMillis: Int): EnterTransition {
+    return fadeIn(
+        animationSpec = tween(durationMillis, easing = FastOutSlowInEasing)
+    ) + slideIntoContainer(
+        animationSpec = tween(durationMillis, easing = FastOutSlowInEasing),
+        towards = towards
+    )
+}
+
+// Animations
+fun AnimatedContentTransitionScope<NavBackStackEntry>.exitSlideTransition(towards: AnimatedContentTransitionScope.SlideDirection, durationMillis: Int): ExitTransition {
+    return fadeOut(
+        animationSpec = tween(durationMillis, easing = FastOutSlowInEasing)
+    ) + slideOutOfContainer(
+        animationSpec = tween(durationMillis, easing = FastOutSlowInEasing),
+        towards = towards
+    )
 }

@@ -6,6 +6,7 @@ import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,8 @@ import com.spacey.newsbuddy.android.R
 import com.spacey.newsbuddy.chat.ChatScreen
 import com.spacey.newsbuddy.settings.SettingsScreen
 import com.spacey.newsbuddy.settings.sync.DataSyncScreen
+import com.spacey.newsbuddy.ui.enterSlideTransition
+import com.spacey.newsbuddy.ui.exitSlideTransition
 import com.spacey.newsbuddy.ui.getLatestDate
 import com.spacey.newsbuddy.ui.navigateFromHome
 import kotlinx.serialization.Serializable
@@ -90,7 +93,11 @@ fun MainNavigation() {
         }
 
 
-        composable<Chat> {
+        composable<Chat>(enterTransition =  {
+            enterSlideTransition(AnimatedContentTransitionScope.SlideDirection.Start, 300)
+        }, exitTransition = {
+            exitSlideTransition(AnimatedContentTransitionScope.SlideDirection.End, 300)
+        }) {
             val route: Chat = it.toRoute()
             ChatScreen(
                 route.date,
