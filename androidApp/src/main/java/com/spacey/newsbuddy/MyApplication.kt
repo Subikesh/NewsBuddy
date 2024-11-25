@@ -36,8 +36,12 @@ class MyApplication : Application() {
 //            .setInitialDelay(calculateTimeTillNextMorning(4, 0), TimeUnit.MILLISECONDS)
             .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 10, TimeUnit.MINUTES)
             .build()
-        WorkManager.getInstance(this)
-            .enqueueUniquePeriodicWork("NewsSync", ExistingPeriodicWorkPolicy.KEEP, newsSyncWorker)
+        val workManager = WorkManager.getInstance(this)
+        if (SettingsAccessor.dataSyncEnabled) {
+            workManager.enqueueUniquePeriodicWork(WORK_ID, ExistingPeriodicWorkPolicy.KEEP, newsSyncWorker)
+        } else {
+            workManager.cancelUniqueWork(WORK_ID)
+        }
     }
 
     private fun calculateTimeTillNextMorning(hour: Int, minute: Int): Long {
