@@ -46,7 +46,7 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
-            implementation(project.dependencies.platform("com.google.firebase:firebase-bom:33.6.0"))
+            implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.analytics)
 //            implementation(libs.firebase.appCheck)
             implementation(libs.firebase.vertexai)

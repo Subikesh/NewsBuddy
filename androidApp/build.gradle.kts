@@ -61,5 +61,8 @@ dependencies {
 
     implementation(libs.work.manager.ktx)
 
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+
     debugImplementation(libs.compose.ui.tooling)
 }
