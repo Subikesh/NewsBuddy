@@ -1,7 +1,5 @@
 package com.spacey.newsbuddy.home
 
-import android.Manifest.permission.POST_NOTIFICATIONS
-import android.os.Build
 import android.speech.tts.TextToSpeech
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,7 +26,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.AppBarContent
 import com.spacey.newsbuddy.FabConfig
 import com.spacey.newsbuddy.genai.SummaryParagraph
-import com.spacey.newsbuddy.ui.RequestPermission
+import com.spacey.newsbuddy.ui.RequestNotificationPermission
 
 @Composable
 fun HomeScreen(
@@ -42,13 +40,10 @@ fun HomeScreen(
         setAppBarContent(null)
         setFabConfig(FabConfig { navigateToChat(null) })
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        RequestPermission(
-            permission = POST_NOTIFICATIONS,
-            onPermissionGranted = {},
-            onPermissionDenied = {}
-        )
-    }
+    RequestNotificationPermission(
+        onPermissionGranted = {},
+        onPermissionDenied = {}
+    )
     Column(Modifier.padding(16.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             IconButton(
