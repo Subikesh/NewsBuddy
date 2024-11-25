@@ -10,6 +10,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +34,9 @@ fun SettingsScreen(navigateDataSyncScreen: () -> Unit, navigateBack: () -> Unit)
         ContentCard(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
             // TODO: Include viewmodel and store preferences
             var syncEnabled: Boolean by remember { mutableStateOf(false) }
+            LaunchedEffect(syncEnabled) {
+                SettingsAccessor.dataSyncEnabled = syncEnabled
+            }
             val syncText = "Daily Sync: ${if (syncEnabled) "Enabled" else "Disabled"}"
             val context = LocalContext.current
             if (syncEnabled && !context.isNotificationAllowed()) {
