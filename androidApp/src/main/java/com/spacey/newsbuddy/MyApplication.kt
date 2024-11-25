@@ -10,6 +10,7 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.spacey.newsbuddy.common.initiateFireBaseSdk
+import com.spacey.newsbuddy.settings.SettingsAccessor
 import com.spacey.newsbuddy.workers.NewsSyncWorker
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -56,5 +57,6 @@ class MyApplication : Application() {
 
     companion object {
         const val SYNC_NOTIFICATION_CHANNEL = "NewsSyncNotifications"
+        const val WORK_ID = "NewsSync"
     }
 }
