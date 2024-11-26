@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.genai.ChatType
 import com.spacey.newsbuddy.ui.BackIconButton
@@ -85,7 +87,7 @@ fun ChatScreen(
                     val lazyColumnState = rememberLazyListState()
                     val keyboardState by keyboardVisibility()
                     LaunchedEffect(chat.chatWindow.chats.size, key2 = keyboardState) {
-                        lazyColumnState.animateScrollToItem(chat.chatWindow.chats.size - 1)
+                        lazyColumnState.animateScrollToItem(chat.chatWindow.chats.size)
                     }
                     Column(Modifier.fillMaxSize()) {
                         LazyColumn(Modifier.weight(1f), state = lazyColumnState) {
@@ -110,26 +112,19 @@ fun ChatScreen(
                                         cardContentColor,
                                         inclinedTo = inclinedDir
                                     ) {
-                                        // TODO: Loading chat bubble
-//                                    if (convo.isLoading) {
-//                                        CircularProgressIndicator()
-//                                    } else {
                                         Text(
                                             text = convo.chatText,
                                             modifier = Modifier.padding(16.dp)
                                         )
-//                                    }
                                     }
                                 }
                             }
                         }
+
                         fun onInputDone() {
                             viewModel.chat(chatInput)
                             chatInput = ""
                         }
-//                    val (focus) = remember {
-//                        FocusRequester.createRefs()
-//                    }
                         TextField(value = chatInput,
                             shape = RoundedCornerShape(30.dp),
                             modifier = Modifier
@@ -145,7 +140,14 @@ fun ChatScreen(
                                 disabledIndicatorColor = Color.Transparent,
                             ),
                             trailingIcon = {
-                                AnimatedVisibility(chatInput.isNotEmpty()) {
+                                AnimatedVisibility(chat.isAiChatLoading) {
+                                    IconButton(onClick = {
+                                        viewModel.stopThinking()
+                                    }, colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
+                                        Icon(Icons.Default.Stop, "Stop loading")
+                                    }
+                                }
+                                AnimatedVisibility(!chat.isAiChatLoading && chatInput.isNotEmpty()) {
                                     IconButton(
                                         onClick = ::onInputDone,
                                         colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
@@ -166,8 +168,13 @@ fun ChatScreen(
                             onValueChange = {
                                 chatInput = it
                             },
+                            readOnly = chat.isAiChatLoading,
                             placeholder = {
-                                Text(text = "Start typing...")
+                                if (chat.isAiChatLoading) {
+                                    Text(text = "Typing...")
+                                } else {
+                                    Text(text = "Start typing...")
+                                }
                             })
                     }
                 }

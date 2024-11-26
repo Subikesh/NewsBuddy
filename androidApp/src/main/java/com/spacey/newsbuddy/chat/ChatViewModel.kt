@@ -3,11 +3,12 @@ package com.spacey.newsbuddy.chat
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.spacey.newsbuddy.genai.ChatBubble
 import com.spacey.newsbuddy.genai.ChatWindow
 import com.spacey.newsbuddy.serviceLocator
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 
 class ChatViewModel : ViewModel() {
@@ -33,11 +34,7 @@ class ChatViewModel : ViewModel() {
     }
 
     fun chat(prompt: String) {
-        if (conversation.value is ChatUiState.Success) {
-        // TODO: Add loading bubble
-//            current = current.copy(current.conversations + listOf(ChatBubble(prompt, true), ChatBubble("", isUser = false, true)))
-//            _conversations.value = current
-        } else {
+        if (conversation.value !is ChatUiState.Success) {
             _conversations.value = ChatUiState.Loading
         }
         if (date == null) {
@@ -50,9 +47,14 @@ class ChatViewModel : ViewModel() {
                 startChat(date!!)
                 return@launch
             }
-            genAiRepository.chatWithAi(chatWindow.chatWindow, prompt).collect { result ->
+            genAiRepository.chatWithAi(chatWindow.chatWindow, prompt).onCompletion {
+                val convo = conversation.value
+                if (convo is ChatUiState.Success) {
+                    _conversations.value = convo.copy(isAiChatLoading = false)
+                }
+            }.collect { result ->
                 if (result.isSuccess) {
-                    _conversations.value = ChatUiState.Success(result.getOrThrow())
+                    _conversations.value = ChatUiState.Success(result.getOrThrow(), true)
                 } else {
                     Log.e("Error", "Convo chat response failed", result.exceptionOrNull())
                     _conversations.value = ChatUiState.Error(result.exceptionOrNull().toString())
@@ -60,10 +62,14 @@ class ChatViewModel : ViewModel() {
             }
         }
     }
+
+    fun stopThinking() {
+        viewModelScope.coroutineContext.cancelChildren()
+    }
 }
 
 sealed class ChatUiState {
     data object Loading : ChatUiState()
     data class Error(val message: String) : ChatUiState()
-    data class Success(val chatWindow: ChatWindow) : ChatUiState()
+    data class Success(val chatWindow: ChatWindow, val isAiChatLoading: Boolean = false) : ChatUiState()
 }
