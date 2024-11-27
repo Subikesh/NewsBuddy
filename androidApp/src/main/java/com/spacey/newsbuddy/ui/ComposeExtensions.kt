@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -162,6 +164,16 @@ fun AnimatedContentTransitionScope<NavBackStackEntry>.enterSlideTransition(towar
         animationSpec = tween(durationMillis, easing = FastOutSlowInEasing),
         towards = towards
     )
+}
+
+@Composable
+fun LoadingScreen() {
+    CenteredColumn {
+        ContentCard(Modifier.fillMaxWidth(0.7f)) {
+            Text("Reading today's news 🗞️\nPlease give me a minute...", Modifier.padding(horizontal = 16.dp, vertical = 8.dp).padding(top = 8.dp).align(Alignment.CenterHorizontally))
+            CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally).padding(horizontal = 16.dp, vertical = 8.dp).padding(bottom = 8.dp))
+        }
+    }
 }
 
 // Animations

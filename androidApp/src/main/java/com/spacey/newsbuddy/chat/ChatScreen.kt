@@ -18,7 +18,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -39,12 +38,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.genai.ChatType
 import com.spacey.newsbuddy.ui.BackIconButton
 import com.spacey.newsbuddy.ui.CenteredTopBarScaffold
 import com.spacey.newsbuddy.ui.ContentCard
+import com.spacey.newsbuddy.ui.LoadingScreen
 import com.spacey.newsbuddy.ui.keyboardVisibility
 
 @Composable
@@ -74,9 +73,7 @@ fun ChatScreen(
                 }
 
                 is ChatUiState.Loading -> {
-                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                        CircularProgressIndicator()
-                    }
+                    LoadingScreen()
                 }
 
                 is ChatUiState.Success -> {
