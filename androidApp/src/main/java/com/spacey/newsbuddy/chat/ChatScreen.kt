@@ -68,7 +68,9 @@ fun ChatScreen(
             when (val chat = conversations) {
                 is ChatUiState.Error -> {
                     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                        Text(text = chat.message, color = MaterialTheme.colorScheme.error)
+                        ContentCard(Modifier.fillMaxWidth(0.9f)) {
+                            Text(text = chat.message, color = MaterialTheme.colorScheme.error, modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally))
+                        }
                     }
                 }
 

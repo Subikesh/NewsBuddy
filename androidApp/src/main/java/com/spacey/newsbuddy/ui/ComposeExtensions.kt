@@ -156,6 +156,16 @@ fun keyboardVisibility(): State<Boolean> {
     return rememberUpdatedState(isImeVisible)
 }
 
+@Composable
+fun LoadingScreen(text: String = "Reading today's news 🗞️\nPlease give me a minute...") {
+    CenteredColumn {
+        ContentCard(Modifier.fillMaxWidth(0.7f)) {
+            Text(text, Modifier.padding(horizontal = 16.dp, vertical = 8.dp).padding(top = 8.dp).align(Alignment.CenterHorizontally))
+            CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally).padding(horizontal = 16.dp, vertical = 8.dp).padding(bottom = 8.dp))
+        }
+    }
+}
+
 // Animations
 fun AnimatedContentTransitionScope<NavBackStackEntry>.enterSlideTransition(towards: AnimatedContentTransitionScope.SlideDirection, durationMillis: Int): EnterTransition {
     return fadeIn(
@@ -166,17 +176,6 @@ fun AnimatedContentTransitionScope<NavBackStackEntry>.enterSlideTransition(towar
     )
 }
 
-@Composable
-fun LoadingScreen() {
-    CenteredColumn {
-        ContentCard(Modifier.fillMaxWidth(0.7f)) {
-            Text("Reading today's news 🗞️\nPlease give me a minute...", Modifier.padding(horizontal = 16.dp, vertical = 8.dp).padding(top = 8.dp).align(Alignment.CenterHorizontally))
-            CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally).padding(horizontal = 16.dp, vertical = 8.dp).padding(bottom = 8.dp))
-        }
-    }
-}
-
-// Animations
 fun AnimatedContentTransitionScope<NavBackStackEntry>.exitSlideTransition(towards: AnimatedContentTransitionScope.SlideDirection, durationMillis: Int): ExitTransition {
     return fadeOut(
         animationSpec = tween(durationMillis, easing = FastOutSlowInEasing)
