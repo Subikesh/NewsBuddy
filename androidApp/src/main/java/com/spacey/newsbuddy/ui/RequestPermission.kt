@@ -27,7 +27,7 @@ fun RequestNotificationPermission(onPermissionGranted: () -> Unit, onPermissionD
     if (!isAlertPositive) {
         AlertDialog(
             title = { Text("Permission Request") },
-            text = { Text("On daily data sync, we will keep you notified when the sync happens. Kindly allow notification permission in the upcoming alert.") },
+            text = { Text("We sync daily news and keep things ready before you open the app. Kindly allow notification permission in the upcoming alert. You can always modify this in the settings.") },
             onDismissRequest = onPermissionDenied,
             confirmButton = {
                 Button(onClick = {

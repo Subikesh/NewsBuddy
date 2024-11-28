@@ -25,6 +25,7 @@ import com.spacey.newsbuddy.ui.CenteredTopBarScaffold
 import com.spacey.newsbuddy.ui.ContentCard
 import com.spacey.newsbuddy.ui.RequestNotificationPermission
 import com.spacey.newsbuddy.ui.isNotificationAllowed
+import com.spacey.newsbuddy.workers.scheduleDataSync
 
 @Composable
 fun SettingsScreen(navigateDataSyncScreen: () -> Unit, navigateBack: () -> Unit) {
@@ -33,12 +34,13 @@ fun SettingsScreen(navigateDataSyncScreen: () -> Unit, navigateBack: () -> Unit)
     }) {
         ContentCard(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
             // TODO: Include viewmodel and store preferences
-            var syncEnabled: Boolean by remember { mutableStateOf(false) }
+            var syncEnabled: Boolean by remember { mutableStateOf(SettingsAccessor.dataSyncEnabled) }
+            val context = LocalContext.current
             LaunchedEffect(syncEnabled) {
                 SettingsAccessor.dataSyncEnabled = syncEnabled
+                scheduleDataSync(context)
             }
             val syncText = "Daily Sync: ${if (syncEnabled) "Enabled" else "Disabled"}"
-            val context = LocalContext.current
             if (syncEnabled && !context.isNotificationAllowed()) {
                 RequestNotificationPermission(onPermissionGranted = {}) { }
             }
