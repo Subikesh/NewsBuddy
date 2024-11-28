@@ -32,13 +32,6 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
 
     @SuppressLint("MissingPermission")
     override suspend fun doWork(): Result {
-        setForeground(ForegroundInfo(
-            0,
-            createNotification(
-                "Data Sync in Progress",
-                "Latest news syncing. Infinite wisdom awaits..."
-            )
-        ))
         val date = getLatestDate()
         val newsResult = serviceLocator.newsRepository.getTodaysNews(date)
         val chatResult = serviceLocator.genAiRepository.startAiChat(date)
@@ -49,7 +42,7 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
         return if (newsResult.isSuccess && summaryResult.isSuccess && chatResult.isSuccess) {
             if (applicationContext.isNotificationAllowed()) {
                 NotificationManagerCompat.from(applicationContext).notify(
-                    0, createNotification(
+                    NOTIF_ID, createNotification(
                         "News Sync Completed!",
                         "Latest news synced and I cant wait to talk about it!"
                     )
@@ -64,7 +57,7 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
             }
             if (applicationContext.isNotificationAllowed() && BuildConfig.DEBUG) {
                 NotificationManagerCompat.from(applicationContext).notify(
-                    0, createNotification(
+                    NOTIF_ID, createNotification(
                         "News Sync Failed!",
                         "News result: ${newsResult.isSuccess}; Summary result: ${summaryResult.isSuccess}; Chat Result: ${chatResult.isSuccess}"
                     )
@@ -72,6 +65,14 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
             }
             Result.retry()
         }
+    }
+
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        val notification = createNotification(
+            "Data Sync in Progress",
+            "Latest news syncing. Infinite wisdom awaits..."
+        )
+        return ForegroundInfo(NOTIF_ID, notification)
     }
 
     private suspend fun makeSyncEntry(
@@ -105,5 +106,9 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
             .setAutoCancel(true)
             .setShowWhen(true)
             .build()
+    }
+
+    companion object {
+        const val NOTIF_ID = 1
     }
 }
