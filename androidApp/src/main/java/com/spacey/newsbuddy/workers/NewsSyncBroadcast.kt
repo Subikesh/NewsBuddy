@@ -6,19 +6,23 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
-import java.time.LocalDateTime
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.analytics
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.days
 
 class NewsSyncBroadcast : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
+        Log.d("DataSync", "Recieved request for data sync")
+        Firebase.analytics.logEvent("DataSyncReceived", null)
         val workConstraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
@@ -30,13 +34,9 @@ class NewsSyncBroadcast : BroadcastReceiver() {
         val workManager = WorkManager.getInstance(context)
         workManager.enqueue(newsSyncWorker)
     }
-
-    companion object {
-        const val WORK_ID = "NewsSync"
-    }
 }
 
-fun scheduleDataSync(context: Context, hour: Int = 4, minute: Int = 0) {
+fun scheduleDataSync(context: Context, hour: Int = 17, minute: Int = 0) {
     val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
     val pendingIntent = PendingIntent.getBroadcast(
         context,
@@ -46,13 +46,13 @@ fun scheduleDataSync(context: Context, hour: Int = 4, minute: Int = 0) {
     )
     alarmManager.setRepeating(
         AlarmManager.RTC_WAKEUP,
-        getTimeNextMorning(hour, minute).timeInMillis,
+        getNextTime(hour, minute).timeInMillis,
         1.days.inWholeMilliseconds,
         pendingIntent
     )
 }
 
-private fun getTimeNextMorning(hour: Int, minute: Int): Calendar {
+private fun getNextTime(hour: Int, minute: Int): Calendar {
     val calendar = Calendar.getInstance().apply {
         set(Calendar.HOUR_OF_DAY, hour)
         set(Calendar.MINUTE, minute)

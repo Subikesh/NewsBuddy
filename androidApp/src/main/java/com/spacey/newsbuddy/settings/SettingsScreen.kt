@@ -36,6 +36,7 @@ fun SettingsScreen(navigateDataSyncScreen: () -> Unit, navigateBack: () -> Unit)
             // TODO: Include viewmodel and store preferences
             var syncEnabled: Boolean by remember { mutableStateOf(SettingsAccessor.dataSyncEnabled) }
             val context = LocalContext.current
+            // TODO: do not run on initial value
             LaunchedEffect(syncEnabled) {
                 SettingsAccessor.dataSyncEnabled = syncEnabled
                 scheduleDataSync(context)
