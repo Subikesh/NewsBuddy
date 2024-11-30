@@ -1,5 +1,6 @@
 package com.spacey.newsbuddy.ui
 
+import android.Manifest
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -16,10 +17,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
+import com.spacey.newsbuddy.MainActivity
 
 @Composable
-fun RequestNotificationPermission(onPermissionGranted: () -> Unit, onPermissionDenied: () -> Unit) {
+fun RequestNotificationPermission(onPermissionGranted: () -> Unit, onPermissionDenied: () -> Unit, onPermanentlyDeclined: () -> Unit) {
     val context = LocalContext.current
     if (context.isNotificationAllowed()) return
 
@@ -39,7 +42,7 @@ fun RequestNotificationPermission(onPermissionGranted: () -> Unit, onPermissionD
         )
     }
     if (isAlertPositive) {
-        RequestPermission(POST_NOTIFICATIONS, onPermissionGranted, onPermissionDenied)
+        RequestPermission(POST_NOTIFICATIONS, onPermissionGranted, onPermissionDenied, onPermanentlyDeclined)
     }
 }
 
@@ -47,13 +50,19 @@ fun RequestNotificationPermission(onPermissionGranted: () -> Unit, onPermissionD
 fun RequestPermission(
     permission: String,
     onPermissionGranted: () -> Unit,
-    onPermissionDenied: () -> Unit
+    onPermissionDenied: () -> Unit,
+    onPermanentlyDeclined: () -> Unit
 ) {
 
+    val context = LocalContext.current
     if (ContextCompat.checkSelfPermission(LocalContext.current, permission) != PackageManager.PERMISSION_GRANTED) {
         val permissionLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) onPermissionGranted()
-            else onPermissionDenied()
+            if (isGranted)
+                onPermissionGranted()
+            else if (shouldShowRequestPermissionRationale(context as MainActivity, POST_NOTIFICATIONS))
+                onPermissionDenied()
+            else
+                onPermanentlyDeclined()
         }
 
         SideEffect {

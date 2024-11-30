@@ -49,7 +49,10 @@ fun HomeScreen(
             SettingsAccessor.dataSyncEnabled = true
             scheduleDataSync(context)
         },
-        onPermissionDenied = {}
+        onPermissionDenied = {},
+        onPermanentlyDeclined = {
+            TODO()
+        }
     )
     Column(Modifier.padding(16.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {

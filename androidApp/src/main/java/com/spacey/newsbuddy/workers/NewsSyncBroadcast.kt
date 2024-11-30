@@ -36,7 +36,7 @@ class NewsSyncBroadcast : BroadcastReceiver() {
     }
 }
 
-fun scheduleDataSync(context: Context, hour: Int = 17, minute: Int = 0) {
+fun scheduleDataSync(context: Context, hour: Int = 4, minute: Int = 0) {
     val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
     val pendingIntent = PendingIntent.getBroadcast(
         context,
