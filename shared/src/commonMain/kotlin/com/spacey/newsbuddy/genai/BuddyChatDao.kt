@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Relation
 import androidx.room.Transaction
-import com.spacey.newsbuddy.news.NewsResponse
 
 @Dao
 interface BuddyChatDao {

@@ -17,12 +17,3 @@ interface SummaryDao {
     @Query("SELECT date FROM NewsSummary GROUP BY date ORDER BY date DESC LIMIT :offset, :limit")
     suspend fun getRecentSummaries(offset: Int, limit: Int): List<String>
 }
-
-@Entity
-data class NewsSummary(
-    val date: String,
-    val content: String,
-    val link: String?,
-    val newsOrder: Int,
-    @PrimaryKey(autoGenerate = true) val id: Int = 0
-)

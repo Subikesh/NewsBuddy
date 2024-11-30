@@ -6,11 +6,12 @@ import com.spacey.newsbuddy.datasync.SyncDao
 import com.spacey.newsbuddy.datasync.SyncEntry
 import com.spacey.newsbuddy.genai.BuddyChatDao
 import com.spacey.newsbuddy.genai.ChatBubble
+import com.spacey.newsbuddy.genai.NewsResponse
 import com.spacey.newsbuddy.genai.NewsSummary
 import com.spacey.newsbuddy.genai.SummaryDao
 import com.spacey.newsbuddy.news.NewsDao
-import com.spacey.newsbuddy.news.NewsResponse
 import com.spacey.newsbuddy.persistance.NewsBuddyDatabase.Companion.DATABASE_VERSION
+
 
 @Database(
     [NewsResponse::class, ChatBubble::class, NewsSummary::class, SyncEntry::class],

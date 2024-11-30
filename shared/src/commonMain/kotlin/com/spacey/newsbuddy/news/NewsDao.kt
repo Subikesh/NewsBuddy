@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Upsert
+import com.spacey.newsbuddy.genai.NewsResponse
 
 @Dao
 interface NewsDao {
@@ -14,11 +15,4 @@ interface NewsDao {
     @Upsert
     fun upsert(news: List<NewsResponse>)
 }
-
-@Entity
-data class NewsResponse(
-    val date: String,
-    val content: String,
-    @PrimaryKey(autoGenerate = true) val id: Int = 0
-)
 
