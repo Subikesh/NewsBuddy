@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.provider.Settings.EXTRA_APP_PACKAGE
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -88,9 +89,8 @@ fun ShowNotificationDeniedAlert(action: String? = null, onPermissionGranted: () 
         }
     }, confirmButton = {
         Button(onClick = {
-            settingsActivity.launch(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                val uri = Uri.fromParts("package", context.packageName, null)
-                setData(uri)
+            settingsActivity.launch(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                putExtra(EXTRA_APP_PACKAGE, context.packageName)
             })
         }) {
             Text(text = "Get me there!")
