@@ -26,14 +26,14 @@ class HomeViewModel : ViewModel() {
                         navToChat(it)
                     }
                 }
-            }.toListedUiState("No chats found")
+            }.toListedUiState("No recent chats")
             val summaries = kotlin.runCatching {
                 genAiRepository.getRecentSummaries().map {
                     HomeBubble(it) {
                         navToSummary(it)
                     }
                 }
-            }.toListedUiState("No summaries found")
+            }.toListedUiState("No recent summaries")
             _uiState.value = HomeUiState(chats, summaries)
         }
     }

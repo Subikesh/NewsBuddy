@@ -69,7 +69,9 @@ fun ChatScreen(
                 is ChatUiState.Error -> {
                     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                         ContentCard(Modifier.fillMaxWidth(0.9f)) {
-                            Text(text = chat.message, color = MaterialTheme.colorScheme.error, modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally))
+                            Text(text = chat.message, color = MaterialTheme.colorScheme.error, modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.CenterHorizontally))
                         }
                     }
                 }
@@ -140,16 +142,23 @@ fun ChatScreen(
                             ),
                             trailingIcon = {
                                 AnimatedVisibility(chat.isAiChatLoading) {
-                                    IconButton(onClick = {
-                                        viewModel.stopThinking()
-                                    }, colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
+                                    IconButton(
+                                        onClick = { viewModel.stopThinking() },
+                                        colors = IconButtonDefaults.iconButtonColors(
+                                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                                        )
+                                    ) {
                                         Icon(Icons.Default.Stop, "Stop loading")
                                     }
                                 }
                                 AnimatedVisibility(!chat.isAiChatLoading && chatInput.isNotEmpty()) {
                                     IconButton(
                                         onClick = ::onInputDone,
-                                        colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                                        colors = IconButtonDefaults.iconButtonColors(
+                                            containerColor = MaterialTheme.colorScheme.primary,
+                                            contentColor = MaterialTheme.colorScheme.onPrimary
+                                        )
                                     ) {
                                         Icon(Icons.Default.Send, "Send chat")
                                     }

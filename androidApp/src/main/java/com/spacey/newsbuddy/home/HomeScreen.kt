@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -56,13 +56,13 @@ fun HomeScreen(
                 onClick = {
                     navigateToSettings()
                 }, colors = IconButtonDefaults.iconButtonColors(
-                    MaterialTheme.colorScheme.secondaryContainer
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             ) {
                 Icon(
-                    Icons.Default.AccountCircle,
-                    contentDescription = "Account",
-                    tint = MaterialTheme.colorScheme.onSurface
+                    Icons.Default.Settings,
+                    contentDescription = "Settings"
                 )
             }
         }
@@ -83,7 +83,7 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(text = "Hi, User👋", modifier = Modifier.padding(bottom = 8.dp))
+                Text(text = "Hey there 👋", modifier = Modifier.padding(bottom = 8.dp))
                 Text(text = "Tap to Chat", style = MaterialTheme.typography.headlineLarge)
             }
         }
