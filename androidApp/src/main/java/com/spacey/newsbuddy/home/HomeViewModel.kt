@@ -28,8 +28,9 @@ class HomeViewModel : ViewModel() {
                     }
                 }
             }.toListedUiState("No recent chats")
+            val summarySupported = SettingsAccessor.summaryFeatureEnabled
             var summaries: ListedUiState<HomeBubble> = ListedUiState.Loading()
-            if (SettingsAccessor.summaryFeatureEnabled) {
+            if (summarySupported) {
                 summaries = kotlin.runCatching {
                     genAiRepository.getRecentSummaries().map {
                         HomeBubble(it) {
@@ -38,7 +39,7 @@ class HomeViewModel : ViewModel() {
                     }
                 }.toListedUiState("No recent summaries")
             }
-            _uiState.value = uiState.value.copy(chatHistory = chats, summaryHistory = summaries)
+            _uiState.value = uiState.value.copy(chatHistory = chats, summaryHistory = summaries, summarySupported = summarySupported)
         }
     }
 }

@@ -112,7 +112,11 @@ fun MainNavigation() {
             )
         }
 
-        composable<Settings> {
+        composable<Settings>(enterTransition =  {
+            enterSlideTransition(AnimatedContentTransitionScope.SlideDirection.Start, 300)
+        }, exitTransition = {
+            exitSlideTransition(AnimatedContentTransitionScope.SlideDirection.End, 300)
+        }) {
             SettingsScreen(
                 navigateDataSyncScreen = { navController.navigate(DataSyncList) },
                 navigateBack = { navController.navigateUp() }
