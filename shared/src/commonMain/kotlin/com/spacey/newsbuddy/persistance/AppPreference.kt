@@ -4,17 +4,20 @@ import com.spacey.newsbuddy.serviceLocator
 import kotlin.reflect.KProperty
 
 interface AppPreference {
-    fun getString(key: String): String
+    fun getStringWithDefault(key: String, default: String): String
     fun putString(key: String, value: String)
+    fun getInt(key: String): Int
+    fun putInt(key: String, value: Int)
     fun getBoolean(key: String): Boolean
     fun putBoolean(key: String, value: Boolean)
 }
 
-internal class Preference(private val key: String) {
+internal class Preference(private val key: String, private val default: String = "") {
     inline operator fun <reified T> getValue(thisRef: Any?, property: KProperty<*>): T {
         return when (T::class) {
-            String::class -> serviceLocator.preference.getString(key)
+            String::class -> serviceLocator.preference.getStringWithDefault(key, default)
             Boolean::class -> serviceLocator.preference.getBoolean(key)
+            Int::class -> serviceLocator.preference.getInt(key)
             else -> TODO("Not yet implemented")
         } as T
     }
@@ -23,6 +26,7 @@ internal class Preference(private val key: String) {
         when (value) {
             is String -> serviceLocator.preference.putString(key, value)
             is Boolean -> serviceLocator.preference.putBoolean(key, value)
+            is Int -> serviceLocator.preference.putInt(key, value)
             else -> TODO("Not yet implemented")
         }
     }
