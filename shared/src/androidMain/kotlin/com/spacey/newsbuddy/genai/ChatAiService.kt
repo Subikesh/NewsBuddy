@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 
 actual class ChatAiService actual constructor(
-    dependencies: Dependencies,
     chatHistory: List<ChatBubble>,
     newsResponseText: String
 ) {

@@ -7,14 +7,13 @@ import com.google.firebase.vertexai.type.ToolConfig
 import com.google.firebase.vertexai.type.content
 import com.google.firebase.vertexai.type.generationConfig
 import com.google.firebase.vertexai.vertexAI
-import com.spacey.newsbuddy.common.Dependencies
 import com.spacey.newsbuddy.common.log
 import com.spacey.newsbuddy.genai.SummaryConstants.CONTENT
 import com.spacey.newsbuddy.genai.SummaryConstants.LINK
 import com.spacey.newsbuddy.genai.SummaryConstants.NEWS_CURATION
 import com.spacey.newsbuddy.persistance.Preference
 
-actual class SummaryAiService actual constructor(dependencies: Dependencies) {
+actual class SummaryAiService {
 
     private val newsProcessingModel by lazy {
         Firebase.vertexAI.generativeModel(

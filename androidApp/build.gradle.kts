@@ -23,7 +23,6 @@ android {
         val keyStoreFile = project.rootProject.file("secrets.properties")
         val properties = Properties()
         properties.load(FileInputStream(keyStoreFile))
-        buildConfigField("String", "GEMINI_API_KEY", properties.getProperty("GEMINI_API_KEY"))
         buildConfigField("String", "NEWS_API_KEY", properties.getProperty("NEWS_API_KEY"))
     }
     buildFeatures {
