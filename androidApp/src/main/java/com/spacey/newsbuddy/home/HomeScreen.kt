@@ -21,15 +21,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.AppBarContent
 import com.spacey.newsbuddy.FabConfig
 import com.spacey.newsbuddy.genai.SummaryParagraph
-import com.spacey.newsbuddy.settings.SettingsAccessor
-import com.spacey.newsbuddy.ui.RequestNotificationPermission
-import com.spacey.newsbuddy.workers.scheduleDataSync
 
 @Composable
 fun HomeScreen(
@@ -43,17 +39,17 @@ fun HomeScreen(
         setAppBarContent(null)
         setFabConfig(FabConfig { navigateToChat(null) })
     }
-    val context = LocalContext.current
-    RequestNotificationPermission(
-        onPermissionGranted = {
-            SettingsAccessor.dataSyncEnabled = true
-            scheduleDataSync(context)
-        },
-        onPermissionDenied = {},
-        onPermanentlyDeclined = {
-            TODO()
-        }
-    )
+    // TODO: Ask permission after second launch
+//    RequestNotificationPermission(
+//        isFirstTime = true,
+//        onPermissionGranted = {
+//            SettingsAccessor.dataSyncEnabled = PermissionState.ENABLED
+//            scheduleDataSync(context)
+//        },
+//        onPermissionDeclined = {},
+//        onPermanentlyDenied = {
+//        }
+//    )
     Column(Modifier.padding(16.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             IconButton(

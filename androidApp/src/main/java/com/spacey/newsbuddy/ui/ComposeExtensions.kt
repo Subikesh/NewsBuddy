@@ -54,6 +54,7 @@ import androidx.navigation.NavOptions
 import com.spacey.newsbuddy.NewsHome
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun CenteredColumn(
@@ -184,3 +185,6 @@ fun AnimatedContentTransitionScope<NavBackStackEntry>.exitSlideTransition(toward
         towards = towards
     )
 }
+
+fun String.capitalize() =
+    replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }

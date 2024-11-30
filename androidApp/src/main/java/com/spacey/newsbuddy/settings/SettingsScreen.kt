@@ -10,7 +10,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,36 +20,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.HorizontalRuler
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.ui.BackIconButton
 import com.spacey.newsbuddy.ui.CenteredTopBarScaffold
 import com.spacey.newsbuddy.ui.ContentCard
 import com.spacey.newsbuddy.ui.RequestNotificationPermission
-import com.spacey.newsbuddy.ui.isNotificationAllowed
-import com.spacey.newsbuddy.workers.scheduleDataSync
+import com.spacey.newsbuddy.ui.ShowNotificationDeniedAlert
+import com.spacey.newsbuddy.ui.capitalize
+import java.util.Locale
 
 @Composable
-fun SettingsScreen(navigateDataSyncScreen: () -> Unit, navigateBack: () -> Unit) {
+fun SettingsScreen(navigateDataSyncScreen: () -> Unit, navigateBack: () -> Unit, viewModel: SettingsViewModel = viewModel()) {
     CenteredTopBarScaffold("Settings", navigationIcon = {
         BackIconButton(navigateBack)
     }) {
-        ContentCard(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-            // TODO: Include viewmodel and store preferences
-            var syncEnabled: Boolean by remember { mutableStateOf(SettingsAccessor.dataSyncEnabled) }
-            val context = LocalContext.current
-            // TODO: do not run on initial value
-            LaunchedEffect(syncEnabled) {
-                SettingsAccessor.dataSyncEnabled = syncEnabled
-                scheduleDataSync(context)
-            }
-            val syncText = "Daily Sync: ${if (syncEnabled) "Enabled" else "Disabled"}"
-            if (syncEnabled && !context.isNotificationAllowed()) {
-                RequestNotificationPermission(onPermissionGranted = {}) { }
-            }
-            SettingsCheckBox(syncText, syncEnabled) {
-                syncEnabled = !syncEnabled
-            }
+        ContentCard(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)) {
+            val settingsUiState by viewModel.syncState.collectAsState()
+            SettingsCheckBox(syncState = settingsUiState.syncState, viewModel = viewModel)
+
             Divider()
-            Text("Latest Data Syncs", Modifier.fillMaxWidth().clickable(onClick = navigateDataSyncScreen).padding(16.dp))
+            Text("Latest Data Syncs",
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = navigateDataSyncScreen)
+                    .padding(16.dp))
             Divider()
             Text("Other Setting", Modifier.padding(16.dp))
             HorizontalRuler()
@@ -59,15 +56,53 @@ fun SettingsScreen(navigateDataSyncScreen: () -> Unit, navigateBack: () -> Unit)
 
 @Composable
 private fun SettingsCheckBox(
-    text: String,
-    selected: Boolean,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    syncState: PermissionState,
+    viewModel: SettingsViewModel,
+    modifier: Modifier = Modifier
 ) {
-    val colorModifier = if (selected) {
+    val context = LocalContext.current
+    val syncText = syncState.name.lowercase(Locale.ROOT).capitalize()
+
+    var requestNotificationPermission by remember { mutableStateOf(false) }
+    var showNotificationDenied by remember { mutableStateOf(false) }
+
+    val colorModifier = if (syncState == PermissionState.ENABLED) {
         modifier.background(MaterialTheme.colorScheme.secondaryContainer)
     } else modifier
-    Row(modifier = colorModifier.fillMaxWidth().clickable(onClick = onClick), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-        Text(text, Modifier.padding(16.dp))
+    Row(modifier = colorModifier
+        .fillMaxWidth()
+        .clickable(onClick = {
+            when (syncState) {
+                PermissionState.ENABLED -> viewModel.disableSync(context)
+                PermissionState.DISABLED -> requestNotificationPermission = true
+                PermissionState.DENIED -> showNotificationDenied = true
+            }
+        }), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+        Text(text = "Data Sync $syncText", Modifier.padding(16.dp))
+//        Text(text = syncText, Modifier.padding(16.dp))
+    }
+    if (requestNotificationPermission) {
+        RequestNotificationPermission(
+            onPermissionGranted = {
+                viewModel.enableDataSync(context)
+                requestNotificationPermission = false
+            },
+            onPermissionDeclined = {
+                viewModel.disableSync(context)
+                requestNotificationPermission = false
+            },
+            onPermanentlyDenied = {
+                viewModel.denyPermission()
+                requestNotificationPermission = false
+            }
+        )
+    }
+    if (showNotificationDenied) {
+        ShowNotificationDeniedAlert(action = "data sync", onPermissionGranted = {
+            viewModel.enableDataSync(context)
+            showNotificationDenied = false
+        }, onDismiss =  {
+            showNotificationDenied = false
+        })
     }
 }
