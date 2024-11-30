@@ -1,6 +1,5 @@
 package com.spacey.newsbuddy.genai
 
-import com.spacey.newsbuddy.common.Dependencies
 import com.spacey.newsbuddy.common.foldAsString
 import com.spacey.newsbuddy.common.getCurrentTime
 import com.spacey.newsbuddy.common.log
@@ -24,9 +23,9 @@ import kotlinx.serialization.json.decodeFromJsonElement
 class GenAiRepository(
     private val newsRepository: NewsRepository,
     private val summaryAiService: SummaryAiService,
+    private val titleAiService: TitleAiService,
     private val buddyChatDao: BuddyChatDao,
-    private val newsSummaryDao: SummaryDao,
-    private val dependencies: Dependencies
+    private val newsSummaryDao: SummaryDao
 ) {
 
     private lateinit var currentChatAiService: ChatAiService
@@ -99,8 +98,12 @@ class GenAiRepository(
         })
     }.flowOn(Dispatchers.IO)
 
+    suspend fun getChatTitle(message: String): Result<String> = withContext(Dispatchers.IO) {
+        titleAiService.prompt(message)
+    }
+
     private fun getConversationAiService(chatWindow: ChatWindow): ChatAiService {
-        return ChatAiService(dependencies, chatWindow.chats, chatWindow.dayNews.content)
+        return ChatAiService(chatWindow.chats, chatWindow.dayNews.content)
     }
 
     private fun parseAiResponse(json: String): List<SummaryParagraph> {

@@ -1,5 +1,6 @@
 package com.spacey.newsbuddy.news
 
+import com.spacey.newsbuddy.genai.NewsResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
