@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,7 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.HorizontalRuler
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -39,26 +39,32 @@ fun SettingsScreen(navigateDataSyncScreen: () -> Unit, navigateBack: () -> Unit,
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)) {
             val settingsUiState by viewModel.syncState.collectAsState()
-            SettingsCheckBox(syncState = settingsUiState.syncState, viewModel = viewModel)
-
+            DataSyncCheckBox(syncState = settingsUiState.syncState, viewModel = viewModel)
             Divider()
+            
+            SettingsCheckBox(label = "Summary Feature (Experimental)", checked = settingsUiState.summaryFeatureEnabled) {
+                if (settingsUiState.summaryFeatureEnabled) {
+                    viewModel.disableSummary()
+                } else {
+                    viewModel.enableSummary()
+                }
+            }
+            Divider()
+
             Text("Latest Data Syncs",
                 Modifier
                     .fillMaxWidth()
                     .clickable(onClick = navigateDataSyncScreen)
                     .padding(16.dp))
             Divider()
-            Text("Other Setting", Modifier.padding(16.dp))
-            HorizontalRuler()
         }
     }
 }
 
 @Composable
-private fun SettingsCheckBox(
+private fun DataSyncCheckBox(
     syncState: PermissionState,
-    viewModel: SettingsViewModel,
-    modifier: Modifier = Modifier
+    viewModel: SettingsViewModel
 ) {
     val context = LocalContext.current
     val syncText = syncState.name.lowercase(Locale.ROOT).capitalize()
@@ -66,20 +72,12 @@ private fun SettingsCheckBox(
     var requestNotificationPermission by remember { mutableStateOf(false) }
     var showNotificationDenied by remember { mutableStateOf(false) }
 
-    val colorModifier = if (syncState == PermissionState.ENABLED) {
-        modifier.background(MaterialTheme.colorScheme.secondaryContainer)
-    } else modifier
-    Row(modifier = colorModifier
-        .fillMaxWidth()
-        .clickable(onClick = {
-            when (syncState) {
-                PermissionState.ENABLED -> viewModel.disableSync(context)
-                PermissionState.DISABLED -> requestNotificationPermission = true
-                PermissionState.DENIED -> showNotificationDenied = true
-            }
-        }), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-        Text(text = "Data Sync $syncText", Modifier.padding(16.dp))
-//        Text(text = syncText, Modifier.padding(16.dp))
+    SettingsCheckBox(label = "Data Sync $syncText", checked = syncState == PermissionState.ENABLED) {
+        when (syncState) {
+            PermissionState.ENABLED -> viewModel.disableSync(context)
+            PermissionState.DISABLED -> requestNotificationPermission = true
+            PermissionState.DENIED -> showNotificationDenied = true
+        }
     }
     if (requestNotificationPermission) {
         RequestNotificationPermission(
@@ -104,5 +102,16 @@ private fun SettingsCheckBox(
         }, onDismiss =  {
             showNotificationDenied = false
         })
+    }
+}
+
+@Composable
+private fun SettingsCheckBox(label: String, checked: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    val colorModifier = if (checked) modifier.background(MaterialTheme.colorScheme.secondaryContainer) else modifier
+    Row(modifier = colorModifier
+        .fillMaxWidth()
+        .clickable(onClick = onClick), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+        Text(text = label, Modifier.padding(16.dp))
+        Checkbox(checked = checked, onCheckedChange = null, Modifier.padding(end = 16.dp))
     }
 }

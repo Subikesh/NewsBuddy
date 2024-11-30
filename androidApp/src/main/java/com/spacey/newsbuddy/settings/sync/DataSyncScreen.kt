@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,7 +27,7 @@ import androidx.work.WorkManager
 import com.spacey.newsbuddy.ListedUiState
 import com.spacey.newsbuddy.ui.BackIconButton
 import com.spacey.newsbuddy.ui.CenteredTopBarScaffold
-import com.spacey.newsbuddy.ui.ContentCard
+import com.spacey.newsbuddy.ui.MessageScreen
 import com.spacey.newsbuddy.workers.NewsSyncWorker
 import java.time.Instant
 import java.time.LocalDateTime
@@ -43,19 +44,21 @@ fun DataSyncScreen(navigateBack: () -> Unit, viewModel: DataSyncViewModel = view
     }) {
         val context = LocalContext.current
         Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
-            ContentCard(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-                when (val dataSyncList = syncList) {
-                    is ListedUiState.Loading -> {
-                        Column(
-                            Modifier.padding(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
+            when (val dataSyncList = syncList) {
+                is ListedUiState.Loading -> {
+                    Column(
+                        Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator()
                     }
+                }
 
-                    is ListedUiState.Success -> {
+                is ListedUiState.Success -> {
+                    if (dataSyncList.resultList.isEmpty()) {
+                        MessageScreen(text = "No data syncs done yet!")
+                    } else {
                         LazyColumn {
                             itemsIndexed(dataSyncList.resultList) { i, syncDetails ->
                                 Column(Modifier.padding(16.dp)) {
@@ -71,15 +74,17 @@ fun DataSyncScreen(navigateBack: () -> Unit, viewModel: DataSyncViewModel = view
                             }
                         }
                     }
-
-                    is ListedUiState.Error -> {
-                        Text(dataSyncList.message, Modifier.padding(16.dp))
-                    }
-
                 }
+
+                is ListedUiState.Error -> {
+                    MessageScreen(text = dataSyncList.message, contentColor = MaterialTheme.colorScheme.error)
+                }
+
             }
 
-            Button(modifier = Modifier.fillMaxWidth().padding(16.dp), onClick = {
+            Button(modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp), onClick = {
                 WorkManager.getInstance(context).enqueue(OneTimeWorkRequestBuilder<NewsSyncWorker>().run {
                     setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                     build()

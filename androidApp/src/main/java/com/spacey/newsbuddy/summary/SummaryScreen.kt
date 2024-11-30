@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -28,15 +29,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.ListedUiState
 import com.spacey.newsbuddy.home.converse
-import com.spacey.newsbuddy.ui.CenteredColumn
 import com.spacey.newsbuddy.ui.LoadingScreen
+import com.spacey.newsbuddy.ui.MessageScreen
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SummaryScreen(date: String, viewModel: SummaryViewModel = viewModel()) {
-    // TODO: Use date
-
-    LaunchedEffect(key1 = true) {
+    val refreshState by remember {
+        mutableStateOf(false)
+    }
+    LaunchedEffect(refreshState) {
         viewModel.promptNews(date)
     }
 
@@ -98,13 +100,7 @@ fun SummaryScreen(date: String, viewModel: SummaryViewModel = viewModel()) {
         }
 
         is ListedUiState.Error -> {
-            CenteredColumn {
-                Text(
-                    state.message,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
+            MessageScreen(text = state.message, contentColor = MaterialTheme.colorScheme.error)
         }
     }
 }

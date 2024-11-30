@@ -9,6 +9,8 @@ object SettingsAccessor {
         set(value) { dataSyncEnabledPref = value.name }
 
     var notificationCount: Int by Preference("notification_count")
+
+    var summaryFeatureEnabled: Boolean by Preference("summary_feature_enabled")
 }
 
 enum class PermissionState {

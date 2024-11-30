@@ -4,7 +4,6 @@ import android.Manifest.permission.POST_NOTIFICATIONS
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.provider.Settings.EXTRA_APP_PACKAGE
@@ -81,8 +80,8 @@ fun ShowNotificationDeniedAlert(action: String? = null, onPermissionGranted: () 
             onPermissionGranted()
         }
     }
-    AlertDialog(title = { Text(text = "We Can't Notify you 😞") }, text = {
-        Text(text = "The notification permission is denied. Kindly open the app settings and enable notification permission${if (action != null) " to enable $action" else ""}.")
+    AlertDialog(title = { Text(text = "We couldn't send notifications 😞") }, text = {
+        Text(text = "The notification permission is disabled. Kindly open the app settings allow notification permission${if (action != null) " to enable $action" else ""}.")
     }, onDismissRequest = onDismiss, dismissButton = {
         Button(onClick = onDismiss) {
             Text(text = "Later")
@@ -93,7 +92,7 @@ fun ShowNotificationDeniedAlert(action: String? = null, onPermissionGranted: () 
                 putExtra(EXTRA_APP_PACKAGE, context.packageName)
             })
         }) {
-            Text(text = "Get me there!")
+            Text(text = "Enable Notifications!")
         }
     }, shape = RoundedCornerShape(20.dp))
 }

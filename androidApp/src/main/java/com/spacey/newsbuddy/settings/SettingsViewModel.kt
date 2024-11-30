@@ -8,8 +8,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class SettingsViewModel : ViewModel() {
-    private val _syncState = MutableStateFlow(SettingsUiState(SettingsAccessor.dataSyncEnabled))
+    private val _syncState = MutableStateFlow(SettingsUiState(SettingsAccessor.dataSyncEnabled, SettingsAccessor.summaryFeatureEnabled))
     val syncState: StateFlow<SettingsUiState> = _syncState
+
+    fun enableSummary() {
+        _syncState.value = syncState.value.copy(summaryFeatureEnabled = true)
+    }
+
+    fun disableSummary() {
+        _syncState.value = syncState.value.copy(summaryFeatureEnabled = false)
+    }
 
     fun enableDataSync(context: Context) {
         SettingsAccessor.dataSyncEnabled = PermissionState.ENABLED
@@ -30,5 +38,6 @@ class SettingsViewModel : ViewModel() {
 }
 
 data class SettingsUiState(
-    val syncState: PermissionState
+    val syncState: PermissionState,
+    val summaryFeatureEnabled: Boolean
 )

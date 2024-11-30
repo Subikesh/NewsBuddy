@@ -15,7 +15,7 @@ class PreferenceImpl(context: Context) : AppPreference, SharedPreferences by con
         edit().putInt(key, value).apply()
     }
 
-    override fun getBoolean(key: String): Boolean = getBoolean(key, false)
+    override fun getBooleanOrDefault(key: String, default: Boolean): Boolean = getBoolean(key, default)
     override fun putBoolean(key: String, value: Boolean) {
         edit().putBoolean(key, value).apply()
     }

@@ -115,7 +115,8 @@ fun MainNavigation() {
         composable<Settings> {
             SettingsScreen(
                 navigateDataSyncScreen = { navController.navigate(DataSyncList) },
-                navigateBack = { navController.navigateUp() })
+                navigateBack = { navController.navigateUp() }
+            )
         }
         composable<DataSyncList> {
             DataSyncScreen(navigateBack = { navController.navigateUp() })

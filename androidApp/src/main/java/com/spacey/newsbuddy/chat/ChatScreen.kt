@@ -2,7 +2,6 @@ package com.spacey.newsbuddy.chat
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +31,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
@@ -44,6 +42,7 @@ import com.spacey.newsbuddy.ui.BackIconButton
 import com.spacey.newsbuddy.ui.CenteredTopBarScaffold
 import com.spacey.newsbuddy.ui.ContentCard
 import com.spacey.newsbuddy.ui.LoadingScreen
+import com.spacey.newsbuddy.ui.MessageScreen
 import com.spacey.newsbuddy.ui.keyboardVisibility
 
 @Composable
@@ -67,13 +66,7 @@ fun ChatScreen(
         Column {
             when (val chat = conversations) {
                 is ChatUiState.Error -> {
-                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                        ContentCard(Modifier.fillMaxWidth(0.9f)) {
-                            Text(text = chat.message, color = MaterialTheme.colorScheme.error, modifier = Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.CenterHorizontally))
-                        }
-                    }
+                    MessageScreen(text = chat.message, contentColor = MaterialTheme.colorScheme.error)
                 }
 
                 is ChatUiState.Loading -> {

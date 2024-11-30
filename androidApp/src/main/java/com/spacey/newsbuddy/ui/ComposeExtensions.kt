@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RenderEffect
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -71,6 +72,7 @@ fun CenteredColumn(
 fun CenteredTopBarScaffold(
     title: String,
     navigationIcon: @Composable () -> Unit,
+    trailingIcon: @Composable () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     Scaffold(containerColor = Color.Transparent, modifier = Modifier.imePadding(), topBar = {
@@ -84,7 +86,9 @@ fun CenteredTopBarScaffold(
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleLarge
                 )
-            }, navigationIcon = navigationIcon
+            },
+            navigationIcon = navigationIcon,
+            actions = { trailingIcon() }
         )
     }, content = { padding ->
         Box(Modifier.padding(padding)) {
@@ -94,7 +98,7 @@ fun CenteredTopBarScaffold(
 }
 
 @Composable
-fun BackIconButton(onClick: () -> Unit) {
+fun RoundIconButton(icon: ImageVector, contentDescription: String, onClick: () -> Unit) {
     IconButton(
         onClick = onClick,
         colors = IconButtonDefaults.iconButtonColors(
@@ -105,8 +109,13 @@ fun BackIconButton(onClick: () -> Unit) {
             .padding(vertical = 16.dp, horizontal = 8.dp)
             .size(40.dp)
     ) {
-        Icon(Icons.Default.ArrowBack, contentDescription = "back")
+        Icon(icon, contentDescription = contentDescription)
     }
+}
+
+@Composable
+fun BackIconButton(onClick: () -> Unit) {
+    RoundIconButton(icon = Icons.Default.ArrowBack, contentDescription = "back", onClick)
 }
 
 fun <T : Any> NavController.navigateFromHome(route: T, inclusive: Boolean = false) {
@@ -161,8 +170,28 @@ fun keyboardVisibility(): State<Boolean> {
 fun LoadingScreen(text: String = "Reading today's news 🗞️\nPlease give me a minute...") {
     CenteredColumn {
         ContentCard(Modifier.fillMaxWidth(0.7f)) {
-            Text(text, Modifier.padding(horizontal = 16.dp, vertical = 8.dp).padding(top = 8.dp).align(Alignment.CenterHorizontally))
-            CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally).padding(horizontal = 16.dp, vertical = 8.dp).padding(bottom = 8.dp))
+            Text(text,
+                Modifier
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .padding(top = 8.dp)
+                    .align(Alignment.CenterHorizontally))
+            CircularProgressIndicator(
+                Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .padding(bottom = 8.dp))
+        }
+    }
+}
+
+@Composable
+fun MessageScreen(text: String, modifier: Modifier = Modifier, contentColor: Color = MaterialTheme.colorScheme.onTertiary) {
+    CenteredColumn {
+        ContentCard(modifier = modifier.fillMaxWidth(0.9f), cardContentColor = contentColor) {
+            Text(text = text, modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+                .align(Alignment.CenterHorizontally))
         }
     }
 }
