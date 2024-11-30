@@ -39,7 +39,7 @@ fun RequestNotificationPermission(onPermissionGranted: () -> Unit, onPermissionD
     val isFirstTime = SettingsAccessor.notificationCount == 0
     var isAlertPositive by remember { mutableStateOf(PermissionState.DISABLED) }
 
-    if (isFirstTime || shouldShowRequestPermissionRationale(context as Activity, POST_NOTIFICATIONS)) { // TODO: returns true
+    if (isFirstTime || shouldShowRequestPermissionRationale(context as Activity, POST_NOTIFICATIONS)) {
         when (isAlertPositive) {
             PermissionState.DISABLED -> {
                 AlertDialog(
@@ -51,12 +51,10 @@ fun RequestNotificationPermission(onPermissionGranted: () -> Unit, onPermissionD
                             isAlertPositive = PermissionState.ENABLED
                         }) { Text("Sure") }
                     }, dismissButton = {
-                        if (isFirstTime) {
-                            Button(onClick = {
-                                onPermissionDeclined()
-                                isAlertPositive = PermissionState.DENIED
-                            }) { Text(text = "Maybe later") }
-                        }
+                        Button(onClick = {
+                            onPermissionDeclined()
+                            isAlertPositive = PermissionState.DENIED
+                        }) { Text(text = "Maybe later") }
                     }, shape = RoundedCornerShape(20.dp),
                 )
             }

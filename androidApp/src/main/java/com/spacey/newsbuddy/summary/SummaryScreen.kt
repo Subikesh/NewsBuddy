@@ -51,7 +51,7 @@ fun SummaryScreen(date: String, viewModel: SummaryViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsState()
     when (val state = uiState) {
         is ListedUiState.Loading -> {
-            LoadingScreen()
+            LoadingScreen(text = "Summarizing today's news 🗞️\nPlease give me a minute...")
         }
 
         is ListedUiState.Success -> {
