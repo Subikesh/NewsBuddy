@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.spacey.newsbuddy.ListedUiState
 import com.spacey.newsbuddy.android.BuildConfig
+import com.spacey.newsbuddy.settings.SettingsAccessor
 import com.spacey.newsbuddy.ui.getLatestDate
 
 @Composable
@@ -46,13 +48,15 @@ fun HomeChatList(viewModel: HomeViewModel, navToChat: (String?) -> Unit, navToSu
         ListUiState("What's up today!", homeUiState.chatHistory) {
             navToChat(null)
         }
-        Text(
-            "Recent Summaries",
-            Modifier.padding(vertical = 16.dp),
-            style = MaterialTheme.typography.headlineLarge
-        )
-        ListUiState("Today's Summary", homeUiState.summaryHistory) {
-            navToSummary(null)
+        if (homeUiState.summarySupported) {
+            Text(
+                "Recent Summaries",
+                Modifier.padding(vertical = 16.dp),
+                style = MaterialTheme.typography.headlineLarge
+            )
+            ListUiState("Today's Summary", homeUiState.summaryHistory) {
+                navToSummary(null)
+            }
         }
     }
 }
@@ -62,7 +66,9 @@ fun ListUiState(todayMsg: String, uiState: ListedUiState<HomeBubble>, navToday: 
     when (uiState) {
         is ListedUiState.Loading -> {
             Column(
-                Modifier.height(50.dp).fillMaxWidth(),
+                Modifier
+                    .height(50.dp)
+                    .fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -115,7 +121,10 @@ fun HomeCard(modifier: Modifier = Modifier, onClick: (() -> Unit)?, content: @Co
         } else this
     }
     Card(
-        modifier.height(100.dp).clip(RoundedCornerShape(20.dp)).clickModifier(),
+        modifier
+            .height(100.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .clickModifier(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.tertiary.copy(0.7f),
             contentColor = MaterialTheme.colorScheme.onTertiary

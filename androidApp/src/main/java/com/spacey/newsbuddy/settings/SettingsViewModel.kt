@@ -12,10 +12,12 @@ class SettingsViewModel : ViewModel() {
     val syncState: StateFlow<SettingsUiState> = _syncState
 
     fun enableSummary() {
+        SettingsAccessor.summaryFeatureEnabled = true
         _syncState.value = syncState.value.copy(summaryFeatureEnabled = true)
     }
 
     fun disableSummary() {
+        SettingsAccessor.summaryFeatureEnabled = false
         _syncState.value = syncState.value.copy(summaryFeatureEnabled = false)
     }
 

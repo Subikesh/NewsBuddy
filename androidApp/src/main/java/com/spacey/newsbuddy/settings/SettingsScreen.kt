@@ -56,7 +56,6 @@ fun SettingsScreen(navigateDataSyncScreen: () -> Unit, navigateBack: () -> Unit,
                     .fillMaxWidth()
                     .clickable(onClick = navigateDataSyncScreen)
                     .padding(16.dp))
-            Divider()
         }
     }
 }

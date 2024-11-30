@@ -24,11 +24,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.spacey.newsbuddy.home.HomeScreen
+import com.spacey.newsbuddy.settings.SettingsAccessor
 import com.spacey.newsbuddy.summary.SummaryScreen
 import com.spacey.newsbuddy.ui.getLatestDate
 import com.spacey.newsbuddy.ui.navigateFromHome
@@ -50,24 +52,10 @@ fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Un
     var bottomSelectedIndex by remember {
         mutableIntStateOf(0)
     }
-
-    data class BottomNavItem(val navClass: KClass<*>, val icon: ImageVector, val contentDescription: String, val navOnClick: () -> Unit, val onClickWhenSelected: () -> Unit)
-
-    val bottomBarItems = remember {
-        listOf(
-            BottomNavItem(NewsHome::class, Icons.Default.Home, "News home", navOnClick = {
-                navController.navigateFromHome(NewsHome, true)
-            }) {
-                // TODO: Refresh page or something
-            },
-            BottomNavItem(Summary::class, Icons.Default.Newspaper, "Summary", navOnClick = {
-                navController.navigateFromHome(Summary(getLatestDate()))
-            }) { },
-            BottomNavItem(Chat::class, Icons.Default.Chat, "Chat", navOnClick = {
-                navigateToChat(null)
-            }) {}
-        )
+    val bottomBarItems: List<BottomNavItem> = remember {
+        getBottomBarItems(navController, navigateToChat)
     }
+
     navController.addOnDestinationChangedListener { _, destination, _ ->
         bottomBarItems.indexOfFirst { destination.route?.contains(it.navClass.qualifiedName!!) == true }.let {
             bottomSelectedIndex = it
@@ -140,6 +128,27 @@ fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Un
             }
         }
     }
+}
+
+data class BottomNavItem(val navClass: KClass<*>, val icon: ImageVector, val contentDescription: String, val navOnClick: () -> Unit, val onClickWhenSelected: () -> Unit)
+
+private fun getBottomBarItems(navController: NavController, navigateToChat: (String?) -> Unit): List<BottomNavItem> {
+    val defaultList = mutableListOf(
+        BottomNavItem(NewsHome::class, Icons.Default.Home, "News home", navOnClick = {
+            navController.navigateFromHome(NewsHome, true)
+        }) {
+            // TODO: Refresh page or something
+        },
+        BottomNavItem(Chat::class, Icons.Default.Chat, "Chat", navOnClick = {
+            navigateToChat(null)
+        }) {}
+    )
+    if (SettingsAccessor.summaryFeatureEnabled) {
+        defaultList.add(1, BottomNavItem(Summary::class, Icons.Default.Newspaper, "Summary", navOnClick = {
+            navController.navigateFromHome(Summary(getLatestDate()))
+        }) { })
+    }
+    return defaultList
 }
 
 data class AppBarContent(val content: (@Composable () -> Unit)? = null)

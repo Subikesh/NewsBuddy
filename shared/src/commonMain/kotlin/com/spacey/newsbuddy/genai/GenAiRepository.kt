@@ -8,6 +8,7 @@ import com.spacey.newsbuddy.common.safeConvert
 import com.spacey.newsbuddy.genai.SummaryConstants.CONTENT
 import com.spacey.newsbuddy.genai.SummaryConstants.LINK
 import com.spacey.newsbuddy.news.NewsRepository
+import com.spacey.newsbuddy.settings.SettingsAccessor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -35,10 +36,17 @@ class GenAiRepository(
     }
 
     suspend fun getRecentSummaries(offset: Int = 0, limit: Int = 10): List<String> = withContext(Dispatchers.IO) {
-        newsSummaryDao.getRecentSummaries(offset, limit)
+        if (SettingsAccessor.summaryFeatureEnabled) {
+            emptyList()
+        } else {
+            newsSummaryDao.getRecentSummaries(offset, limit)
+        }
     }
 
     suspend fun getNewsSummary(date: String, forceRefresh: Boolean = false): Result<List<SummaryParagraph>> = withContext(Dispatchers.IO) {
+        if (!SettingsAccessor.summaryFeatureEnabled) {
+            return@withContext Result.success(emptyList())
+        }
         val newsAiSummary = kotlin.runCatching { newsSummaryDao.getNewsSummary(date) }
         if (!forceRefresh && newsAiSummary.isSuccess && newsAiSummary.getOrThrow().isNotEmpty()) {
             return@withContext newsAiSummary.map { daySummary ->

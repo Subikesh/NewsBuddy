@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.spacey.newsbuddy.ListedUiState
 import com.spacey.newsbuddy.genai.GenAiRepository
 import com.spacey.newsbuddy.serviceLocator
+import com.spacey.newsbuddy.settings.SettingsAccessor
 import com.spacey.newsbuddy.toListedUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,24 +28,28 @@ class HomeViewModel : ViewModel() {
                     }
                 }
             }.toListedUiState("No recent chats")
-            val summaries = kotlin.runCatching {
-                genAiRepository.getRecentSummaries().map {
-                    HomeBubble(it) {
-                        navToSummary(it)
+            var summaries: ListedUiState<HomeBubble> = ListedUiState.Loading()
+            if (SettingsAccessor.summaryFeatureEnabled) {
+                summaries = kotlin.runCatching {
+                    genAiRepository.getRecentSummaries().map {
+                        HomeBubble(it) {
+                            navToSummary(it)
+                        }
                     }
-                }
-            }.toListedUiState("No recent summaries")
-            _uiState.value = HomeUiState(chats, summaries)
+                }.toListedUiState("No recent summaries")
+            }
+            _uiState.value = uiState.value.copy(chatHistory = chats, summaryHistory = summaries)
         }
     }
 }
 
 data class HomeUiState(
     val chatHistory: ListedUiState<HomeBubble>,
-    val summaryHistory: ListedUiState<HomeBubble>
+    val summaryHistory: ListedUiState<HomeBubble>,
+    val summarySupported: Boolean
 ) {
     companion object {
-        val LOADING = HomeUiState(ListedUiState.Loading(), ListedUiState.Loading())
+        val LOADING = HomeUiState(ListedUiState.Loading(), ListedUiState.Loading(), SettingsAccessor.summaryFeatureEnabled)
     }
 }
 
