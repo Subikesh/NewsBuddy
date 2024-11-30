@@ -36,7 +36,7 @@ class NewsSyncBroadcast : BroadcastReceiver() {
     }
 }
 
-fun scheduleDataSync(context: Context, hour: Int = 4, minute: Int = 0) {
+fun scheduleDataSync(context: Context, cancel: Boolean = false, hour: Int = 4, minute: Int = 0) {
     val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
     val pendingIntent = PendingIntent.getBroadcast(
         context,
@@ -44,12 +44,20 @@ fun scheduleDataSync(context: Context, hour: Int = 4, minute: Int = 0) {
         Intent(context, NewsSyncBroadcast::class.java),
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
-    alarmManager.setRepeating(
-        AlarmManager.RTC_WAKEUP,
-        getNextTime(hour, minute).timeInMillis,
-        1.days.inWholeMilliseconds,
-        pendingIntent
-    )
+    if (cancel) {
+        alarmManager.cancel(pendingIntent)
+    } else {
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            getNextTime(hour, minute).timeInMillis,
+            1.days.inWholeMilliseconds,
+            pendingIntent
+        )
+    }
+}
+
+fun cancelDataSync(context: Context) {
+    scheduleDataSync(context, cancel = true)
 }
 
 private fun getNextTime(hour: Int, minute: Int): Calendar {
