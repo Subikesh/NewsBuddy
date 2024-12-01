@@ -17,8 +17,8 @@ import com.spacey.newsbuddy.android.BuildConfig
 import com.spacey.newsbuddy.android.R
 import com.spacey.newsbuddy.datasync.SyncEntry
 import com.spacey.newsbuddy.genai.ChatWindow
+import com.spacey.newsbuddy.genai.NewsResponse
 import com.spacey.newsbuddy.genai.SummaryParagraph
-import com.spacey.newsbuddy.news.NewsResponse
 import com.spacey.newsbuddy.serviceLocator
 import com.spacey.newsbuddy.ui.getLatestDate
 import com.spacey.newsbuddy.ui.isNotificationAllowed
