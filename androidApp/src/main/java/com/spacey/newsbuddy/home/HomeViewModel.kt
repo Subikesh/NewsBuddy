@@ -23,8 +23,8 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             val chats = kotlin.runCatching {
                 genAiRepository.getRecentChats().map {
-                    HomeBubble(it) {
-                        navToChat(it)
+                    HomeBubble(it.date, it.title) {
+                        navToChat(it.date)
                     }
                 }
             }.toListedUiState("No recent chats")
@@ -33,7 +33,8 @@ class HomeViewModel : ViewModel() {
             if (summarySupported) {
                 summaries = kotlin.runCatching {
                     genAiRepository.getRecentSummaries().map {
-                        HomeBubble(it) {
+                        // TODO: Set the summary title here
+                        HomeBubble(it, it) {
                             navToSummary(it)
                         }
                     }
@@ -54,4 +55,4 @@ data class HomeUiState(
     }
 }
 
-class HomeBubble(val title: String, val onClick: () -> Unit)
+class HomeBubble(val date: String, val title: String, val onClick: () -> Unit)

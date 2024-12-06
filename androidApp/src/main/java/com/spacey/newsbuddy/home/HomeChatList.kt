@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,7 +27,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.spacey.newsbuddy.ListedUiState
 import com.spacey.newsbuddy.android.BuildConfig
-import com.spacey.newsbuddy.settings.SettingsAccessor
 import com.spacey.newsbuddy.ui.getLatestDate
 
 @Composable
@@ -45,24 +43,20 @@ fun HomeChatList(viewModel: HomeViewModel, navToChat: (String?) -> Unit, navToSu
             Modifier.padding(vertical = 16.dp),
             style = MaterialTheme.typography.headlineLarge
         )
-        ListUiState("What's up today!", homeUiState.chatHistory) {
-            navToChat(null)
-        }
+        ListUiState(homeUiState.chatHistory)
         if (homeUiState.summarySupported) {
             Text(
                 "Recent Summaries",
                 Modifier.padding(vertical = 16.dp),
                 style = MaterialTheme.typography.headlineLarge
             )
-            ListUiState("Today's Summary", homeUiState.summaryHistory) {
-                navToSummary(null)
-            }
+            ListUiState(homeUiState.summaryHistory)
         }
     }
 }
 
 @Composable
-fun ListUiState(todayMsg: String, uiState: ListedUiState<HomeBubble>, navToday: () -> Unit) {
+fun ListUiState(uiState: ListedUiState<HomeBubble>) {
     when (uiState) {
         is ListedUiState.Loading -> {
             Column(
@@ -78,19 +72,9 @@ fun ListUiState(todayMsg: String, uiState: ListedUiState<HomeBubble>, navToday: 
 
         is ListedUiState.Success -> {
             LazyRow {
-                if (!isTodaysDate(uiState.resultList[0].title)) {
-                    item {
-                        HomeCard(modifier = Modifier.padding(horizontal = 8.dp), onClick = navToday) {
-                            Text(todayMsg, Modifier.padding(16.dp))
-                        }
-                    }
-                }
                 itemsIndexed(uiState.resultList) { i, chat ->
                     HomeCard(modifier = Modifier.padding(horizontal = 8.dp), onClick = chat.onClick) {
-                        val chat = if (i == 0 && isTodaysDate(chat.title)) {
-                            todayMsg
-                        } else chat.title
-                        Text(chat, Modifier.padding(16.dp))
+                        Text(chat.title, Modifier.padding(16.dp))
                     }
                 }
             }
