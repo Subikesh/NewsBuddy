@@ -3,11 +3,14 @@ package com.spacey.newsbuddy.home
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,7 +30,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.spacey.newsbuddy.ListedUiState
 import com.spacey.newsbuddy.android.BuildConfig
-import com.spacey.newsbuddy.ui.getLatestDate
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun HomeChatList(viewModel: HomeViewModel, navToChat: (String?) -> Unit, navToSummary: (String?) -> Unit) {
@@ -37,7 +41,7 @@ fun HomeChatList(viewModel: HomeViewModel, navToChat: (String?) -> Unit, navToSu
 
     val homeUiState by viewModel.uiState.collectAsState()
 
-    Column {
+    Column(Modifier.height(275.dp)) {
         Text(
             "Recent Chats",
             Modifier.padding(vertical = 16.dp),
@@ -73,7 +77,9 @@ fun ListUiState(uiState: ListedUiState<HomeBubble>) {
         is ListedUiState.Success -> {
             LazyRow {
                 itemsIndexed(uiState.resultList) { i, chat ->
-                    HomeCard(modifier = Modifier.padding(horizontal = 8.dp), onClick = chat.onClick) {
+                    HomeCard(modifier = Modifier.padding(horizontal = 8.dp), onClick = chat.onClick, bottomContent = {
+                        Text(text = chat.date.formatToHomeDateDisplay(), Modifier.padding(12.dp))
+                    }) {
                         Text(chat.title, Modifier.padding(16.dp))
                     }
                 }
@@ -81,7 +87,7 @@ fun ListUiState(uiState: ListedUiState<HomeBubble>) {
         }
 
         is ListedUiState.Error -> {
-            HomeCard(Modifier.fillMaxWidth(), null) {
+            HomeCard(Modifier.fillMaxWidth(), null, bottomContent = {}) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -98,7 +104,7 @@ fun ListUiState(uiState: ListedUiState<HomeBubble>) {
 }
 
 @Composable
-fun HomeCard(modifier: Modifier = Modifier, onClick: (() -> Unit)?, content: @Composable () -> Unit) {
+fun HomeCard(modifier: Modifier = Modifier, onClick: (() -> Unit)?, bottomContent: @Composable () -> Unit, content: @Composable () -> Unit) {
     val clickModifier: Modifier.() -> Modifier = {
         if (onClick != null) {
             clickable { onClick() }
@@ -106,18 +112,32 @@ fun HomeCard(modifier: Modifier = Modifier, onClick: (() -> Unit)?, content: @Co
     }
     Card(
         modifier
-            .height(100.dp)
+            .widthIn(200.dp, 250.dp)
             .clip(RoundedCornerShape(20.dp))
+            .fillMaxHeight()
             .clickModifier(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.tertiary.copy(0.7f),
             contentColor = MaterialTheme.colorScheme.onTertiary
         )
     ) {
-        content()
+        Column {
+            Box(Modifier.weight(1f)) {
+                content()
+            }
+            Card(
+                Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            ) {
+                bottomContent()
+            }
+        }
     }
 }
 
-private fun isTodaysDate(dateStr: String): Boolean {
-    return dateStr == getLatestDate()
+private fun String.formatToHomeDateDisplay(): String {
+    return LocalDate.parse(this, DateTimeFormatter.ISO_LOCAL_DATE).format(DateTimeFormatter.ofPattern("EEE, d MMM yyyy"))
 }

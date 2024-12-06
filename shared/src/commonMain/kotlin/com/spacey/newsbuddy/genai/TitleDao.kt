@@ -1,13 +1,13 @@
 package com.spacey.newsbuddy.genai
 
 import androidx.room.Dao
-import androidx.room.Insert
+import androidx.room.Upsert
 
 @Dao
 interface TitleDao {
-    @Insert
+    @Upsert
     fun addChatTitle(title: ChatTitle)
 
-    @Insert
+    @Upsert
     fun addSummaryTitle(title: SummaryTitle)
 }
