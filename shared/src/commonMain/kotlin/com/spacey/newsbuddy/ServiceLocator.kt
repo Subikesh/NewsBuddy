@@ -28,6 +28,7 @@ class ServiceLocator(private val dependencies: Dependencies) {
     private val buddyChatDao: BuddyChatDao by lazy { newsBuddyDatabase.getGenAiDao() }
     private val summaryDao: SummaryDao by lazy { newsBuddyDatabase.getSummaryDao() }
     private val dataSyncDao: SyncDao by lazy { newsBuddyDatabase.getSyncDao() }
+    private val titleDao: TitleDao by lazy { newsBuddyDatabase.getTitleDao() }
 
     val newsRepository by lazy { NewsRepository(newsApiService, newsDao) }
     val genAiRepository by lazy { GenAiRepository(newsRepository, summaryAiService, titleAiService, buddyChatDao, summaryDao) }

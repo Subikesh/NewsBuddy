@@ -20,10 +20,16 @@ data class ChatBubble(
 
 @Entity
 data class ChatTitle(
-    val newsId: Int,
+    @PrimaryKey val newsId: Int,
     val date: String,
-    val title: String,
-    @PrimaryKey(autoGenerate = true) val id: Int = 0
+    val title: String
+)
+
+@Entity
+data class SummaryTitle(
+    @PrimaryKey val newsId: Int,
+    val date: String,
+    val title: String
 )
 
 @Entity
