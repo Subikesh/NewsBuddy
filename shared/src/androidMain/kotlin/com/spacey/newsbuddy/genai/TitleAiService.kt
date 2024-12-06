@@ -19,14 +19,15 @@ actual class TitleAiService {
                 temperature = 0.7f
                 topK = 10
                 topP = 0.95f
-                maxOutputTokens = 600
+                maxOutputTokens = 50
                 responseMimeType = "text/plain"
             },
             // safetySettings = Adjust safety settings
             // See https://ai.google.dev/gemini-api/docs/safety-settings
             systemInstruction = content(role = "system") {
                 text("You will be given the introductory message about some news articles about some day. Generate a short and concise title for that chat screen" +
-                        "Only include info about the news content included in the message and not anything about conversation or greetings.")
+                        "Only include info about the news content included in the message and not anything about conversation or greetings. " +
+                        "You need not include all the news in there, just try to frame a catchy news headline.")
             },
             safetySettings = listOf(
                 SafetySetting(HarmCategory.DANGEROUS_CONTENT, HarmBlockThreshold.LOW_AND_ABOVE),

@@ -25,12 +25,13 @@ class GenAiRepository(
     private val summaryAiService: SummaryAiService,
     private val titleAiService: TitleAiService,
     private val buddyChatDao: BuddyChatDao,
-    private val newsSummaryDao: SummaryDao
+    private val newsSummaryDao: SummaryDao,
+    private val titleDao: TitleDao
 ) {
 
     private lateinit var currentChatAiService: ChatAiService
 
-    suspend fun getRecentChats(offset: Int = 0, limit: Int = 10): List<String> = withContext(Dispatchers.IO) {
+    suspend fun getRecentChats(offset: Int = 0, limit: Int = 10): List<ChatTitle> = withContext(Dispatchers.IO) {
         buddyChatDao.getRecentChats(offset, limit)
     }
 
@@ -78,10 +79,14 @@ class GenAiRepository(
 
         val news = newsRepository.getTodaysNews(date)
         news.safeConvert { newsResponse ->
-            currentChatAiService = getConversationAiService(ChatWindow(newsResponse, emptyList()))
+            currentChatAiService = getConversationAiService(ChatWindow(newsResponse, null, emptyList()))
             log("News", "News response: $newsResponse")
-            currentChatAiService.prompt(newsResponse.content).safeConvert { aiResponse ->
+            currentChatAiService.prompt("Start").safeConvert { aiResponse ->
                 val aiResponseStr = aiResponse.foldAsString()
+                // TODO: Check if ai response is error
+                if (aiResponseStr.isNotEmpty()) {
+                    saveChatTitle(newsResponse.id, newsResponse.date, aiResponseStr)
+                }
                 buddyChatDao.insert(ChatBubble(newsResponse.id, getCurrentTime(), ChatType.AI, aiResponseStr))
                 buddyChatDao.safeGetChatWindow(newsResponse.date)
             }
@@ -89,6 +94,9 @@ class GenAiRepository(
     }
 
     fun chatWithAi(chatWindow: ChatWindow, prompt: String): Flow<Result<ChatWindow>> = flow {
+        if (chatWindow.title == null) {
+            saveChatTitle(chatWindow.dayNews.id, chatWindow.dayNews.date, chatWindow.chats.first().chatText)
+        }
         buddyChatDao.insert(ChatBubble(chatWindow.dayNews.id, getCurrentTime(), ChatType.USER, prompt))
         emit(buddyChatDao.safeGetChatWindow(chatWindow.dayNews.date))
         emit(currentChatAiService.prompt(prompt).safeConvert { aiResponse ->
@@ -98,8 +106,11 @@ class GenAiRepository(
         })
     }.flowOn(Dispatchers.IO)
 
-    suspend fun getChatTitle(message: String): Result<String> = withContext(Dispatchers.IO) {
-        titleAiService.prompt(message)
+    private suspend fun saveChatTitle(newsId: Int, date: String, startMsg: String) {
+        withContext(Dispatchers.IO) {
+            val titleResult = titleAiService.prompt(startMsg)
+            titleResult.getOrNull()?.let { titleDao.addChatTitle(ChatTitle(newsId, date, it)) }
+        }
     }
 
     private fun getConversationAiService(chatWindow: ChatWindow): ChatAiService {
