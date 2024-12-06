@@ -23,14 +23,14 @@ class SettingsViewModel : ViewModel() {
 
     fun enableDataSync(context: Context) {
         SettingsAccessor.dataSyncEnabled = PermissionState.ENABLED
-        _syncState.value = syncState.value.copy(syncState = PermissionState.ENABLED)
         scheduleDataSync(context)
+        _syncState.value = syncState.value.copy(syncState = PermissionState.ENABLED)
     }
 
     fun disableSync(context: Context) {
         SettingsAccessor.dataSyncEnabled = PermissionState.DISABLED
-        _syncState.value = syncState.value.copy(syncState = PermissionState.DISABLED)
         cancelDataSync(context)
+        _syncState.value = syncState.value.copy(syncState = PermissionState.DISABLED)
     }
 
     fun denyPermission() {
