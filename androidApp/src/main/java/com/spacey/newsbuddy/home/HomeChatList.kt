@@ -2,6 +2,8 @@ package com.spacey.newsbuddy.home
 
 import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,9 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -41,62 +46,59 @@ fun HomeChatList(viewModel: HomeViewModel, navToChat: (String?) -> Unit, navToSu
 
     val homeUiState by viewModel.uiState.collectAsState()
 
-    Column(Modifier.height(275.dp)) {
-        Text(
-            "Recent Chats",
-            Modifier.padding(vertical = 16.dp),
-            style = MaterialTheme.typography.headlineLarge
-        )
-        ListUiState(homeUiState.chatHistory)
+    Column {
+        ListUiState("Recent Chats", homeUiState.chatHistory)
         if (homeUiState.summarySupported) {
-            Text(
-                "Recent Summaries",
-                Modifier.padding(vertical = 16.dp),
-                style = MaterialTheme.typography.headlineLarge
-            )
-            ListUiState(homeUiState.summaryHistory)
+            ListUiState("Recent Summaries", homeUiState.summaryHistory)
         }
     }
 }
 
 @Composable
-fun ListUiState(uiState: ListedUiState<HomeBubble>) {
-    when (uiState) {
-        is ListedUiState.Loading -> {
-            Column(
-                Modifier
-                    .height(50.dp)
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                CircularProgressIndicator()
+fun ListUiState(title: String, uiState: ListedUiState<HomeBubble>) {
+    Column(Modifier.height(275.dp)) {
+        Text(
+            title,
+            Modifier.padding(vertical = 16.dp),
+            style = MaterialTheme.typography.headlineLarge
+        )
+        when (uiState) {
+            is ListedUiState.Loading -> {
+                Column(
+                    Modifier
+                        .height(50.dp)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator()
+                }
             }
-        }
 
-        is ListedUiState.Success -> {
-            LazyRow {
-                itemsIndexed(uiState.resultList) { i, chat ->
-                    HomeCard(modifier = Modifier.padding(horizontal = 8.dp), onClick = chat.onClick, bottomContent = {
-                        Text(text = chat.date.formatToHomeDateDisplay(), Modifier.padding(12.dp))
-                    }) {
-                        Text(chat.title, Modifier.padding(16.dp))
+            is ListedUiState.Success -> {
+                LazyRow {
+                    itemsIndexed(uiState.resultList) { i, chat ->
+                        HomeCard(modifier = Modifier.padding(horizontal = 8.dp), onClick = chat.onClick, bottomContent = {
+                            Text(text = chat.date.formatToHomeDateDisplay(), Modifier.padding(12.dp))
+                        }) {
+                            Text(chat.title, Modifier.padding(16.dp))
+                        }
                     }
                 }
             }
-        }
 
-        is ListedUiState.Error -> {
-            HomeCard(Modifier.fillMaxWidth(), null, bottomContent = {}) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Log.e("HomeError", uiState.message)
-                    val errorText = if (BuildConfig.DEBUG) uiState.message
-                        else "Something went wrong when fetching data. Please feel free to contact support."
-                    Text(text = errorText, textAlign = TextAlign.Center, modifier = Modifier)
+            is ListedUiState.Error -> {
+                HomeCard(Modifier.fillMaxWidth(), null, bottomContent = {}) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Log.e("HomeError", uiState.message)
+                        val errorText = if (BuildConfig.DEBUG) uiState.message
+                            else "Something went wrong when fetching data. Please feel free to contact support."
+                        Text(text = errorText, textAlign = TextAlign.Center, modifier = Modifier)
+                    }
                 }
             }
         }
