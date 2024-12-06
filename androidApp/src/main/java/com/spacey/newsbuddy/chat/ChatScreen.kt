@@ -60,7 +60,7 @@ fun ChatScreen(
     }
 
     val conversations by viewModel.conversation.collectAsState()
-    CenteredTopBarScaffold(title = conversations.title, navigationIcon = {
+    CenteredTopBarScaffold(title = "News Buddy", navigationIcon = {
         BackIconButton(navBackToHome)
     }) {
         Column {

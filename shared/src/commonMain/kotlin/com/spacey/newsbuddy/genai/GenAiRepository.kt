@@ -73,6 +73,10 @@ class GenAiRepository(
         val chatWindow = buddyChatDao.safeGetChatWindow(date)
         // TODO: Check if chatWindow was error or chatWindow for that date was empty
         if (chatWindow.isSuccess) {
+            val chatResult = chatWindow.getOrThrow()
+            if (chatResult.title == null) {
+                saveChatTitle(chatResult.dayNews.id, chatResult.dayNews.date, chatResult.chats.first().chatText)
+            }
             currentChatAiService = getConversationAiService(chatWindow.getOrThrow())
             return@withContext chatWindow
         }

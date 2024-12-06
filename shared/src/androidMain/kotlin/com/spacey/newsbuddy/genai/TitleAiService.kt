@@ -27,7 +27,7 @@ actual class TitleAiService {
             systemInstruction = content(role = "system") {
                 text("You will be given the introductory message about some news articles about some day. Generate a short and concise title for that chat screen" +
                         "Only include info about the news content included in the message and not anything about conversation or greetings. " +
-                        "You need not include all the news in there, just try to frame a catchy news headline.")
+                        "Just create a catchy phrase headline by picking the important two or three news.")
             },
             safetySettings = listOf(
                 SafetySetting(HarmCategory.DANGEROUS_CONTENT, HarmBlockThreshold.LOW_AND_ABOVE),

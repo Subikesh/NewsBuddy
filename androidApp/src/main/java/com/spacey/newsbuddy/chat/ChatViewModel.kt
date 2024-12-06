@@ -68,8 +68,8 @@ class ChatViewModel : ViewModel() {
     }
 }
 
-sealed class ChatUiState(val title: String) {
-    data object Loading : ChatUiState("")
-    data class Error(val message: String) : ChatUiState("News Buddy")
-    data class Success(val chatWindow: ChatWindow, val isAiChatLoading: Boolean = false) : ChatUiState(chatWindow.title ?: "News Buddy")
+sealed class ChatUiState {
+    data object Loading : ChatUiState()
+    data class Error(val message: String) : ChatUiState()
+    data class Success(val chatWindow: ChatWindow, val isAiChatLoading: Boolean = false) : ChatUiState()
 }
