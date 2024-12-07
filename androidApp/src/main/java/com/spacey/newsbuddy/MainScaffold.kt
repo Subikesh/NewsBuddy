@@ -1,7 +1,7 @@
 package com.spacey.newsbuddy
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Home
@@ -13,7 +13,6 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -34,6 +34,7 @@ import com.spacey.newsbuddy.settings.SettingsAccessor
 import com.spacey.newsbuddy.summary.SummaryScreen
 import com.spacey.newsbuddy.ui.getLatestDate
 import com.spacey.newsbuddy.ui.navigateFromHome
+import com.spacey.newsbuddy.ui.plus
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
@@ -102,12 +103,13 @@ fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Un
             }*/
         }
     ) { padding ->
+        val homePadding = padding + PaddingValues(16.dp)
         NavHost(navController = navController, startDestination = NewsHome, modifier = Modifier
-            .padding(padding)
             .background(Color.Transparent)) {
             composable<NewsHome> {
                 val todayDate = getLatestDate()
                 HomeScreen(
+                    padding = homePadding,
                     setAppBarContent = { appBarContent = it },
                     setFabConfig = { fabConfig = it },
                     navigateToChat = navigateToChat,
@@ -117,14 +119,7 @@ fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Un
             }
 
             composable<Summary> {
-                SummaryScreen(it.toRoute<Summary>().date)
-            }
-
-            composable<User> {
-                EmptyScreen()
-                appBarContent = AppBarContent {
-                    Text(text = "News Buddy")
-                }
+                SummaryScreen(it.toRoute<Summary>().date, padding)
             }
         }
     }

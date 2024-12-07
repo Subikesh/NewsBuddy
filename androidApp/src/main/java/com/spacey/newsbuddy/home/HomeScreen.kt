@@ -3,6 +3,7 @@ package com.spacey.newsbuddy.home
 import android.speech.tts.TextToSpeech
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,6 +32,7 @@ import com.spacey.newsbuddy.genai.SummaryParagraph
 
 @Composable
 fun HomeScreen(
+    padding: PaddingValues,
     setAppBarContent: (AppBarContent?) -> Unit,
     setFabConfig: (FabConfig) -> Unit,
     navigateToChat: (String?) -> Unit,
@@ -52,7 +54,7 @@ fun HomeScreen(
 //        onPermanentlyDenied = {
 //        }
 //    )
-    Column(Modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
+    Column(Modifier.padding(padding).verticalScroll(rememberScrollState())) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             IconButton(
                 onClick = {

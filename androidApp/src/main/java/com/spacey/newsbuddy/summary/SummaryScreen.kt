@@ -34,7 +34,7 @@ import com.spacey.newsbuddy.ui.MessageScreen
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SummaryScreen(date: String, viewModel: SummaryViewModel = viewModel()) {
+fun SummaryScreen(date: String, padding: PaddingValues, viewModel: SummaryViewModel = viewModel()) {
     val refreshState by remember {
         mutableStateOf(false)
     }
@@ -71,7 +71,7 @@ fun SummaryScreen(date: String, viewModel: SummaryViewModel = viewModel()) {
 //            textToSpeech.setOnUtteranceProgressListener(NewsSpeechListener(setFabIcon) {
 //                currentSpeaking = it
 //            })
-            LazyColumn {
+            LazyColumn(contentPadding = padding) {
                 itemsIndexed(items = state.resultList) { i, conversation ->
                     val weight = if (i == currentSpeaking) FontWeight.ExtraBold else null
                     val shape = if (i == 0) RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp) else RoundedCornerShape(0.dp)
@@ -100,7 +100,7 @@ fun SummaryScreen(date: String, viewModel: SummaryViewModel = viewModel()) {
         }
 
         is ListedUiState.Error -> {
-            MessageScreen(text = state.message, contentColor = MaterialTheme.colorScheme.error)
+            MessageScreen(text = state.message, contentColor = MaterialTheme.colorScheme.error, modifier = Modifier.padding(padding))
         }
     }
 }
