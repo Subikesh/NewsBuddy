@@ -12,7 +12,7 @@ interface BuddyChatDao {
     @Transaction
     @Query("SELECT * FROM ChatBubble as chat " +
             "LEFT JOIN NewsResponse AS news " +
-            "LEFT JOIN ChatTitle AS chatTitle " +
+            "INNER JOIN ChatTitle AS chatTitle " +
             "ON news.id = chat.newsId and news.id = chatTitle.newsId " +
             "WHERE news.date = :date ORDER BY chat.time ASC")
     suspend fun getChatWindow(date: String): ChatWindow
