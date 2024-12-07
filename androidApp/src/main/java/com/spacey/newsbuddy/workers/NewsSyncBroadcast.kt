@@ -36,40 +36,27 @@ class NewsSyncBroadcast : BroadcastReceiver() {
     }
 }
 
-fun scheduleDataSync(context: Context, cancel: Boolean = false, hour: Int = 5, minute: Int = 0) {
+fun scheduleDataSync(context: Context, timeCalendar: Calendar) {
     val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
-    val pendingIntent = PendingIntent.getBroadcast(
-        context,
-        0,
-        Intent(context, NewsSyncBroadcast::class.java),
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    val pendingIntent = getDataSyncIntent(context)
+    Log.d("AlarmManager", "Alarm repeat has started")
+    alarmManager.setRepeating(
+        AlarmManager.RTC_WAKEUP,
+        timeCalendar.timeInMillis,
+        1.days.inWholeMilliseconds,
+        pendingIntent
     )
-    if (cancel) {
-        Log.d("AlarmManager", "Alarm cancel started")
-        alarmManager.cancel(pendingIntent)
-    } else {
-        Log.d("AlarmManager", "Alarm repeat has started")
-        alarmManager.setRepeating(
-            AlarmManager.RTC_WAKEUP,
-            getNextTime(hour, minute).timeInMillis,
-            1.days.inWholeMilliseconds,
-            pendingIntent
-        )
-    }
 }
+
 
 fun cancelDataSync(context: Context) {
-    scheduleDataSync(context, cancel = true)
+    val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
+    alarmManager.cancel(getDataSyncIntent(context))
 }
 
-private fun getNextTime(hour: Int, minute: Int): Calendar {
-    val calendar = Calendar.getInstance().apply {
-        set(Calendar.HOUR_OF_DAY, hour)
-        set(Calendar.MINUTE, minute)
-        set(Calendar.SECOND, 0)
-        if (before(Calendar.getInstance())) {
-            add(Calendar.DATE, 1)
-        }
-    }
-    return calendar
-}
+private fun getDataSyncIntent(context: Context) = PendingIntent.getBroadcast(
+    context,
+    0,
+    Intent(context, NewsSyncBroadcast::class.java),
+    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+)
