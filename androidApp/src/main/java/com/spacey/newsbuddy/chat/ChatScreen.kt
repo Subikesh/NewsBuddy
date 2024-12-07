@@ -119,11 +119,12 @@ fun ChatScreen(
                             viewModel.chat(chatInput)
                             chatInput = ""
                         }
-                        TextField(value = chatInput,
+                        TextField(
+                            value = chatInput,
                             shape = RoundedCornerShape(30.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 4.dp),
+                                .padding(top = 4.dp, bottom = 8.dp),
                             colors = TextFieldDefaults.colors(
                                 disabledContainerColor = MaterialTheme.colorScheme.tertiary,
                                 focusedContainerColor = MaterialTheme.colorScheme.tertiary,
