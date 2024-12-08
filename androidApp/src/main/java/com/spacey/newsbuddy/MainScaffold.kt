@@ -29,6 +29,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.spacey.newsbuddy.chat.ChatListScreen
 import com.spacey.newsbuddy.home.HomeScreen
 import com.spacey.newsbuddy.settings.SettingsAccessor
 import com.spacey.newsbuddy.summary.SummaryScreen
@@ -44,17 +45,11 @@ fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Un
     var appBarContent: AppBarContent? by remember {
         mutableStateOf(null)
     }
-    var fabIcon by remember {
-        mutableStateOf(Icons.Filled.Chat)
-    }
-    var fabConfig: FabConfig? by remember {
-        mutableStateOf(FabConfig(onClick = { navigateToChat(null) }))
-    }
     var bottomSelectedIndex by remember {
         mutableIntStateOf(0)
     }
     val bottomBarItems: List<BottomNavItem> = remember {
-        getBottomBarItems(navController, navigateToChat)
+        getBottomBarItems(navController)
     }
 
     navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -111,7 +106,6 @@ fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Un
                 HomeScreen(
                     padding = homePadding,
                     setAppBarContent = { appBarContent = it },
-                    setFabConfig = { fabConfig = it },
                     navigateToChat = navigateToChat,
                     navigateToSummary = { navController.navigateFromHome(Summary(it ?: todayDate)) },
                     navigateToSettings = navigateToSettings
@@ -121,13 +115,17 @@ fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Un
             composable<Summary> {
                 SummaryScreen(it.toRoute<Summary>().date, padding)
             }
+
+            composable<ChatList> {
+                ChatListScreen(navigateToSettings = navigateToSettings, navigateToChat = navigateToChat)
+            }
         }
     }
 }
 
 data class BottomNavItem(val navClass: KClass<*>, val icon: ImageVector, val contentDescription: String, val navOnClick: () -> Unit, val onClickWhenSelected: () -> Unit)
 
-private fun getBottomBarItems(navController: NavController, navigateToChat: (String?) -> Unit): List<BottomNavItem> {
+private fun getBottomBarItems(navController: NavController): List<BottomNavItem> {
     val defaultList = mutableListOf(
         BottomNavItem(NewsHome::class, Icons.Default.Home, "News home", navOnClick = {
             navController.navigateFromHome(NewsHome, true)
@@ -135,7 +133,7 @@ private fun getBottomBarItems(navController: NavController, navigateToChat: (Str
             // TODO: Refresh page or something
         },
         BottomNavItem(Chat::class, Icons.Default.Chat, "Chat", navOnClick = {
-            navigateToChat(null)
+            navController.navigateFromHome(ChatList)
         }) {}
     )
     if (SettingsAccessor.summaryFeatureEnabled) {
@@ -147,7 +145,6 @@ private fun getBottomBarItems(navController: NavController, navigateToChat: (Str
 }
 
 data class AppBarContent(val content: (@Composable () -> Unit)? = null)
-data class FabConfig(val showFab: Boolean = true, val onClick: () -> Unit)
 
 @Serializable
 data class Summary(val date: String)
@@ -156,4 +153,4 @@ data class Summary(val date: String)
 data object NewsHome
 
 @Serializable
-data object User
+data object ChatList
