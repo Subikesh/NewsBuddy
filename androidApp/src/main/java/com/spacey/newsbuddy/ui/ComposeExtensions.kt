@@ -35,6 +35,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -77,6 +78,7 @@ fun CenteredTopBarScaffold(
     title: String,
     navigationIcon: @Composable () -> Unit,
     trailingIcon: @Composable () -> Unit = {},
+    fabContent: @Composable () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     Scaffold(containerColor = Color.Transparent, modifier = Modifier.imePadding(), topBar = {
@@ -94,7 +96,7 @@ fun CenteredTopBarScaffold(
             navigationIcon = navigationIcon,
             actions = { trailingIcon() }
         )
-    }, content = { padding ->
+    }, floatingActionButton = fabContent, content = { padding ->
         Box(Modifier.padding(padding)) {
             content()
         }
@@ -102,13 +104,15 @@ fun CenteredTopBarScaffold(
 }
 
 @Composable
-fun RoundIconButton(icon: ImageVector, contentDescription: String, onClick: () -> Unit) {
+fun RoundIconButton(
+    icon: ImageVector, iconColors: IconButtonColors = IconButtonDefaults.iconButtonColors(
+        containerColor = MaterialTheme.colorScheme.tertiary,
+        contentColor = MaterialTheme.colorScheme.onTertiary
+    ), contentDescription: String, onClick: () -> Unit
+) {
     IconButton(
         onClick = onClick,
-        colors = IconButtonDefaults.iconButtonColors(
-            containerColor = MaterialTheme.colorScheme.tertiary,
-            contentColor = MaterialTheme.colorScheme.onTertiary
-        ),
+        colors = iconColors,
         modifier = Modifier
             .padding(vertical = 16.dp, horizontal = 8.dp)
             .size(40.dp)
@@ -119,7 +123,7 @@ fun RoundIconButton(icon: ImageVector, contentDescription: String, onClick: () -
 
 @Composable
 fun BackIconButton(onClick: () -> Unit) {
-    RoundIconButton(icon = Icons.Default.ArrowBack, contentDescription = "back", onClick)
+    RoundIconButton(icon = Icons.Default.ArrowBack, contentDescription = "back", onClick = onClick)
 }
 
 fun <T : Any> NavController.navigateFromHome(route: T, inclusive: Boolean = false) {
