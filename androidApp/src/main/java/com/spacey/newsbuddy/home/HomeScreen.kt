@@ -27,21 +27,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.AppBarContent
-import com.spacey.newsbuddy.FabConfig
 import com.spacey.newsbuddy.genai.SummaryParagraph
 
 @Composable
 fun HomeScreen(
     padding: PaddingValues,
     setAppBarContent: (AppBarContent?) -> Unit,
-    setFabConfig: (FabConfig) -> Unit,
     navigateToChat: (String?) -> Unit,
     navigateToSummary: (String?) -> Unit,
     navigateToSettings: () -> Unit
 ) {
     LaunchedEffect(key1 = true) {
         setAppBarContent(null)
-        setFabConfig(FabConfig { navigateToChat(null) })
     }
     // TODO: Ask permission after second launch
 //    RequestNotificationPermission(
