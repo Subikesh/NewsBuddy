@@ -77,7 +77,11 @@ fun MainNavigation() {
         startDestination = Home,
         Modifier.background(Color.Transparent)
     ) {
-        composable<Home> {
+        composable<Home>(exitTransition = {
+            exitSlideTransition(AnimatedContentTransitionScope.SlideDirection.Start, 300)
+        }, popEnterTransition = {
+            enterSlideTransition(AnimatedContentTransitionScope.SlideDirection.End, 300)
+        }) {
             MainScaffold(
                 navigateToChat = {
                     navController.navigateFromHome(Chat(it ?: getLatestDate()))
@@ -95,7 +99,7 @@ fun MainNavigation() {
 
         composable<Chat>(enterTransition =  {
             enterSlideTransition(AnimatedContentTransitionScope.SlideDirection.Start, 300)
-        }, exitTransition = {
+        }, popExitTransition = {
             exitSlideTransition(AnimatedContentTransitionScope.SlideDirection.End, 300)
         }) {
             val route: Chat = it.toRoute()
@@ -115,6 +119,10 @@ fun MainNavigation() {
         composable<Settings>(enterTransition =  {
             enterSlideTransition(AnimatedContentTransitionScope.SlideDirection.Start, 300)
         }, exitTransition = {
+            exitSlideTransition(AnimatedContentTransitionScope.SlideDirection.Start, 300)
+        }, popEnterTransition = {
+            enterSlideTransition(AnimatedContentTransitionScope.SlideDirection.End, 300)
+        }, popExitTransition = {
             exitSlideTransition(AnimatedContentTransitionScope.SlideDirection.End, 300)
         }) {
             SettingsScreen(
@@ -122,7 +130,11 @@ fun MainNavigation() {
                 navigateBack = { navController.navigateUp() }
             )
         }
-        composable<DataSyncList> {
+        composable<DataSyncList>(enterTransition =  {
+            enterSlideTransition(AnimatedContentTransitionScope.SlideDirection.Start, 300)
+        }, exitTransition = {
+            exitSlideTransition(AnimatedContentTransitionScope.SlideDirection.End, 300)
+        }) {
             DataSyncScreen(navigateBack = { navController.navigateUp() })
         }
     }
