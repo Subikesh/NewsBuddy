@@ -17,8 +17,8 @@ android {
         applicationId = "com.spacey.newsbuddy.android"
         minSdk = 28
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 100
+        versionName = "1.0.0-alpha"
 
         val keyStoreFile = project.rootProject.file("secrets.properties")
         val properties = Properties()
