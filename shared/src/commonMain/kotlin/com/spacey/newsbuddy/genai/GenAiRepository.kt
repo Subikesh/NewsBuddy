@@ -37,9 +37,9 @@ class GenAiRepository(
 
     suspend fun getRecentSummaries(offset: Int = 0, limit: Int = 10): List<String> = withContext(Dispatchers.IO) {
         if (SettingsAccessor.summaryFeatureEnabled) {
-            emptyList()
-        } else {
             newsSummaryDao.getRecentSummaries(offset, limit)
+        } else {
+            emptyList()
         }
     }
 
