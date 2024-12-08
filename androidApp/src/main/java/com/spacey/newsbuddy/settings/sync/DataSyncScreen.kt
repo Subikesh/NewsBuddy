@@ -3,13 +3,14 @@ package com.spacey.newsbuddy.settings.sync
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,14 +22,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
-import androidx.work.WorkManager
 import com.spacey.newsbuddy.ListedUiState
 import com.spacey.newsbuddy.ui.BackIconButton
 import com.spacey.newsbuddy.ui.CenteredTopBarScaffold
 import com.spacey.newsbuddy.ui.MessageScreen
-import com.spacey.newsbuddy.workers.NewsSyncWorker
+import com.spacey.newsbuddy.ui.RoundIconButton
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -39,10 +37,16 @@ fun DataSyncScreen(navigateBack: () -> Unit, viewModel: DataSyncViewModel = view
         viewModel.fetchLatestDataSyncs()
     }
     val syncList by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
     CenteredTopBarScaffold("Data Sync History", navigationIcon = {
         BackIconButton(navigateBack)
+    }, trailingIcon = {
+        if (syncList !is ListedUiState.Loading) {
+            RoundIconButton(icon = Icons.Default.Sync, iconColors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary), contentDescription = "Sync now") {
+                viewModel.syncNow(context)
+            }
+        }
     }) {
-        val context = LocalContext.current
         Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
             when (val dataSyncList = syncList) {
                 is ListedUiState.Loading -> {
@@ -80,17 +84,6 @@ fun DataSyncScreen(navigateBack: () -> Unit, viewModel: DataSyncViewModel = view
                     MessageScreen(text = dataSyncList.message, contentColor = MaterialTheme.colorScheme.error)
                 }
 
-            }
-
-            Button(modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp), onClick = {
-                WorkManager.getInstance(context).enqueue(OneTimeWorkRequestBuilder<NewsSyncWorker>().run {
-                    setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                    build()
-                })
-            }) {
-                Text("Sync Now")
             }
         }
 
