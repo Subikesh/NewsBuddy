@@ -18,14 +18,12 @@ class HomeViewModel : ViewModel() {
 
     private val genAiRepository: GenAiRepository = serviceLocator.genAiRepository
 
-    fun loadHome(navToChat: (String) -> Unit, navToSummary: (String) -> Unit) {
+    fun loadHome() {
         _uiState.value = HomeUiState.LOADING
         viewModelScope.launch {
             val chats = kotlin.runCatching {
                 genAiRepository.getRecentChats().map {
-                    HomeBubble(it.date, it.title) {
-                        navToChat(it.date)
-                    }
+                    HomeBubble(it.date, it.title)
                 }
             }.toListedUiState("No recent chats")
             val summarySupported = SettingsAccessor.summaryFeatureEnabled
@@ -34,9 +32,7 @@ class HomeViewModel : ViewModel() {
                 summaries = kotlin.runCatching {
                     genAiRepository.getRecentSummaries().map {
                         // TODO: Set the summary title here
-                        HomeBubble(it, it) {
-                            navToSummary(it)
-                        }
+                        HomeBubble(it, it)
                     }
                 }.toListedUiState("No recent summaries")
             }
@@ -55,4 +51,4 @@ data class HomeUiState(
     }
 }
 
-class HomeBubble(val date: String, val title: String, val onClick: () -> Unit)
+class HomeBubble(val date: String, val title: String)

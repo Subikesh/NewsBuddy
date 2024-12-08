@@ -2,8 +2,6 @@ package com.spacey.newsbuddy.home
 
 import android.util.Log
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,12 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -41,21 +36,21 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun HomeChatList(viewModel: HomeViewModel, navToChat: (String?) -> Unit, navToSummary: (String?) -> Unit) {
     LaunchedEffect(true) {
-        viewModel.loadHome(navToChat, navToSummary)
+        viewModel.loadHome()
     }
 
     val homeUiState by viewModel.uiState.collectAsState()
 
     Column {
-        ListUiState("Recent Chats", homeUiState.chatHistory)
+        ListUiState("Recent Chats", homeUiState.chatHistory, navToChat)
         if (homeUiState.summarySupported) {
-            ListUiState("Recent Summaries", homeUiState.summaryHistory)
+            ListUiState("Recent Summaries", homeUiState.summaryHistory, navToSummary)
         }
     }
 }
 
 @Composable
-fun ListUiState(title: String, uiState: ListedUiState<HomeBubble>) {
+fun ListUiState(title: String, uiState: ListedUiState<HomeBubble>, navToChat: (String?) -> Unit) {
     Column(Modifier.height(275.dp)) {
         Text(
             title,
@@ -78,7 +73,9 @@ fun ListUiState(title: String, uiState: ListedUiState<HomeBubble>) {
             is ListedUiState.Success -> {
                 LazyRow {
                     itemsIndexed(uiState.resultList) { i, chat ->
-                        HomeCard(modifier = Modifier.padding(horizontal = 8.dp), onClick = chat.onClick, bottomContent = {
+                        HomeCard(modifier = Modifier.padding(horizontal = 8.dp), onClick = {
+                            navToChat(chat.date)
+                        }, bottomContent = {
                             Text(text = chat.date.formatToHomeDateDisplay(), Modifier.padding(12.dp))
                         }) {
                             Text(chat.title, Modifier.padding(16.dp))
