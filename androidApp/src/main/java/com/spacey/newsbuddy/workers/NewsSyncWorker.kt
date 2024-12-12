@@ -15,10 +15,11 @@ import com.google.firebase.ktx.Firebase
 import com.spacey.newsbuddy.MyApplication
 import com.spacey.newsbuddy.android.BuildConfig
 import com.spacey.newsbuddy.android.R
+import com.spacey.newsbuddy.common.isAiServerException
 import com.spacey.newsbuddy.datasync.SyncEntry
 import com.spacey.newsbuddy.genai.ChatWindow
-import com.spacey.newsbuddy.genai.SummaryParagraph
 import com.spacey.newsbuddy.genai.NewsResponse
+import com.spacey.newsbuddy.genai.SummaryParagraph
 import com.spacey.newsbuddy.serviceLocator
 import com.spacey.newsbuddy.ui.getLatestDate
 import com.spacey.newsbuddy.ui.isNotificationAllowed
@@ -55,15 +56,22 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
                 param("chat_result", chatResult.toString())
                 param("summary_result", summaryResult.toString())
             }
-            if (applicationContext.isNotificationAllowed() && BuildConfig.DEBUG) {
+            if (applicationContext.isNotificationAllowed()) {
                 NotificationManagerCompat.from(applicationContext).notify(
                     NOTIF_ID, createNotification(
                         "News Sync Failed!",
-                        "News result: ${newsResult.isSuccess}; Summary result: ${summaryResult.isSuccess}; Chat Result: ${chatResult.isSuccess}"
+                        if (BuildConfig.DEBUG)
+                            "News result: ${newsResult.isSuccess}; Summary result: ${summaryResult.isSuccess}; Chat Result: ${chatResult.isSuccess}"
+                        else
+                            "An error occurred when syncing today's news."
                     )
                 )
             }
-            Result.retry()
+            if (chatResult.isAiServerException()) {
+                Result.failure()
+            } else {
+                Result.retry()
+            }
         }
     }
 

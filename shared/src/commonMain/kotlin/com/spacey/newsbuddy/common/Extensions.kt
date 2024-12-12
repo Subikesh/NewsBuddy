@@ -22,3 +22,5 @@ suspend fun Flow<String?>.foldAsString(): String {
 }
 
 expect fun getCurrentTime(): Long
+
+expect fun Result<*>.isAiServerException(): Boolean
