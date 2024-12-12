@@ -47,7 +47,11 @@ fun ChatListScreen(homeViewModel: HomeViewModel = viewModel(), navigateToSetting
     }) {
         when (val chatHistory = uiState.chatHistory) {
             is ListedUiState.Error -> {
-                MessageScreen(text = "Error in fetching recent chat history! ${if (BuildConfig.DEBUG) chatHistory.message else ""}")
+                if (chatHistory.message == HomeViewModel.NO_CHAT_ERROR) {
+                    MessageScreen(text = "No recent chats found.")
+                } else {
+                    MessageScreen(text = "Error in fetching recent chat history! ${if (BuildConfig.DEBUG) chatHistory.message else ""}")
+                }
             }
             is ListedUiState.Loading -> {
                 LoadingScreen("Collecting our recent conversations...")

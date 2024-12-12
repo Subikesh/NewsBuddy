@@ -39,6 +39,11 @@ class HomeViewModel : ViewModel() {
             _uiState.value = uiState.value.copy(chatHistory = chats, summaryHistory = summaries, summarySupported = summarySupported)
         }
     }
+
+    companion object {
+        const val NO_CHAT_ERROR = "No recent chats"
+        const val NO_SUMMARY_ERROR = "No recent summaries"
+    }
 }
 
 data class HomeUiState(
