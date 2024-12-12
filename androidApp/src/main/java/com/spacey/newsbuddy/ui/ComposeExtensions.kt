@@ -79,7 +79,7 @@ fun CenteredTopBarScaffold(
     navigationIcon: @Composable () -> Unit,
     trailingIcon: @Composable () -> Unit = {},
     fabContent: @Composable () -> Unit = {},
-    content: @Composable () -> Unit
+    content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(containerColor = Color.Transparent, modifier = Modifier.imePadding(), topBar = {
         CenterAlignedTopAppBar(
@@ -96,9 +96,11 @@ fun CenteredTopBarScaffold(
             navigationIcon = navigationIcon,
             actions = { trailingIcon() }
         )
-    }, floatingActionButton = fabContent, content = { padding ->
+    }, floatingActionButton = {
+        fabContent()
+    }, content = { padding ->
         Box(Modifier.padding(padding)) {
-            content()
+            content(padding)
         }
     })
 }

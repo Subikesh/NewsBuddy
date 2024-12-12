@@ -14,8 +14,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,6 +32,7 @@ import com.spacey.newsbuddy.ui.CenteredTopBarScaffold
 import com.spacey.newsbuddy.ui.ContentCard
 import com.spacey.newsbuddy.ui.LoadingScreen
 import com.spacey.newsbuddy.ui.MessageScreen
+import com.spacey.newsbuddy.ui.RoundIconButton
 
 @Composable
 fun ChatListScreen(homeViewModel: HomeViewModel = viewModel(), navigateToSettings: () -> Unit, navigateToChat: (String?) -> Unit) {
@@ -43,11 +42,8 @@ fun ChatListScreen(homeViewModel: HomeViewModel = viewModel(), navigateToSetting
         homeViewModel.loadHome()
     }
 
-    CenteredTopBarScaffold(title = "Recent Chats", navigationIcon = {}, fabContent = {
-        ExtendedFloatingActionButton(onClick = { navigateToChat(null) }) {
-            Text(text = "Start Chat", Modifier.padding(16.dp))
-            Icon(Icons.Default.Add, contentDescription = "Start chat")
-        }
+    CenteredTopBarScaffold(title = "Recent Chats", navigationIcon = {}, trailingIcon = {
+        RoundIconButton(icon = Icons.Default.Add, contentDescription = "Start chat", onClick = { navigateToChat(null) })
     }) {
         when (val chatHistory = uiState.chatHistory) {
             is ListedUiState.Error -> {
@@ -59,7 +55,7 @@ fun ChatListScreen(homeViewModel: HomeViewModel = viewModel(), navigateToSetting
             is ListedUiState.Success -> {
                 ContentCard(modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)) {
+                    .padding(16.dp)) {
                     LazyColumn {
                         itemsIndexed(chatHistory.resultList) { i, chat ->
                             Column {
