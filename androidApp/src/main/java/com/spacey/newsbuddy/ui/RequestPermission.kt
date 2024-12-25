@@ -13,6 +13,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -43,7 +45,7 @@ fun RequestNotificationPermission(onPermissionGranted: () -> Unit, onPermissionD
         when (isAlertPositive) {
             PermissionState.DISABLED -> {
                 AlertDialog(
-                    title = { Text("Permission Request 🙏🏻") },
+                    title = { Text("Permission Request") },
                     text = { Text("We sync daily news and keep things ready before you open the app. Kindly allow notification permission in the upcoming alert. You can always modify this in the settings.") },
                     onDismissRequest = onPermissionDeclined,
                     confirmButton = {
@@ -51,7 +53,11 @@ fun RequestNotificationPermission(onPermissionGranted: () -> Unit, onPermissionD
                             isAlertPositive = PermissionState.ENABLED
                         }) { Text("Sure") }
                     }, dismissButton = {
-                        Button(onClick = {
+                        Button(
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            ), onClick = {
                             onPermissionDeclined()
                             isAlertPositive = PermissionState.DENIED
                         }) { Text(text = "Maybe later") }

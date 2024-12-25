@@ -18,7 +18,8 @@ class ChatViewModel : ViewModel() {
     private val _conversation = MutableStateFlow<ChatUiState>(ChatUiState.Loading)
     val conversation: StateFlow<ChatUiState> = _conversation
 
-    private var date: String? = null
+    var date: String? = null
+        private set
 
     fun startChat(date: String) {
         this.date = date

@@ -195,13 +195,15 @@ fun LoadingScreen(text: String = "Reading today's news 🗞️\nPlease give me a
 }
 
 @Composable
-fun MessageScreen(text: String, modifier: Modifier = Modifier, contentColor: Color = MaterialTheme.colorScheme.onTertiary) {
+fun MessageScreen(text: String, modifier: Modifier = Modifier, contentColor: Color = MaterialTheme.colorScheme.onTertiary, actionButton: @Composable (() -> Unit)? = null) {
     CenteredColumn {
         ContentCard(modifier = modifier.fillMaxWidth(0.9f), cardContentColor = contentColor) {
             Text(text = text, modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally))
+
+            actionButton?.invoke()
         }
     }
 }

@@ -192,7 +192,7 @@ private fun SettingsCheckBox(
                     Text(text = subTitle, style = MaterialTheme.typography.bodySmall)
                 }
             }
-            Switch(checked = checked, onCheckedChange = null, Modifier.padding(end = 8.dp))
+            Switch(checked = checked, onCheckedChange = null, Modifier.padding(end = 16.dp))
         }
     }
 }

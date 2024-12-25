@@ -105,7 +105,6 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
             Intent(applicationContext, MyApplication::class.java),
             PendingIntent.FLAG_IMMUTABLE
         )
-
         return Notification.Builder(applicationContext, MyApplication.SYNC_NOTIFICATION_CHANNEL)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(title)

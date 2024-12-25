@@ -45,9 +45,12 @@ actual class TitleAiService {
             return Result.failure(AiBusyException("Title generation model is already running"))
         }
         ongoingTitleRequest = true
-        return runCatching {
-            titleProcessingModel.generateContent(message).text ?: ""
-        }.also {
+        return try {
+            Result.success(titleProcessingModel.generateContent(message).text ?: "")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        } finally {
             ongoingTitleRequest = false
         }
     }

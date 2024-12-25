@@ -117,7 +117,7 @@ fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Un
             }
 
             composable<ChatList> {
-                ChatListScreen(navigateToSettings = navigateToSettings, navigateToChat = navigateToChat)
+                ChatListScreen(navigateToChat = navigateToChat)
             }
         }
     }

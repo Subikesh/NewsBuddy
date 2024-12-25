@@ -1,13 +1,17 @@
 package com.spacey.newsbuddy.settings.sync
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.IconButtonDefaults
@@ -61,7 +65,19 @@ fun DataSyncScreen(navigateBack: () -> Unit, viewModel: DataSyncViewModel = view
 
                 is ListedUiState.Success -> {
                     if (dataSyncList.resultList.isEmpty()) {
-                        MessageScreen(text = "No data syncs done yet!")
+                        MessageScreen(text = "No data syncs done yet!", actionButton = {
+                            Card(
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                                ),
+                                modifier = Modifier.fillMaxWidth().clickable {
+                                    viewModel.syncNow(context)
+                                }
+                            ) {
+                                Text("Sync Now!", Modifier.align(Alignment.CenterHorizontally).padding(16.dp))
+                            }
+                        })
                     } else {
                         LazyColumn {
                             itemsIndexed(dataSyncList.resultList) { i, syncDetails ->

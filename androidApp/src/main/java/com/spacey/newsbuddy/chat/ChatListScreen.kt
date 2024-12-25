@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -32,23 +30,32 @@ import com.spacey.newsbuddy.ui.CenteredTopBarScaffold
 import com.spacey.newsbuddy.ui.ContentCard
 import com.spacey.newsbuddy.ui.LoadingScreen
 import com.spacey.newsbuddy.ui.MessageScreen
-import com.spacey.newsbuddy.ui.RoundIconButton
 
 @Composable
-fun ChatListScreen(homeViewModel: HomeViewModel = viewModel(), navigateToSettings: () -> Unit, navigateToChat: (String?) -> Unit) {
+fun ChatListScreen(homeViewModel: HomeViewModel = viewModel(), navigateToChat: (String?) -> Unit) {
     val uiState by homeViewModel.uiState.collectAsState()
 
     LaunchedEffect(key1 = true) {
         homeViewModel.loadHome()
     }
 
-    CenteredTopBarScaffold(title = "Recent Chats", navigationIcon = {}, trailingIcon = {
-        RoundIconButton(icon = Icons.Default.Add, contentDescription = "Start chat", onClick = { navigateToChat(null) })
-    }) {
+    CenteredTopBarScaffold(title = "Recent Chats", navigationIcon = {}) {
         when (val chatHistory = uiState.chatHistory) {
             is ListedUiState.Error -> {
                 if (chatHistory.message == HomeViewModel.NO_CHAT_ERROR) {
-                    MessageScreen(text = "No recent chats found.")
+                    MessageScreen(text = "No recent chats found.", actionButton = {
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            ),
+                            modifier = Modifier.fillMaxWidth().clickable {
+                                navigateToChat(null)
+                            }
+                        ) {
+                            Text("Chat Now!", Modifier.align(Alignment.CenterHorizontally).padding(16.dp))
+                        }
+                    })
                 } else {
                     MessageScreen(text = "Error in fetching recent chat history! ${if (BuildConfig.DEBUG) chatHistory.message else ""}")
                 }
