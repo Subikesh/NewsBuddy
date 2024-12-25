@@ -25,7 +25,7 @@ class HomeViewModel : ViewModel() {
                 genAiRepository.getRecentChats().map {
                     HomeBubble(it.date, it.title)
                 }
-            }.toListedUiState("No recent chats")
+            }.toListedUiState(NO_CHAT_ERROR)
             val summarySupported = SettingsAccessor.summaryFeatureEnabled
             var summaries: ListedUiState<HomeBubble> = ListedUiState.Loading()
             if (summarySupported) {
@@ -34,7 +34,7 @@ class HomeViewModel : ViewModel() {
                         // TODO: Set the summary title here
                         HomeBubble(it, it)
                     }
-                }.toListedUiState("No recent summaries")
+                }.toListedUiState(NO_SUMMARY_ERROR)
             }
             _uiState.value = uiState.value.copy(chatHistory = chats, summaryHistory = summaries, summarySupported = summarySupported)
         }

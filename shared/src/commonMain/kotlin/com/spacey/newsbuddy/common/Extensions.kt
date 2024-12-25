@@ -13,6 +13,7 @@ inline fun <T, R> Result<T>.safeConvert(block: (T) -> Result<R>): Result<R> {
             Result.failure(this.exceptionOrNull()!!)
         }
     } catch (e: Exception) {
+        e.printStackTrace()
         Result.failure(e)
     }
 }
@@ -24,3 +25,5 @@ suspend fun Flow<String?>.foldAsString(): String {
 expect fun getCurrentTime(): Long
 
 expect fun Result<*>.isAiServerException(): Boolean
+
+internal object NoInternetException : Exception("Error connecting to servers! Please check the internet connection and try again.")

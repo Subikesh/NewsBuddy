@@ -1,5 +1,7 @@
 package com.spacey.newsbuddy.genai
 
+import com.spacey.newsbuddy.common.Dependencies
+import com.spacey.newsbuddy.common.NoInternetException
 import com.spacey.newsbuddy.common.foldAsString
 import com.spacey.newsbuddy.common.getCurrentTime
 import com.spacey.newsbuddy.common.log
@@ -26,7 +28,8 @@ class GenAiRepository(
     private val titleAiService: TitleAiService,
     private val buddyChatDao: BuddyChatDao,
     private val newsSummaryDao: SummaryDao,
-    private val titleDao: TitleDao
+    private val titleDao: TitleDao,
+    private val dependencies: Dependencies
 ) {
 
     private lateinit var currentChatAiService: ChatAiService
@@ -60,6 +63,9 @@ class GenAiRepository(
         val news = newsRepository.getTodaysNews(date, forceRefresh)
         news.safeConvert {
             log("News", "News response: $it")
+            if (!dependencies.isInternetConnected()) {
+                throw NoInternetException
+            }
             var i = 0
             summaryAiService.prompt(it.content).map { aiMsg ->
                 parseAiResponse(aiMsg).also { convoList ->
@@ -83,6 +89,9 @@ class GenAiRepository(
 
         val news = newsRepository.getTodaysNews(date)
         news.safeConvert { newsResponse ->
+            if (!dependencies.isInternetConnected()) {
+                throw NoInternetException
+            }
             currentChatAiService = getConversationAiService(ChatWindow(newsResponse, null, emptyList()))
             log("News", "News response: $newsResponse")
             currentChatAiService.prompt("Start").safeConvert { aiResponse ->

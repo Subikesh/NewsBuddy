@@ -8,4 +8,5 @@ interface Dependencies {
     val newsBuddyDatabase: Lazy<NewsBuddyDatabase>
 
     fun getNewsApiToken(): String
+    fun isInternetConnected(): Boolean
 }
