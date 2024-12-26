@@ -9,7 +9,7 @@ import com.google.firebase.vertexai.type.generationConfig
 import com.google.firebase.vertexai.vertexAI
 import com.spacey.newsbuddy.persistance.Preference
 
-actual class TitleAiService {
+actual class TitleAiService : AiService<String>() {
 
     // TODO: Configure the temp and topK params?
     private val titleProcessingModel by lazy {
@@ -40,7 +40,7 @@ actual class TitleAiService {
 
     private var ongoingTitleRequest: Boolean by Preference("ongoing_title_request")
 
-    actual suspend fun prompt(message: String): Result<String> {
+    actual override suspend fun promptAi(message: String): Result<String> {
         if (ongoingTitleRequest) {
             return Result.failure(AiBusyException("Title generation model is already running"))
         }

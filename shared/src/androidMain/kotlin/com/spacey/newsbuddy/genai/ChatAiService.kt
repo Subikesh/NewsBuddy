@@ -7,7 +7,6 @@ import com.google.firebase.vertexai.type.SafetySetting
 import com.google.firebase.vertexai.type.content
 import com.google.firebase.vertexai.type.generationConfig
 import com.google.firebase.vertexai.vertexAI
-import com.spacey.newsbuddy.common.Dependencies
 import com.spacey.newsbuddy.common.toGeminiContent
 import com.spacey.newsbuddy.persistance.Preference
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +17,7 @@ import kotlinx.coroutines.flow.onCompletion
 actual class ChatAiService actual constructor(
     chatHistory: List<ChatBubble>,
     newsResponseText: String
-) {
+) : AiService<Flow<String?>>() {
 
     // TODO: Authentication?
     private val convoProcessingModel by lazy {
@@ -57,7 +56,7 @@ actual class ChatAiService actual constructor(
 
     private val chat = convoProcessingModel.startChat(chatHistory.toGeminiContent())
 
-    actual suspend fun prompt(message: String): Result<Flow<String?>> {
+    actual override suspend fun promptAi(message: String): Result<Flow<String?>> {
         if (ongoingChatRequest) {
             return Result.failure(AiBusyException("Another Chat AI request is already running"))
         }

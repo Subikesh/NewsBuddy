@@ -13,7 +13,7 @@ import com.spacey.newsbuddy.genai.SummaryConstants.LINK
 import com.spacey.newsbuddy.genai.SummaryConstants.NEWS_CURATION
 import com.spacey.newsbuddy.persistance.Preference
 
-actual class SummaryAiService {
+actual class SummaryAiService : AiService<String>() {
 
     private val newsProcessingModel by lazy {
         Firebase.vertexAI.generativeModel(
@@ -40,7 +40,7 @@ actual class SummaryAiService {
 
     private var ongoingSummaryRequest: Boolean by Preference("ongoing_summary_request")
 
-    actual suspend fun prompt(message: String): Result<String> {
+    internal actual override suspend fun promptAi(message: String): Result<String> {
         if (ongoingSummaryRequest) {
             return Result.failure(AiBusyException("Another AI summary request is already running"))
         }
