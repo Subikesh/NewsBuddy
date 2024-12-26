@@ -12,7 +12,7 @@ class MyApplication : Application() {
         super.onCreate()
         initiateFireBaseSdk(this)
         ServiceLocator.initiate(DependenciesImpl(this))
-        FirebaseRemoteConfig.getInstance().fetchAndActivate()
+        FirebaseRemoteConfig.getInstance( ).fetchAndActivate()
 
         val notificationManager = getSystemService(NotificationManager::class.java)
         notificationManager.createNotificationChannel(
