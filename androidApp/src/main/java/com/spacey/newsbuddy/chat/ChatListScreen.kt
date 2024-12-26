@@ -57,7 +57,7 @@ fun ChatListScreen(homeViewModel: HomeViewModel = viewModel(), navigateToChat: (
                         }
                     })
                 } else {
-                    MessageScreen(text = "Error in fetching recent chat history! ${if (BuildConfig.DEBUG) chatHistory.message else ""}")
+                    MessageScreen(text = "Error in fetching recent chat history! ${chatHistory.message}")
                 }
             }
             is ListedUiState.Loading -> {

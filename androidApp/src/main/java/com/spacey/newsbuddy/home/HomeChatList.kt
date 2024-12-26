@@ -92,8 +92,7 @@ fun ListUiState(title: String, uiState: ListedUiState<HomeBubble>, navToChat: (S
                         verticalArrangement = Arrangement.Center
                     ) {
                         Log.e("HomeError", uiState.message)
-                        val errorText = if (BuildConfig.DEBUG) uiState.message
-                            else "Something went wrong when fetching data. Please feel free to contact support."
+                        val errorText = uiState.message
                         Text(text = errorText, textAlign = TextAlign.Center, modifier = Modifier)
                     }
                 }

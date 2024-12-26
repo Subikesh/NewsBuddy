@@ -26,4 +26,4 @@ expect fun getCurrentTime(): Long
 
 expect fun Result<*>.isAiServerException(): Boolean
 
-internal object NoInternetException : Exception("Error connecting to servers! Please check the internet connection and try again.")
+object NoInternetException : Exception()

@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Bundle
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -57,7 +58,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.spacey.newsbuddy.NewsHome
+import com.spacey.newsbuddy.common.NoInternetException
+import com.spacey.newsbuddy.common.isAiServerException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -235,4 +240,30 @@ fun AnimatedContentTransitionScope<NavBackStackEntry>.exitSlideTransition(toward
         animationSpec = tween(durationMillis, easing = FastOutSlowInEasing),
         towards = towards
     )
+}
+
+fun Result<*>.getErrorMsgOrNull(isDebug: Boolean): Pair<String, Boolean>? {
+    if (isSuccess) {
+        return null
+    }
+    val exception = exceptionOrNull()!!
+    exception.printStackTrace()
+    Firebase.analytics.logEvent("ChatError", Bundle().apply {
+        putString("Message", exception.message)
+        putString("StackTrace", exception.stackTraceToString())
+    })
+    return when (exception) {
+        is NoInternetException -> {
+            "Error connecting to servers! Please check the internet connection and try again." to false
+        }
+        else -> {
+            (if (isDebug && exception.message != null) {
+                exception.message!!
+            } else if (isAiServerException()) {
+                "Some Error occured with the AI agent. Kindly contact support to report the issue!"
+            } else {
+                "Some unknown exception occured. Kindly contact support to report the issue!"
+            }) to true
+        }
+    }
 }

@@ -4,8 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spacey.newsbuddy.ListedUiState
+import com.spacey.newsbuddy.android.BuildConfig
 import com.spacey.newsbuddy.genai.SummaryParagraph
 import com.spacey.newsbuddy.serviceLocator
+import com.spacey.newsbuddy.ui.getErrorMsgOrNull
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -26,7 +28,7 @@ class SummaryViewModel : ViewModel() {
             }, onFailure = {
                 Log.e("Error", "Error in getting news conversation")
                 it.printStackTrace()
-                ListedUiState.Error(it.toString())
+                ListedUiState.Error(newsConvo.getErrorMsgOrNull(BuildConfig.DEBUG)!!.first)
             })
         }
     }

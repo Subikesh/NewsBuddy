@@ -21,6 +21,7 @@ import com.spacey.newsbuddy.genai.ChatWindow
 import com.spacey.newsbuddy.genai.NewsResponse
 import com.spacey.newsbuddy.genai.SummaryParagraph
 import com.spacey.newsbuddy.serviceLocator
+import com.spacey.newsbuddy.ui.getErrorMsgOrNull
 import com.spacey.newsbuddy.ui.getLatestDate
 import com.spacey.newsbuddy.ui.isNotificationAllowed
 
@@ -36,7 +37,6 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
         val date = getLatestDate()
         val newsResult = serviceLocator.newsRepository.getTodaysNews(date)
         val chatResult = serviceLocator.genAiRepository.startAiChat(date)
-//        val summaryResult: KResult<List<SummaryParagraph>> = if (BuildConfig.DEBUG) KResult.success(emptyList()) else serviceLocator.genAiRepository.getNewsSummary(date)
         val summaryResult = serviceLocator.genAiRepository.getNewsSummary(date)
 
         makeSyncEntry(newsResult, summaryResult, chatResult)
@@ -91,8 +91,8 @@ class NewsSyncWorker(context: Context, workerParams: WorkerParameters) :
         val syncEntry = SyncEntry(
             System.currentTimeMillis(),
             newsResult.isSuccess.toString(),
-            summaryResult.exceptionOrNull()?.message ?: true.toString(),
-            chatResult.exceptionOrNull()?.message ?: true.toString(),
+            summaryResult.getErrorMsgOrNull(BuildConfig.DEBUG)?.first ?: true.toString(),
+            chatResult.getErrorMsgOrNull(BuildConfig.DEBUG)?.first ?: true.toString(),
         )
         syncRepository.insert(syncEntry)
     }

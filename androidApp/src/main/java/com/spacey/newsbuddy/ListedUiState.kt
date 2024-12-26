@@ -1,5 +1,8 @@
 package com.spacey.newsbuddy
 
+import com.spacey.newsbuddy.android.BuildConfig
+import com.spacey.newsbuddy.ui.getErrorMsgOrNull
+
 sealed class ListedUiState<out T> {
     data class Loading(val message: String = "") : ListedUiState<Nothing>()
     data class Error(val message: String) : ListedUiState<Nothing>()
@@ -14,6 +17,6 @@ fun <T> Result<List<T>>.toListedUiState(emptyMsg: String? = null): ListedUiState
         }
         ListedUiState.Success(res)
     } else {
-        ListedUiState.Error(exceptionOrNull()?.message ?: "Some error occurred")
+        ListedUiState.Error(getErrorMsgOrNull(BuildConfig.DEBUG)!!.first)
     }
 }

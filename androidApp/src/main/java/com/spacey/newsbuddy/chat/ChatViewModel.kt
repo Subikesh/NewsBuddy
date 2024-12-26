@@ -1,10 +1,11 @@
 package com.spacey.newsbuddy.chat
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.spacey.newsbuddy.android.BuildConfig
 import com.spacey.newsbuddy.genai.ChatWindow
 import com.spacey.newsbuddy.serviceLocator
+import com.spacey.newsbuddy.ui.getErrorMsgOrNull
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +30,7 @@ class ChatViewModel : ViewModel() {
             if (result.isSuccess) {
                 _conversation.value = ChatUiState.Success(result.getOrThrow())
             } else {
-                _conversation.value = ChatUiState.Error(result.exceptionOrNull().toString())
+                _conversation.value = ChatUiState.Error(result.getErrorMsgOrNull(BuildConfig.DEBUG)!!.first)
             }
         }
     }
@@ -57,8 +58,7 @@ class ChatViewModel : ViewModel() {
                 if (result.isSuccess) {
                     _conversation.value = ChatUiState.Success(result.getOrThrow(), true)
                 } else {
-                    Log.e("Error", "Convo chat response failed", result.exceptionOrNull())
-                    _conversation.value = ChatUiState.Error(result.exceptionOrNull().toString())
+                    _conversation.value = ChatUiState.Error(result.getErrorMsgOrNull(BuildConfig.DEBUG)!!.first)
                 }
             }
         }
