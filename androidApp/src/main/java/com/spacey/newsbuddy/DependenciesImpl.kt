@@ -3,8 +3,7 @@ package com.spacey.newsbuddy
 import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.spacey.newsbuddy.android.BuildConfig
 import com.spacey.newsbuddy.common.Dependencies
 import com.spacey.newsbuddy.common.PreferenceImpl
@@ -19,7 +18,7 @@ class DependenciesImpl(private val context: Application) : Dependencies {
     }
 
     override fun isAiFeaturesSupported(): Boolean {
-        return Firebase.remoteConfig.getBoolean(AI_FEATURES_ENABLED)
+        return FirebaseRemoteConfig.getInstance().getBoolean(AI_FEATURES_ENABLED)
     }
 
     override fun getNewsApiToken(): String = BuildConfig.NEWS_API_KEY

@@ -34,12 +34,12 @@ actual class ChatAiService actual constructor(
             // See https://ai.google.dev/gemini-api/docs/safety-settings
             systemInstruction = content(role = "system") {
                 text(
-                    "INSTRUCTIONS: You are being used as a voice chat companion. \n" +
+                    "INSTRUCTIONS: You are NewsBuddy, a news voice chat companion. \n" +
                             "The user will chat with you regarding the given news articles and you can answer user's queries and also lead \n" +
                             "them to different topics and articles to cover all the news of his interest, also be sure to add some \n" +
-                            "questions and interesting facts linking to another news article to make the conversation flowing. As a voice assistant, you will provide brief response\n" +
-                            " to the prompts unless if you are asked to elaborate on particular matter. Prioritise on the actual \n" +
-                            "facts and logic over speculation or guess and try to find the most relevant news article to the prompt and respond. Start with a \n" +
+                            "questions and interesting facts linking to another news article to make the conversation flowing. As a voice assistant, you will provide brief response" +
+                            " to the prompts unless if you are asked to elaborate on particular matter. ALWAYS rely on the facts and NEVER guess any fact or news. " +
+                            "Try to find the most relevant news articles to the prompt and respond based on that. Start with a \n" +
                             "greeting and a moderate summary with the most important topics to start the conversation.\n Here's the news response for context: $newsResponseText"
                 )
             },
