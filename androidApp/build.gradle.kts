@@ -14,7 +14,6 @@ android {
     namespace = "com.spacey.newsbuddy.android"
     compileSdk = 34
     defaultConfig {
-        applicationId = "com.spacey.newsbuddy.android"
         minSdk = 28
         targetSdk = 34
         versionCode = 100
@@ -35,8 +34,17 @@ android {
         }
     }
     buildTypes {
-        getByName("release") {
+        release {
+            defaultConfig {
+                applicationId = "com.spacey.newsbuddy.android"
+            }
             isMinifyEnabled = false
+        }
+
+        debug {
+            defaultConfig {
+                applicationId = "com.spacey.newsbuddy.android.debug"
+            }
         }
     }
     compileOptions {

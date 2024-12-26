@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:438400917477:android:36f56335af89f15dfa190c",
+        "mobilesdk_app_id": "1:438400917477:android:22bdde38f52210a2fa190c",
         "android_client_info": {
-          "package_name": "com.spacey.newsbuddy"
+          "package_name": "com.spacey.newsbuddy.android"
         }
       },
       "oauth_client": [],
@@ -26,9 +26,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:438400917477:android:22bdde38f52210a2fa190c",
+        "mobilesdk_app_id": "1:438400917477:android:c6f5776d8157fab5fa190c",
         "android_client_info": {
-          "package_name": "com.spacey.newsbuddy.android"
+          "package_name": "com.spacey.newsbuddy.android.debug"
         }
       },
       "oauth_client": [],
