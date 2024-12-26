@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "438400917477",
+    "project_id": "news-buddy-6b1d7",
+    "storage_bucket": "news-buddy-6b1d7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:438400917477:android:36f56335af89f15dfa190c",
+        "android_client_info": {
+          "package_name": "com.spacey.newsbuddy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0bLqHx7wSUNZ2tYP2pyg_Giw6j9Lbqs8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:438400917477:android:22bdde38f52210a2fa190c",
+        "android_client_info": {
+          "package_name": "com.spacey.newsbuddy.android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0bLqHx7wSUNZ2tYP2pyg_Giw6j9Lbqs8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
