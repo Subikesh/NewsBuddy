@@ -38,6 +38,7 @@ android {
             defaultConfig {
                 applicationId = "com.spacey.newsbuddy.android"
             }
+            isDebuggable = false
             isMinifyEnabled = false
         }
 
