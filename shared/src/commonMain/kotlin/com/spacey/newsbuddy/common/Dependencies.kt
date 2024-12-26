@@ -9,4 +9,5 @@ interface Dependencies {
 
     fun getNewsApiToken(): String
     fun isInternetConnected(): Boolean
+    fun isAiFeaturesSupported(): Boolean
 }

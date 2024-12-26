@@ -27,3 +27,4 @@ expect fun getCurrentTime(): Long
 expect fun Result<*>.isAiServerException(): Boolean
 
 object NoInternetException : Exception()
+object AiFeaturesDisabled : Exception()

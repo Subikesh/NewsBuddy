@@ -61,6 +61,7 @@ import androidx.navigation.NavOptions
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import com.spacey.newsbuddy.NewsHome
+import com.spacey.newsbuddy.common.AiFeaturesDisabled
 import com.spacey.newsbuddy.common.NoInternetException
 import com.spacey.newsbuddy.common.isAiServerException
 import java.time.LocalDate
@@ -255,6 +256,9 @@ fun Result<*>.getErrorMsgOrNull(isDebug: Boolean): Pair<String, Boolean>? {
     return when (exception) {
         is NoInternetException -> {
             "Error connecting to servers! Please check the internet connection and try again." to false
+        }
+        is AiFeaturesDisabled -> {
+            "AI Features are disabled temporarily. Contact support to know more." to true
         }
         else -> {
             (if (isDebug && exception.message != null) {
