@@ -2,6 +2,7 @@ package com.spacey.newsbuddy.summary
 
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,13 +35,15 @@ import com.spacey.newsbuddy.ui.MessageScreen
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SummaryScreen(date: String, padding: PaddingValues, viewModel: SummaryViewModel = viewModel()) {
+fun SummaryScreen(date: String, padding: PaddingValues, viewModel: SummaryViewModel = viewModel(), navigateBack: () -> Unit) {
     val refreshState by remember {
         mutableStateOf(false)
     }
     LaunchedEffect(refreshState) {
         viewModel.promptNews(date)
     }
+
+    BackHandler(true, navigateBack)
 
     val context = LocalContext.current
     val textToSpeech = TextToSpeech(context) {

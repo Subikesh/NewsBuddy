@@ -1,5 +1,6 @@
 package com.spacey.newsbuddy.chat
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -50,7 +51,7 @@ fun ChatScreen(
     date: String,
 //    setAppBarContent: (AppBarContent?) -> Unit,
 //    setFabConfig: (FabConfig?) -> Unit,
-    navBackToHome: () -> Unit,
+    navigateBack: () -> Unit,
     viewModel: ChatViewModel = viewModel()
 ) {
     LaunchedEffect(key1 = true) {
@@ -59,9 +60,11 @@ fun ChatScreen(
 //        setFabConfig(null)
     }
 
+    BackHandler(true, navigateBack)
+
     val conversations by viewModel.conversation.collectAsState()
     CenteredTopBarScaffold(title = "News Buddy", navigationIcon = {
-        BackIconButton(navBackToHome)
+        BackIconButton(navigateBack)
     }) {
         Column {
             when (val chat = conversations) {
