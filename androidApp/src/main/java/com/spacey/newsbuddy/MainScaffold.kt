@@ -15,6 +15,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -50,6 +52,11 @@ fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Un
     }
     val bottomBarItems: List<BottomNavItem> = remember {
         getBottomBarItems(navController)
+    }
+    val mainActivity = LocalContext.current as MainActivity
+
+    LaunchedEffect(true) {
+        mainActivity.loadInterstitialAd()
     }
 
     navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -113,7 +120,10 @@ fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Un
             }
 
             composable<Summary> {
-                SummaryScreen(it.toRoute<Summary>().date, padding)
+                SummaryScreen(it.toRoute<Summary>().date, padding) {
+                    mainActivity.showInterstitialAd()
+                    navController.navigateUp()
+                }
             }
 
             composable<ChatList> {
