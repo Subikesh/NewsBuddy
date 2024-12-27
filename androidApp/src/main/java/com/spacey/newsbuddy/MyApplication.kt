@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.spacey.newsbuddy.common.initiateFireBaseSdk
 
 class MyApplication : Application() {
@@ -12,7 +13,12 @@ class MyApplication : Application() {
         super.onCreate()
         initiateFireBaseSdk(this)
         ServiceLocator.initiate(DependenciesImpl(this))
-        FirebaseRemoteConfig.getInstance( ).fetchAndActivate()
+        val configSettings = remoteConfigSettings {
+            setFetchTimeoutInSeconds(3600)
+        }
+        FirebaseRemoteConfig.getInstance().apply {
+            setConfigSettingsAsync(configSettings)
+        }
 
         val notificationManager = getSystemService(NotificationManager::class.java)
         notificationManager.createNotificationChannel(
