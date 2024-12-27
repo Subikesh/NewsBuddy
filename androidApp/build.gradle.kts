@@ -75,5 +75,7 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.remote.config)
 
+    implementation(libs.gms.play.services.ads)
+
     debugImplementation(libs.compose.ui.tooling)
 }
