@@ -3,7 +3,6 @@ package com.spacey.newsbuddy.home
 import android.speech.tts.TextToSpeech
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -81,7 +80,7 @@ fun HomeScreen(
 
         HomeChatList(viewModel(), navigateToChat, navigateToSummary)
 
-        BannerAd("ca-app-pub-3940256099942544/9214589741", AdSize.BANNER)
+        BannerAd("ca-app-pub-1812668276280069/8875898022", AdSize.BANNER)
     }
 }
 

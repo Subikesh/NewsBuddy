@@ -239,7 +239,7 @@ fun LoadingScreen(text: String) {
                     .padding(bottom = 8.dp))
         }
 
-        BannerAd("ca-app-pub-3940256099942544/9214589741")
+        BannerAd("ca-app-pub-1812668276280069/6486071237")
     }
 }
 
@@ -254,7 +254,7 @@ fun MessageScreen(text: String, modifier: Modifier = Modifier, contentColor: Col
 
             actionButton?.invoke()
         }
-        BannerAd("ca-app-pub-3940256099942544/9214589741")
+        BannerAd("ca-app-pub-1812668276280069/7677237129")
     }
 }
 

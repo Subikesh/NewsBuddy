@@ -146,7 +146,7 @@ class MainActivity : ComponentActivity() {
         adIsLoading = true
         val adRequest = Builder().build()
 
-        InterstitialAd.load(this,"ca-app-pub-3940256099942544/1033173712", adRequest, object : InterstitialAdLoadCallback() {
+        InterstitialAd.load(this,"ca-app-pub-1812668276280069/5060776094", adRequest, object : InterstitialAdLoadCallback() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
                 Log.e("AdMessage", "Ad failure: $adError")
                 interstitialAd = null
