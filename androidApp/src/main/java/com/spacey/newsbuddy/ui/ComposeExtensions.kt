@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.WindowMetrics
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -55,11 +56,16 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
+import com.spacey.newsbuddy.MainActivity
 import com.spacey.newsbuddy.NewsHome
 import com.spacey.newsbuddy.common.AiFeaturesDisabled
 import com.spacey.newsbuddy.common.NoInternetException
@@ -130,6 +136,33 @@ fun RoundIconButton(
 }
 
 @Composable
+fun BannerAd(adUnitId: String, adSize: AdSize? = null) {
+    AndroidView(
+        factory = { context ->
+            // Get the ad size with screen width.
+            val mainActivity = context as MainActivity
+            val displayMetrics = mainActivity.resources.displayMetrics
+            val adWidthPixels =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    val windowMetrics: WindowMetrics = mainActivity.windowManager.currentWindowMetrics
+                    windowMetrics.bounds.width()
+                } else {
+                    displayMetrics.widthPixels
+                }
+            val density = displayMetrics.density
+            val adWidth = (adWidthPixels / density).toInt()
+
+            AdView(mainActivity).apply {
+                setAdSize(adSize ?: AdSize.getCurrentOrientationInlineAdaptiveBannerAdSize(mainActivity, adWidth))
+                setAdUnitId(adUnitId)
+                loadAd(AdRequest.Builder().build())
+            }
+        },
+        modifier = Modifier.fillMaxWidth().padding(16.dp)
+    )
+}
+
+@Composable
 fun BackIconButton(onClick: () -> Unit) {
     RoundIconButton(icon = Icons.Default.ArrowBack, contentDescription = "back", onClick = onClick)
 }
@@ -183,7 +216,7 @@ fun keyboardVisibility(): State<Boolean> {
 }
 
 @Composable
-fun LoadingScreen(text: String = "Reading today's news 🗞️\nPlease give me a minute...") {
+fun LoadingScreen(text: String) {
     CenteredColumn {
         ContentCard(Modifier.fillMaxWidth(0.7f)) {
             Text(text,
@@ -197,6 +230,8 @@ fun LoadingScreen(text: String = "Reading today's news 🗞️\nPlease give me a
                     .padding(horizontal = 16.dp, vertical = 8.dp)
                     .padding(bottom = 8.dp))
         }
+
+        BannerAd("ca-app-pub-3940256099942544/9214589741")
     }
 }
 
@@ -211,6 +246,7 @@ fun MessageScreen(text: String, modifier: Modifier = Modifier, contentColor: Col
 
             actionButton?.invoke()
         }
+        BannerAd("ca-app-pub-3940256099942544/9214589741")
     }
 }
 
