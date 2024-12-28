@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -89,25 +90,12 @@ fun CenteredColumn(
 fun CenteredTopBarScaffold(
     title: String,
     navigationIcon: @Composable () -> Unit,
-    trailingIcon: @Composable () -> Unit = {},
+    trailingIcon: @Composable RowScope.() -> Unit = {},
     fabContent: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(containerColor = Color.Transparent, modifier = Modifier.imePadding(), topBar = {
-        CenterAlignedTopAppBar(
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
-            title = {
-                Text(
-                    title,
-                    Modifier.padding(16.dp),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleLarge
-                )
-            },
-            navigationIcon = navigationIcon,
-            actions = { trailingIcon() }
-        )
+        CenteredTopBar(title, navigationIcon, windowInsets = TopAppBarDefaults.windowInsets, trailingIcon = trailingIcon)
     }, floatingActionButton = {
         fabContent()
     }, content = { padding ->
@@ -115,6 +103,26 @@ fun CenteredTopBarScaffold(
             content(padding)
         }
     })
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CenteredTopBar(title: String, navigationIcon: @Composable () -> Unit, windowInsets: WindowInsets = WindowInsets(top = 0), trailingIcon: @Composable RowScope.() -> Unit) {
+    CenterAlignedTopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+        title = {
+            Text(
+                title,
+                Modifier.padding(16.dp),
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge
+            )
+        },
+        windowInsets = windowInsets,
+        navigationIcon = navigationIcon,
+        actions = trailingIcon
+    )
 }
 
 @Composable
@@ -259,6 +267,10 @@ operator fun PaddingValues.plus(other: PaddingValues): PaddingValues = PaddingVa
 
 fun String.capitalize() =
     replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
+
+fun String.formatToHomeDateDisplay(): String {
+    return LocalDate.parse(this, DateTimeFormatter.ISO_LOCAL_DATE).format(DateTimeFormatter.ofPattern("EEE, d MMM yyyy"))
+}
 
 // Animations
 fun AnimatedContentTransitionScope<NavBackStackEntry>.enterSlideTransition(towards: AnimatedContentTransitionScope.SlideDirection, durationMillis: Int): EnterTransition {

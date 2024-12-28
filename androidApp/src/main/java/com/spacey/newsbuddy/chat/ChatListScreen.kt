@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.ListedUiState
 import com.spacey.newsbuddy.home.HomeViewModel
-import com.spacey.newsbuddy.ui.CenteredTopBarScaffold
+import com.spacey.newsbuddy.ui.CenteredTopBar
 import com.spacey.newsbuddy.ui.ContentCard
 import com.spacey.newsbuddy.ui.LoadingScreen
 import com.spacey.newsbuddy.ui.MessageScreen
@@ -41,9 +41,11 @@ fun ChatListScreen(homeViewModel: HomeViewModel = viewModel(), navigateToChat: (
         homeViewModel.loadHome()
     }
 
-    CenteredTopBarScaffold(title = "Recent Chats", navigationIcon = {}, trailingIcon = {
-        RoundIconButton(icon = Icons.Default.Add, contentDescription = "Start chat", onClick = { navigateToChat(null) })
-    }) {
+    Column {
+        CenteredTopBar(title = "Recent Chats", navigationIcon = {}, trailingIcon = {
+            RoundIconButton(icon = Icons.Default.Add, contentDescription = "Start chat", onClick = { navigateToChat(null) })
+        })
+
         when (val chatHistory = uiState.chatHistory) {
             is ListedUiState.Error -> {
                 if (chatHistory.message == HomeViewModel.NO_CHAT_ERROR) {
