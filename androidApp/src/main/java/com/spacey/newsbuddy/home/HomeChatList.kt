@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,10 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.spacey.newsbuddy.ListedUiState
-import com.spacey.newsbuddy.android.BuildConfig
-import com.spacey.newsbuddy.ui.BannerAd
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import com.spacey.newsbuddy.ui.formatToHomeDateDisplay
 
 @Composable
 fun HomeChatList(viewModel: HomeViewModel, navToChat: (String?) -> Unit, navToSummary: (String?) -> Unit) {
@@ -55,7 +53,7 @@ fun ListUiState(title: String, uiState: ListedUiState<HomeBubble>, navToChat: (S
     Column(Modifier.height(275.dp)) {
         Text(
             title,
-            Modifier.padding(vertical = 16.dp),
+            Modifier.padding(16.dp),
             style = MaterialTheme.typography.headlineLarge
         )
         when (uiState) {
@@ -72,9 +70,9 @@ fun ListUiState(title: String, uiState: ListedUiState<HomeBubble>, navToChat: (S
             }
 
             is ListedUiState.Success -> {
-                LazyRow {
+                LazyRow(contentPadding = PaddingValues(16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     itemsIndexed(uiState.resultList) { i, chat ->
-                        HomeCard(modifier = Modifier.padding(horizontal = 8.dp), onClick = {
+                        HomeCard(onClick = {
                             navToChat(chat.date)
                         }, bottomContent = {
                             Text(text = chat.date.formatToHomeDateDisplay(), Modifier.padding(12.dp))
@@ -86,7 +84,7 @@ fun ListUiState(title: String, uiState: ListedUiState<HomeBubble>, navToChat: (S
             }
 
             is ListedUiState.Error -> {
-                HomeCard(Modifier.fillMaxWidth(), null, bottomContent = {}) {
+                HomeCard(Modifier.fillMaxWidth().padding(16.dp), null, bottomContent = {}) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -135,8 +133,4 @@ fun HomeCard(modifier: Modifier = Modifier, onClick: (() -> Unit)?, bottomConten
             }
         }
     }
-}
-
-private fun String.formatToHomeDateDisplay(): String {
-    return LocalDate.parse(this, DateTimeFormatter.ISO_LOCAL_DATE).format(DateTimeFormatter.ofPattern("EEE, d MMM yyyy"))
 }

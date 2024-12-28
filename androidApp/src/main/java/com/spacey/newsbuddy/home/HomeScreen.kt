@@ -33,7 +33,6 @@ import com.spacey.newsbuddy.ui.BannerAd
 
 @Composable
 fun HomeScreen(
-    padding: PaddingValues,
     setAppBarContent: (AppBarContent?) -> Unit,
     navigateToChat: (String?) -> Unit,
     navigateToSummary: (String?) -> Unit,
@@ -42,19 +41,8 @@ fun HomeScreen(
     LaunchedEffect(key1 = true) {
         setAppBarContent(null)
     }
-    // TODO: Ask permission after second launch
-//    RequestNotificationPermission(
-//        isFirstTime = true,
-//        onPermissionGranted = {
-//            SettingsAccessor.dataSyncEnabled = PermissionState.ENABLED
-//            scheduleDataSync(context)
-//        },
-//        onPermissionDeclined = {},
-//        onPermanentlyDenied = {
-//        }
-//    )
-    Column(Modifier.padding(padding).verticalScroll(rememberScrollState())) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+    Column(Modifier.verticalScroll(rememberScrollState())) {
+        Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.End) {
             IconButton(
                 onClick = {
                     navigateToSettings()

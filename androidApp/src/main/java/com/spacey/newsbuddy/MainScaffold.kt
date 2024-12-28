@@ -2,6 +2,7 @@ package com.spacey.newsbuddy
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Home
@@ -22,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -73,7 +75,7 @@ fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Un
                 unselectedIconColor = MaterialTheme.colorScheme.primary.copy(alpha = .4f),
                 indicatorColor = MaterialTheme.colorScheme.surfaceColorAtElevation(LocalAbsoluteTonalElevation.current)
             )
-            NavigationBar(containerColor = MaterialTheme.colorScheme.secondary) {
+            NavigationBar(containerColor = MaterialTheme.colorScheme.secondary, modifier = Modifier.shadow(elevation = 10.dp)) {
                 bottomBarItems.forEachIndexed { i, bottomBarItem ->
                     NavigationBarItem(selected = bottomSelectedIndex == i, onClick = {
                         if (bottomSelectedIndex != i) {
@@ -105,13 +107,11 @@ fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Un
             }*/
         }
     ) { padding ->
-        val homePadding = padding + PaddingValues(16.dp)
         NavHost(navController = navController, startDestination = NewsHome, modifier = Modifier
-            .background(Color.Transparent)) {
+            .background(Color.Transparent).padding(padding)) {
             composable<NewsHome> {
                 val todayDate = getLatestDate()
                 HomeScreen(
-                    padding = homePadding,
                     setAppBarContent = { appBarContent = it },
                     navigateToChat = navigateToChat,
                     navigateToSummary = { navController.navigateFromHome(Summary(it ?: todayDate)) },
@@ -120,7 +120,7 @@ fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Un
             }
 
             composable<Summary> {
-                SummaryScreen(it.toRoute<Summary>().date, padding) {
+                SummaryScreen(it.toRoute<Summary>().date) {
                     mainActivity.showInterstitialAd()
                     navController.navigateUp()
                 }
