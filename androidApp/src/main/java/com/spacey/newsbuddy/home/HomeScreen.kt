@@ -80,7 +80,7 @@ fun HomeScreen(
 
         HomeChatList(viewModel(), navigateToChat, navigateToSummary)
 
-        BannerAd("ca-app-pub-1812668276280069/8875898022", AdSize.BANNER)
+        BannerAd("ca-app-pub-4784093806834711/9474663827", AdSize.BANNER)
     }
 }
 
