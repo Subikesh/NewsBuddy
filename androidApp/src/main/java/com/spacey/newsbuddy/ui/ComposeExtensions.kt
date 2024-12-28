@@ -149,25 +149,25 @@ fun BannerAd(adUnitId: String, adSize: AdSize? = null) {
     AndroidView(
         factory = { context ->
             // Get the ad size with screen width.
-            val mainActivity = context as MainActivity
-            val displayMetrics = mainActivity.resources.displayMetrics
+            context as MainActivity
+            val displayMetrics = context.resources.displayMetrics
             val adWidthPixels =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    val windowMetrics: WindowMetrics = mainActivity.windowManager.currentWindowMetrics
+                    val windowMetrics: WindowMetrics = context.windowManager.currentWindowMetrics
                     windowMetrics.bounds.width()
                 } else {
                     displayMetrics.widthPixels
                 }
             val density = displayMetrics.density
-            val adWidth = (adWidthPixels / density).toInt()
+            val adWidth = (adWidthPixels / density).toInt() - 32
 
-            AdView(mainActivity).apply {
-                setAdSize(adSize ?: AdSize.getCurrentOrientationInlineAdaptiveBannerAdSize(mainActivity, adWidth))
+            AdView(context).apply {
+                setAdSize(adSize ?: AdSize.getCurrentOrientationInlineAdaptiveBannerAdSize(context, adWidth))
                 setAdUnitId(adUnitId)
                 loadAd(AdRequest.Builder().build())
             }
         },
-        modifier = Modifier.fillMaxWidth().padding(16.dp)
+        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
     )
 }
 

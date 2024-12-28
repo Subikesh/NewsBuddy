@@ -12,10 +12,12 @@ import com.spacey.newsbuddy.datasync.SyncEntry
 import com.spacey.newsbuddy.serviceLocator
 import com.spacey.newsbuddy.workers.NewsSyncWorker
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.seconds
 
 class DataSyncViewModel : ViewModel() {
 

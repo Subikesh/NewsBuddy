@@ -29,8 +29,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.ListedUiState
 import com.spacey.newsbuddy.ui.BackIconButton
 import com.spacey.newsbuddy.ui.CenteredTopBarScaffold
+import com.spacey.newsbuddy.ui.LoadingScreen
 import com.spacey.newsbuddy.ui.MessageScreen
 import com.spacey.newsbuddy.ui.RoundIconButton
+import com.spacey.newsbuddy.ui.isInternetConnected
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -56,13 +58,7 @@ fun DataSyncScreen(navigateBack: () -> Unit, viewModel: DataSyncViewModel = view
         Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
             when (val dataSyncList = syncList) {
                 is ListedUiState.Loading -> {
-                    Column(
-                        Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
+                    LoadingScreen("Syncing latest news, and summarizing it...")
                 }
 
                 is ListedUiState.Success -> {
