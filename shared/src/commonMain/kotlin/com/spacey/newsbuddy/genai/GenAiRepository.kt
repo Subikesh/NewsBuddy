@@ -13,16 +13,19 @@ import com.spacey.newsbuddy.news.NewsRepository
 import com.spacey.newsbuddy.settings.SettingsAccessor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
+import kotlin.time.Duration.Companion.seconds
 
 class GenAiRepository(
     private val newsRepository: NewsRepository,
@@ -60,13 +63,17 @@ class GenAiRepository(
                 }
             }
         }
-        // Cache not found
-        log("Date", "Response for cacheDate: $date")
+        // Delaying loading for banner admob
+        // TODO: If show Ad check
+        val delayJob = launch {
+            delay(3.seconds)
+        }
         val news = newsRepository.getTodaysNews(date, forceRefresh)
         news.safeConvert {
             log("News", "News response: $it")
             var i = 0
             summaryAiService.prompt(it.content, dependencies).map { aiMsg ->
+                delayJob.join()
                 parseAiResponse(aiMsg).also { convoList ->
                     newsSummaryDao.upsert(convoList.map { NewsSummary(date, it.content, it.link, i++) })
                 }
@@ -85,7 +92,11 @@ class GenAiRepository(
             currentChatAiService = getConversationAiService(chatWindow.getOrThrow())
             return@withContext chatWindow
         }
-
+        // Delaying loading for banner admob
+        // TODO: If show Ad check
+        val delayJob = launch {
+            delay(3.seconds)
+        }
         val news = newsRepository.getTodaysNews(date)
         news.safeConvert { newsResponse ->
             currentChatAiService = getConversationAiService(ChatWindow(newsResponse, null, emptyList()))
@@ -96,6 +107,7 @@ class GenAiRepository(
                 if (aiResponseStr.isNotEmpty()) {
                     saveChatTitle(newsResponse.id, newsResponse.date, aiResponseStr)
                 }
+                delayJob.join()
                 buddyChatDao.insert(ChatBubble(newsResponse.id, getCurrentTime(), ChatType.AI, aiResponseStr))
                 buddyChatDao.safeGetChatWindow(newsResponse.date)
             }
