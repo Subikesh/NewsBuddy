@@ -7,6 +7,7 @@ import com.spacey.newsbuddy.genai.GenAiRepository
 import com.spacey.newsbuddy.serviceLocator
 import com.spacey.newsbuddy.settings.SettingsAccessor
 import com.spacey.newsbuddy.toListedUiState
+import com.spacey.newsbuddy.ui.formatToHomeDateDisplay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -32,7 +33,7 @@ class HomeViewModel : ViewModel() {
                 summaries = kotlin.runCatching {
                     genAiRepository.getRecentSummaries().map {
                         // TODO: Set the summary title here
-                        HomeBubble(it, it)
+                        HomeBubble(it, "Top headlines on ${it.formatToHomeDateDisplay()}")
                     }
                 }.toListedUiState(NO_SUMMARY_ERROR)
             }

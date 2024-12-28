@@ -29,13 +29,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spacey.newsbuddy.ListedUiState
-import com.spacey.newsbuddy.home.converse
+import com.spacey.newsbuddy.ui.CenteredTopBar
 import com.spacey.newsbuddy.ui.LoadingScreen
 import com.spacey.newsbuddy.ui.MessageScreen
+import com.spacey.newsbuddy.ui.formatToHomeDateDisplay
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SummaryScreen(date: String, padding: PaddingValues, viewModel: SummaryViewModel = viewModel(), navigateBack: () -> Unit) {
+fun SummaryScreen(date: String, viewModel: SummaryViewModel = viewModel(), navigateBack: () -> Unit) {
     val refreshState by remember {
         mutableStateOf(false)
     }
@@ -74,10 +75,16 @@ fun SummaryScreen(date: String, padding: PaddingValues, viewModel: SummaryViewMo
 //            textToSpeech.setOnUtteranceProgressListener(NewsSpeechListener(setFabIcon) {
 //                currentSpeaking = it
 //            })
-            LazyColumn(contentPadding = padding) {
+            LazyColumn(contentPadding = PaddingValues(16.dp)) {
+                item {
+                    CenteredTopBar("News on ${date.formatToHomeDateDisplay()}", navigationIcon = {}, trailingIcon = {})
+                }
+
                 itemsIndexed(items = state.resultList) { i, conversation ->
                     val weight = if (i == currentSpeaking) FontWeight.ExtraBold else null
-                    val shape = if (i == 0) RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp) else RoundedCornerShape(0.dp)
+                    val shape = if (i == 0) RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp)
+                    else if (i == state.resultList.size - 1) RoundedCornerShape(bottomStart = 35.dp, bottomEnd = 35.dp)
+                    else RoundedCornerShape(0.dp)
                     val textPadding = if (i == 0) PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 8.dp) else PaddingValues(vertical = 8.dp, horizontal = 16.dp)
                     Card(shape = shape, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiary)) {
                         Text(text = conversation.content,
@@ -86,11 +93,12 @@ fun SummaryScreen(date: String, padding: PaddingValues, viewModel: SummaryViewMo
                                 .combinedClickable(
                                     onLongClickLabel = "Open Url",
                                     onLongClick = {
-                                        conversation.link?.let {
-                                            uriHandler.openUri(it)
-                                        }
+                                        // TODO: Text to speech disabled
+//                                        textToSpeech.converse(state.resultList, i)
                                     }) {
-                                    textToSpeech.converse(state.resultList, i)
+                                    conversation.link?.let {
+                                        uriHandler.openUri(it)
+                                    }
                                 },
                             style = MaterialTheme.typography.bodyLarge.copy(
                                 fontWeight = weight,
@@ -103,7 +111,7 @@ fun SummaryScreen(date: String, padding: PaddingValues, viewModel: SummaryViewMo
         }
 
         is ListedUiState.Error -> {
-            MessageScreen(text = state.message, contentColor = MaterialTheme.colorScheme.error, modifier = Modifier.padding(padding))
+            MessageScreen(text = state.message, contentColor = MaterialTheme.colorScheme.error, modifier = Modifier.padding(16.dp))
         }
     }
 }
