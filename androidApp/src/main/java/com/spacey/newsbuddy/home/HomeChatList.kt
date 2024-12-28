@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.spacey.newsbuddy.ListedUiState
 import com.spacey.newsbuddy.android.BuildConfig
+import com.spacey.newsbuddy.ui.BannerAd
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

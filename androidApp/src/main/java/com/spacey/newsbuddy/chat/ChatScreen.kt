@@ -73,7 +73,7 @@ fun ChatScreen(
                 }
 
                 is ChatUiState.Loading -> {
-                    LoadingScreen()
+                    LoadingScreen("Reading today's news 🗞️\nPlease give me a minute...")
                 }
 
                 is ChatUiState.Success -> {

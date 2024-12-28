@@ -26,8 +26,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.gms.ads.AdSize
 import com.spacey.newsbuddy.AppBarContent
 import com.spacey.newsbuddy.genai.SummaryParagraph
+import com.spacey.newsbuddy.ui.BannerAd
 
 @Composable
 fun HomeScreen(
@@ -90,7 +92,8 @@ fun HomeScreen(
         }
 
         HomeChatList(viewModel(), navigateToChat, navigateToSummary)
-//        SummaryScreen()
+
+        BannerAd("ca-app-pub-3940256099942544/9214589741", AdSize.BANNER)
     }
 }
 
