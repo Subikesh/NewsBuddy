@@ -3,6 +3,7 @@ package com.spacey.newsbuddy.ui
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowMetrics
@@ -289,6 +290,11 @@ fun AnimatedContentTransitionScope<NavBackStackEntry>.exitSlideTransition(toward
         animationSpec = tween(durationMillis, easing = FastOutSlowInEasing),
         towards = towards
     )
+}
+
+fun Context.isInternetConnected(): Boolean {
+    val connectivity = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    return connectivity.activeNetworkInfo?.isConnected == true
 }
 
 fun Result<*>.getErrorMsgOrNull(isDebug: Boolean): Pair<String, Boolean>? {

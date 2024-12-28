@@ -47,7 +47,9 @@ fun DataSyncScreen(navigateBack: () -> Unit, viewModel: DataSyncViewModel = view
     }, trailingIcon = {
         if (syncList !is ListedUiState.Loading) {
             RoundIconButton(icon = Icons.Default.Sync, iconColors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary), contentDescription = "Sync now") {
-                viewModel.syncNow(context)
+                if (context.isInternetConnected()) {
+                    viewModel.syncNow(context)
+                }
             }
         }
     }) {
