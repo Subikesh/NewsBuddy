@@ -135,6 +135,7 @@ class MainActivity : ComponentActivity() {
         val backgroundScope = CoroutineScope(Dispatchers.IO)
         backgroundScope.launch {
             MobileAds.initialize(this@MainActivity) {}
+            MobileAds.setAppVolume(0.5f)
         }
     }
 

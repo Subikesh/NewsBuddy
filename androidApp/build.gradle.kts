@@ -38,6 +38,7 @@ android {
             defaultConfig {
                 applicationId = "com.spacey.newsbuddy.android"
             }
+            ndk.debugSymbolLevel = "FULL"
             isDebuggable = false
             isMinifyEnabled = false
         }
