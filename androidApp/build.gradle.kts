@@ -16,7 +16,7 @@ android {
     defaultConfig {
         minSdk = 28
         targetSdk = 34
-        versionCode = 1
+        versionCode = 2
         versionName = "0.0.1-alpha"
 
         val keyStoreFile = project.rootProject.file("secrets.properties")
