@@ -2,12 +2,7 @@
 
 Stay informed like never before with **NewsBuddy**, the smart app that brings you the latest news, summarizes it, and lets you chat about it! Designed to keep you updated effortlessly, NewsBuddy transforms the way you consume and interact with daily news.  
 
-## Key Features
-
-- **Interactive News Chats:** Dive deeper into the day’s top headlines by engaging in AI-driven conversations about the topics you care about. 
-- **Daily News Sync:** Automatically downloads the latest news each day to keep you informed.  
-- **AI-Powered Summaries:** Get concise, easy-to-read summaries for all major news stories.  
-- **Personalized Experience:** Explore news tailored to your interests, with interactive prompts to help you discover new perspectives.  
+![ss_saved](https://github.com/user-attachments/assets/cfc60d3b-b4e9-4be7-b1a1-570615eacdd5)
 
 ## App Architecture
 
@@ -30,3 +25,10 @@ Stay informed like never before with **NewsBuddy**, the smart app that brings yo
 * Dependency Injection
 * Vertex AI and Gemini
 * Firebase Analytics, Crashlytics, Remote Config and Google Admob
+
+## Key Features
+
+- **Interactive News Chats:** Dive deeper into the day’s top headlines by engaging in AI-driven conversations about the topics you care about. 
+- **Daily News Sync:** Automatically downloads the latest news each day to keep you informed.  
+- **AI-Powered Summaries:** Get concise, easy-to-read summaries for all major news stories.  
+- **Personalized Experience:** Explore news tailored to your interests, with interactive prompts to help you discover new perspectives.  
