@@ -1,8 +1,10 @@
 package com.spacey.newsbuddy.news
 
+import com.spacey.newsbuddy.common.ConnectivityManager
 import com.spacey.newsbuddy.common.Dependencies
 import com.spacey.newsbuddy.common.NoInternetException
 import com.spacey.newsbuddy.genai.NewsResponse
+import com.spacey.newsbuddy.news.vendornewsapi.NewsApiNetworkService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
@@ -11,14 +13,14 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 class NewsRepository(
-    private val newsApiService: NewsApiService,
+    private val newsApiService: NewsNetworkService,
     private val newsDao: NewsDao,
-    private val dependencies: Dependencies
+    private val connectivityManager: ConnectivityManager
 ) {
 
     suspend fun getTodaysNews(date: String, forceRefresh: Boolean = false): Result<NewsResponse> = withContext(Dispatchers.IO) {
         try {
-            if (!dependencies.isInternetConnected()) {
+            if (!connectivityManager.isInternetConnected()) {
                 throw NoInternetException
             }
             val summary = runCatching { newsDao.getNewsResponse(date) }

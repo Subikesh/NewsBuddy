@@ -12,7 +12,7 @@ import io.ktor.serialization.kotlinx.json.json
 
 expect fun getHttpClientEngine(): HttpClientEngine
 
-abstract class BaseApiService(private val dependencies: Dependencies) {
+abstract class BaseApiService {
     private val httpClient = HttpClient(getHttpClientEngine()) {
         install(Logging) {
             this.logger = object : io.ktor.client.plugins.logging.Logger {
@@ -26,8 +26,8 @@ abstract class BaseApiService(private val dependencies: Dependencies) {
         }
     }
 
-    suspend fun getApiCall(url: String, builder: HttpRequestBuilder.() -> Unit): HttpResponse = httpClient.get(url) {
+    suspend fun getApiCall(url: String, apiToken: String, builder: HttpRequestBuilder.() -> Unit): HttpResponse = httpClient.get(url) {
         builder()
-        bearerAuth(dependencies.getNewsApiToken())
+        bearerAuth(apiToken)
     }
 }

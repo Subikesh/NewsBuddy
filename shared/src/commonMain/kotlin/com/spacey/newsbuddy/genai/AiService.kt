@@ -1,19 +1,19 @@
 package com.spacey.newsbuddy.genai
 
 import com.spacey.newsbuddy.common.AiFeaturesDisabled
-import com.spacey.newsbuddy.common.Dependencies
+import com.spacey.newsbuddy.common.ConnectivityManager
 import com.spacey.newsbuddy.common.NoInternetException
 import kotlinx.coroutines.flow.Flow
 
 abstract class AiService<T> {
     internal abstract suspend fun promptAi(message: String): Result<T>
 
-    suspend fun prompt(message: String, dependencies: Dependencies): Result<T> {
+    suspend fun prompt(message: String, isAiFeaturesSupported: Boolean, connectivityManager: ConnectivityManager): Result<T> {
         try {
-            if (!dependencies.isInternetConnected()) {
+            if (!connectivityManager.isInternetConnected()) {
                 throw NoInternetException
             }
-            if (!dependencies.isAiFeaturesSupported()) {
+            if (!isAiFeaturesSupported) {
                 throw AiFeaturesDisabled
             }
             return promptAi(message)

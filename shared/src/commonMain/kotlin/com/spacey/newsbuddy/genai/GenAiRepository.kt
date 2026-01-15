@@ -1,8 +1,8 @@
 package com.spacey.newsbuddy.genai
 
-import com.spacey.newsbuddy.common.AiFeaturesDisabled
+import com.spacey.newsbuddy.common.ConnectivityManager
 import com.spacey.newsbuddy.common.Dependencies
-import com.spacey.newsbuddy.common.NoInternetException
+import com.spacey.newsbuddy.common.FeatureFlagManager
 import com.spacey.newsbuddy.common.foldAsString
 import com.spacey.newsbuddy.common.getCurrentTime
 import com.spacey.newsbuddy.common.log
@@ -34,10 +34,13 @@ class GenAiRepository(
     private val buddyChatDao: BuddyChatDao,
     private val newsSummaryDao: SummaryDao,
     private val titleDao: TitleDao,
-    private val dependencies: Dependencies
+    private val featureFlagManager: FeatureFlagManager,
+    private val connectivityManager: ConnectivityManager
 ) {
 
     private lateinit var currentChatAiService: ChatAiService
+    private val isAiFeaturesSupported: Boolean
+        get() = featureFlagManager.isAiFeaturesSupported()
 
     suspend fun getRecentChats(offset: Int = 0, limit: Int = 10): List<ChatTitle> = withContext(Dispatchers.IO) {
         buddyChatDao.getRecentChats(offset, limit)
@@ -72,7 +75,7 @@ class GenAiRepository(
         news.safeConvert {
             log("News", "News response: $it")
             var i = 0
-            summaryAiService.prompt(it.content, dependencies).map { aiMsg ->
+            summaryAiService.prompt(it.content, isAiFeaturesSupported, connectivityManager).map { aiMsg ->
                 delayJob.join()
                 parseAiResponse(aiMsg).also { convoList ->
                     newsSummaryDao.upsert(convoList.map { NewsSummary(date, it.content, it.link, i++) })
@@ -101,7 +104,7 @@ class GenAiRepository(
         news.safeConvert { newsResponse ->
             currentChatAiService = getConversationAiService(ChatWindow(newsResponse, null, emptyList()))
             log("News", "News response: $newsResponse")
-            currentChatAiService.prompt("Start", dependencies).safeConvert { aiResponse ->
+            currentChatAiService.prompt("Start", isAiFeaturesSupported, connectivityManager).safeConvert { aiResponse ->
                 val aiResponseStr = aiResponse.foldAsString()
                 // TODO: Check if ai response is error
                 if (aiResponseStr.isNotEmpty()) {
@@ -120,7 +123,7 @@ class GenAiRepository(
         }
         buddyChatDao.insert(ChatBubble(chatWindow.dayNews.id, getCurrentTime(), ChatType.USER, prompt))
         emit(buddyChatDao.safeGetChatWindow(chatWindow.dayNews.date))
-        emit(currentChatAiService.prompt(prompt, dependencies).safeConvert { aiResponse ->
+        emit(currentChatAiService.prompt(prompt, isAiFeaturesSupported, connectivityManager).safeConvert { aiResponse ->
             val aiResponseStr = aiResponse.foldAsString()
             buddyChatDao.insert(ChatBubble(chatWindow.dayNews.id, getCurrentTime(), ChatType.AI, aiResponseStr))
             buddyChatDao.safeGetChatWindow(chatWindow.dayNews.date)
@@ -132,7 +135,7 @@ class GenAiRepository(
     private suspend fun saveChatTitle(newsId: Int, date: String, startMsg: String) {
         try {
             withContext(Dispatchers.IO) {
-                val titleResult = titleAiService.prompt(startMsg, dependencies)
+                val titleResult = titleAiService.prompt(startMsg, isAiFeaturesSupported, connectivityManager)
                 titleResult.getOrNull()?.let { titleDao.addChatTitle(ChatTitle(newsId, date, it)) }
             }
         } catch (_: Exception) {

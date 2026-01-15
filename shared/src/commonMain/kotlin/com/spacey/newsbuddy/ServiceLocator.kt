@@ -9,7 +9,7 @@ import com.spacey.newsbuddy.genai.SummaryAiService
 import com.spacey.newsbuddy.genai.SummaryDao
 import com.spacey.newsbuddy.genai.TitleAiService
 import com.spacey.newsbuddy.genai.TitleDao
-import com.spacey.newsbuddy.news.NewsApiService
+import com.spacey.newsbuddy.news.vendornewsapi.NewsApiNetworkService
 import com.spacey.newsbuddy.news.NewsDao
 import com.spacey.newsbuddy.news.NewsRepository
 import com.spacey.newsbuddy.persistance.AppPreference
@@ -17,8 +17,9 @@ import com.spacey.newsbuddy.persistance.NewsBuddyDatabase
 
 lateinit var serviceLocator: ServiceLocator
 
-class ServiceLocator(private val dependencies: Dependencies) {
-    private val newsApiService by lazy { NewsApiService(dependencies) }
+class ServiceLocator(dependencies: Dependencies) {
+    private val newsTokenFetcher by dependencies.newsTokenFetcher
+    private val newsApiService by lazy { NewsApiNetworkService(newsTokenFetcher) }
     private val summaryAiService by lazy { SummaryAiService() }
     private val titleAiService by lazy { TitleAiService() }
 
@@ -31,8 +32,10 @@ class ServiceLocator(private val dependencies: Dependencies) {
     private val dataSyncDao: SyncDao by lazy { newsBuddyDatabase.getSyncDao() }
     private val titleDao: TitleDao by lazy { newsBuddyDatabase.getTitleDao() }
 
-    val newsRepository by lazy { NewsRepository(newsApiService, newsDao, dependencies) }
-    val genAiRepository by lazy { GenAiRepository(newsRepository, summaryAiService, titleAiService, buddyChatDao, summaryDao, titleDao, dependencies) }
+    private val connectivityManager by dependencies.connectivityManager
+    private val featureFlagManager by dependencies.featureFlagManager
+    val newsRepository by lazy { NewsRepository(newsApiService, newsDao, connectivityManager) }
+    val genAiRepository by lazy { GenAiRepository(newsRepository, summaryAiService, titleAiService, buddyChatDao, summaryDao, titleDao, featureFlagManager, connectivityManager) }
     val syncRepository by lazy { DataSyncRepository(dataSyncDao) }
 
     companion object {
