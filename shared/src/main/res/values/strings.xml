@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="main_chat_title">Tap to Chat</string>
+    <string name="main_chat_subtitle">Hey there 👋</string>
+
+    <string name="chat_list_title">Recent Chats</string>
+
+    <string name="notification_permission_title">Permission Request</string>
+    <string name="notification_permission_dialog">We sync daily news and keep things ready before you open the app. Kindly allow notification permission when prompted. You can always modify this in the settings.</string>
+    <string name="notification_permission_positive">Sure</string>
+    <string name="notification_permission_negative">Maybe Later</string>
+</resources>

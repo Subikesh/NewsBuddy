@@ -225,9 +225,9 @@ fun keyboardVisibility(): State<Boolean> {
 }
 
 @Composable
-fun LoadingScreen(text: String) {
+fun LoadingScreen(text: String, modifier: Modifier = Modifier) {
     CenteredColumn {
-        ContentCard(Modifier.fillMaxWidth(0.7f)) {
+        ContentCard(modifier.fillMaxWidth(0.7f)) {
             Text(text,
                 Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp)

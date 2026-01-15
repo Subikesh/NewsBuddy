@@ -23,10 +23,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
 import com.spacey.newsbuddy.MainActivity
+import com.spacey.newsbuddy.R
 import com.spacey.newsbuddy.settings.PermissionState
 import com.spacey.newsbuddy.settings.SettingsAccessor
 
@@ -45,13 +47,13 @@ fun RequestNotificationPermission(onPermissionGranted: () -> Unit, onPermissionD
         when (isAlertPositive) {
             PermissionState.DISABLED -> {
                 AlertDialog(
-                    title = { Text("Permission Request") },
-                    text = { Text("We sync daily news and keep things ready before you open the app. Kindly allow notification permission in the upcoming alert. You can always modify this in the settings.") },
+                    title = { Text(stringResource(R.string.notification_permission_title)) },
+                    text = { Text(stringResource(R.string.notification_permission_dialog)) },
                     onDismissRequest = onPermissionDeclined,
                     confirmButton = {
                         Button(onClick = {
                             isAlertPositive = PermissionState.ENABLED
-                        }) { Text("Sure") }
+                        }) { Text(stringResource(R.string.notification_permission_positive)) }
                     }, dismissButton = {
                         Button(
                             colors = ButtonDefaults.buttonColors(
@@ -60,7 +62,7 @@ fun RequestNotificationPermission(onPermissionGranted: () -> Unit, onPermissionD
                             ), onClick = {
                             onPermissionDeclined()
                             isAlertPositive = PermissionState.DENIED
-                        }) { Text(text = "Maybe later") }
+                        }) { Text(stringResource(R.string.notification_permission_negative)) }
                     }, shape = RoundedCornerShape(20.dp),
                 )
             }

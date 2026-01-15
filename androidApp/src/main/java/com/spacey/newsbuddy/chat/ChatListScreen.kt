@@ -34,14 +34,14 @@ import com.spacey.newsbuddy.ui.MessageScreen
 import com.spacey.newsbuddy.ui.RoundIconButton
 
 @Composable
-fun ChatListScreen(homeViewModel: HomeViewModel = viewModel(), navigateToChat: (String?) -> Unit) {
+fun ChatListScreen(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel(), navigateToChat: (String?) -> Unit) {
     val uiState by homeViewModel.uiState.collectAsState()
 
     LaunchedEffect(key1 = true) {
         homeViewModel.loadHome()
     }
 
-    Column {
+    Column(modifier) {
         CenteredTopBar(title = "Recent Chats", navigationIcon = {}, trailingIcon = {
             RoundIconButton(icon = Icons.Default.Add, contentDescription = "Start chat", onClick = { navigateToChat(null) })
         })

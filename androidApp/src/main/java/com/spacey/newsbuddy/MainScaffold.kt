@@ -108,10 +108,11 @@ fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Un
         }
     ) { padding ->
         NavHost(navController = navController, startDestination = NewsHome, modifier = Modifier
-            .background(Color.Transparent).padding(padding)) {
+            .background(Color.Transparent)) {
             composable<NewsHome> {
                 val todayDate = getLatestDate()
                 HomeScreen(
+                    modifier = Modifier.padding(padding),
                     setAppBarContent = { appBarContent = it },
                     navigateToChat = navigateToChat,
                     navigateToSummary = { navController.navigateFromHome(Summary(it ?: todayDate)) },
@@ -120,14 +121,14 @@ fun MainScaffold(navigateToChat: (String?) -> Unit, navigateToSettings: () -> Un
             }
 
             composable<Summary> {
-                SummaryScreen(it.toRoute<Summary>().date) {
+                SummaryScreen(it.toRoute<Summary>().date, padding = padding) {
                     mainActivity.showInterstitialAd()
                     navController.navigateUp()
                 }
             }
 
             composable<ChatList> {
-                ChatListScreen(navigateToChat = navigateToChat)
+                ChatListScreen(modifier = Modifier.padding(padding), navigateToChat = navigateToChat)
             }
         }
     }

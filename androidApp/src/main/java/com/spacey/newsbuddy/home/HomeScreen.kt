@@ -23,15 +23,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.ads.AdSize
 import com.spacey.newsbuddy.AppBarContent
+import com.spacey.newsbuddy.R
 import com.spacey.newsbuddy.genai.SummaryParagraph
 import com.spacey.newsbuddy.ui.BannerAd
 
 @Composable
 fun HomeScreen(
+    modifier: Modifier = Modifier,
     setAppBarContent: (AppBarContent?) -> Unit,
     navigateToChat: (String?) -> Unit,
     navigateToSummary: (String?) -> Unit,
@@ -40,7 +43,7 @@ fun HomeScreen(
     LaunchedEffect(key1 = true) {
         setAppBarContent(null)
     }
-    Column(Modifier.verticalScroll(rememberScrollState())) {
+    Column(modifier.verticalScroll(rememberScrollState())) {
         Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.End) {
             IconButton(
                 onClick = {
@@ -73,8 +76,8 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(text = "Hey there 👋", modifier = Modifier.padding(bottom = 8.dp))
-                Text(text = "Tap to Chat", style = MaterialTheme.typography.headlineLarge)
+                Text(stringResource(R.string.main_chat_title), modifier = Modifier.padding(bottom = 8.dp))
+                Text(stringResource(R.string.main_chat_subtitle), style = MaterialTheme.typography.headlineLarge)
             }
         }
 

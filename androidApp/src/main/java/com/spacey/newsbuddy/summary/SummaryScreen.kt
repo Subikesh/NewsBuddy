@@ -33,10 +33,11 @@ import com.spacey.newsbuddy.ui.CenteredTopBar
 import com.spacey.newsbuddy.ui.LoadingScreen
 import com.spacey.newsbuddy.ui.MessageScreen
 import com.spacey.newsbuddy.ui.formatToHomeDateDisplay
+import com.spacey.newsbuddy.ui.plus
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SummaryScreen(date: String, viewModel: SummaryViewModel = viewModel(), navigateBack: () -> Unit) {
+fun SummaryScreen(date: String, padding: PaddingValues, viewModel: SummaryViewModel = viewModel(), navigateBack: () -> Unit) {
     val refreshState by remember {
         mutableStateOf(false)
     }
@@ -57,7 +58,7 @@ fun SummaryScreen(date: String, viewModel: SummaryViewModel = viewModel(), navig
     val uiState by viewModel.uiState.collectAsState()
     when (val state = uiState) {
         is ListedUiState.Loading -> {
-            LoadingScreen(text = "Summarizing today's news 🗞️\nPlease give me a minute...")
+            LoadingScreen(text = "Summarizing today's news 🗞️\nPlease give me a minute...", modifier = Modifier.padding(padding))
         }
 
         is ListedUiState.Success -> {
@@ -75,7 +76,7 @@ fun SummaryScreen(date: String, viewModel: SummaryViewModel = viewModel(), navig
 //            textToSpeech.setOnUtteranceProgressListener(NewsSpeechListener(setFabIcon) {
 //                currentSpeaking = it
 //            })
-            LazyColumn(contentPadding = PaddingValues(16.dp)) {
+            LazyColumn(contentPadding = padding + PaddingValues(16.dp)) {
                 item {
                     CenteredTopBar("News on ${date.formatToHomeDateDisplay()}", navigationIcon = {}, trailingIcon = {})
                 }
@@ -111,7 +112,7 @@ fun SummaryScreen(date: String, viewModel: SummaryViewModel = viewModel(), navig
         }
 
         is ListedUiState.Error -> {
-            MessageScreen(text = state.message, contentColor = MaterialTheme.colorScheme.error, modifier = Modifier.padding(16.dp))
+            MessageScreen(text = state.message, contentColor = MaterialTheme.colorScheme.error, modifier = Modifier.padding(padding + PaddingValues(16.dp)))
         }
     }
 }
